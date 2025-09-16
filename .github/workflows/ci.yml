@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-tidy (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install llvm -y
+
+      - name: Install clang-tidy (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install llvm
+
+      - name: Install clang-tidy (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+
+      - name: Configure
+        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
+      - name: Build
+        run: cmake --build build --config Release --parallel
+      - name: Format check (clang-format)
+        run: |
+          if command -v clang-format >/dev/null 2>&1; then
+            git ls-files "core/src/*.{c,cpp}" "core/include/**/*.{h,hpp}" "kernels/*.hlsl" | tr '\n' '\0' | xargs -0 -I{} clang-format --dry-run -Werror -style=file {}
+          else
+            echo "clang-format not found"; exit 1
+          fi
+
+      - name: Lint (clang-tidy)
+        run: |
+          clang-tidy --version
+          cmake --build build --config Release --target zx
+          clang-tidy $(git ls-files 'core/src/*.cpp') -- -Icore/include
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure -C Release
+
+

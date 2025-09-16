@@ -1,0 +1,60 @@
+# Build artifacts
+/build/
+/build-*/
+/out/
+/bin/
+/lib/
+/CMakeBuild*/
+/*.sln
+/*.vcxproj*
+*.user
+*.obj
+*.pdb
+*.ilk
+*.log
+*.cache
+*.tmp
+*.tlog
+*.ipch
+*.dir/
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.code-workspace
+
+# Intermediate
+*.generated.h
+*.pch
+*.rsp
+
+# Dependencies
+node_modules/
+
+# Ignore docs by default
+/docs/**
+# Keep core docs
+!README.md
+!ALGORITHMS.md
+
+# Images and binaries
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tga
+*.psd
+*.zip
+*.7z
+*.tar
+*.tar.gz
+
+# Shader intermediates
+*.spv
+*.dxil
+
+# Clang/format caches
+.clangd/
