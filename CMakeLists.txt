@@ -26,18 +26,22 @@ if(ZX_BUILD_SHARED)
     core/src/zx_api.cpp
     core/src/zx_tiles.cpp
     core/src/zx_apic_ref.cpp
+    core/src/zx_contact_ref.cpp
     core/src/zx_writeback.cpp
     core/src/zx_constitutive_ref.cpp
     core/src/zx_validation.cpp
+    core/src/zx_heave_validation.cpp
   )
 else()
   add_library(zx STATIC
     core/src/zx_api.cpp
     core/src/zx_tiles.cpp
     core/src/zx_apic_ref.cpp
+    core/src/zx_contact_ref.cpp
     core/src/zx_writeback.cpp
     core/src/zx_constitutive_ref.cpp
     core/src/zx_validation.cpp
+    core/src/zx_heave_validation.cpp
   )
 endif()
 
@@ -136,6 +140,41 @@ if(ZX_ENABLE_TESTS)
   target_include_directories(validation_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
   target_link_libraries(validation_tests PRIVATE zx)
   add_test(NAME validation_tests COMMAND validation_tests)
+
+  add_executable(norsand_test
+    tests/norsand_test.cpp
+  )
+  target_include_directories(norsand_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(norsand_test PRIVATE zx)
+  add_test(NAME norsand_test COMMAND norsand_test)
+
+  add_executable(heave_validation_test
+    tests/heave_validation_test.cpp
+  )
+  target_include_directories(heave_validation_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(heave_validation_test PRIVATE zx)
+  add_test(NAME heave_validation_test COMMAND heave_validation_test)
+
+  add_executable(anisotropic_contact_test
+    tests/anisotropic_contact_test.cpp
+  )
+  target_include_directories(anisotropic_contact_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(anisotropic_contact_test PRIVATE zx)
+  add_test(NAME anisotropic_contact_test COMMAND anisotropic_contact_test)
+
+  add_executable(wheel_heave_test
+    tests/wheel_heave_test.cpp
+  )
+  target_include_directories(wheel_heave_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(wheel_heave_test PRIVATE zx)
+  add_test(NAME wheel_heave_test COMMAND wheel_heave_test)
+
+  add_executable(foot_heave_test
+    tests/foot_heave_test.cpp
+  )
+  target_include_directories(foot_heave_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(foot_heave_test PRIVATE zx)
+  add_test(NAME foot_heave_test COMMAND foot_heave_test)
 endif()
 
 

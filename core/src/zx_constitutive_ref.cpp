@@ -202,4 +202,59 @@ void zx_mc_return_map(
     if (delta_gamma_out) *delta_gamma_out = gamma;
 }
 
+float zx_norsand_e_cs(float p_mean, const zx_norsand_params* ns)
+{
+    // Ensure pressure positive for log; use absolute
+    float p = std::max(1.0f, std::fabs(p_mean) + ns->p_ref);
+    float ratio = p / ns->p_ref;
+    float term = std::pow(std::log(ratio), ns->n_exp);
+    return ns->e_ref - ns->lambda_cs * term;
+}
+
+float zx_norsand_state_parameter(const zx_norsand_state* st, float p_mean, const zx_norsand_params* ns)
+{
+    return st->void_ratio_e - zx_norsand_e_cs(p_mean, ns);
+}
+
+void zx_norsand_return_map(
+    const zx_elastic_params* ep,
+    const zx_norsand_params* ns,
+    zx_norsand_state* state,
+    const float sigma_trial[9],
+    float sigma_out[9],
+    float* delta_gamma_out,
+    float* eps_v_pl)
+{
+    (void)ep;
+    float I1, J2; zx_stress_invariants(sigma_trial, &I1, &J2);
+    float p = I1 / 3.0f;
+    float q = std::sqrt(std::max(0.0f, 3.0f * J2));
+    float psi = zx_norsand_state_parameter(state, p, ns);
+
+    // Target critical stress ratio q = M * (-p)
+    float q_target = ns->M * (-p);
+    float t = 0.5f; // relaxation factor
+    float q_new = (1.0f - t) * q + t * q_target;
+    float J2_new = (q_new*q_new) / 3.0f;
+
+    // Deviatoric scaling
+    float dev[9];
+    for (int i=0;i<9;++i) dev[i] = sigma_trial[i];
+    dev[0]-=p; dev[4]-=p; dev[8]-=p;
+    float s2 = 0.0f; for (int i=0;i<9;++i) s2 += dev[i]*dev[i];
+    float s_norm = std::sqrt(std::max(1e-30f, s2));
+    float target_s_norm = std::sqrt(2.0f * J2_new);
+    float scale = target_s_norm / s_norm;
+    for (int i=0;i<9;++i) sigma_out[i] = scale * dev[i];
+    sigma_out[0] += p; sigma_out[4] += p; sigma_out[8] += p;
+
+    // Volumetric update from dilatancy: dε_v^pl ≈ k * ψ * dγ
+    float dgamma = std::fabs(q - q_new);
+    float deps_v_pl = ns->dilatancy_scale * psi * dgamma;
+    if (eps_v_pl) *eps_v_pl += deps_v_pl;
+    // Update void ratio with volumetric change proxy: e_new = e * exp(deps_v)
+    state->void_ratio_e = state->void_ratio_e * std::exp(deps_v_pl);
+    if (delta_gamma_out) *delta_gamma_out = dgamma;
+}
+
 

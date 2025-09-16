@@ -64,6 +64,39 @@ ZX_API void ZX_CALL zx_mc_return_map(
     float* delta_gamma_out,
     float* eps_v_pl /* in/out, may be null */);
 
+/* NorSand parameters and state */
+typedef struct zx_norsand_params {
+    float M;             /* critical stress ratio */
+    float lambda_cs;     /* CSL slope in e-ln p space */
+    float kappa;         /* swelling slope */
+    float p_ref;         /* reference pressure (Pa) */
+    float e_ref;         /* void ratio at p_ref on CSL */
+    float n_exp;         /* exponent for e_cs(p) = e_ref - lambda_cs * ln((p+p_ref)/p_ref)^n */
+    float dilatancy_scale; /* scale for dilatancy vs state parameter */
+} zx_norsand_params;
+
+typedef struct zx_norsand_state {
+    float void_ratio_e;  /* current void ratio */
+} zx_norsand_state;
+
+/* Critical state void ratio as a function of mean pressure p (compression negative by convention). */
+ZX_API float ZX_CALL zx_norsand_e_cs(float p_mean, const zx_norsand_params* ns);
+
+/* State parameter ψ = e - e_cs(p). */
+ZX_API float ZX_CALL zx_norsand_state_parameter(const zx_norsand_state* st, float p_mean, const zx_norsand_params* ns);
+
+/* NorSand return map (simplified) that adjusts stress toward critical stress ratio M and
+ * updates volumetric plastic strain via a dilatancy law proportional to ψ.
+ */
+ZX_API void ZX_CALL zx_norsand_return_map(
+    const zx_elastic_params* ep,
+    const zx_norsand_params* ns,
+    zx_norsand_state* state,
+    const float sigma_trial[9],
+    float sigma_out[9],
+    float* delta_gamma_out,
+    float* eps_v_pl /* in/out, may be null */);
+
 #endif /* ZX_CONSTITUTIVE_REF_H */
 
 
