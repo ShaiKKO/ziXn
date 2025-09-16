@@ -38,6 +38,10 @@ node_modules/
 # Keep core docs
 !README.md
 !ALGORITHMS.md
+Plan.md
+plan.md
+Roadmap.MD
+Roadmap.md
 
 # Images and binaries
 *.png
