@@ -1,0 +1,5 @@
+{
+  "samples": [
+    { "scene": "dambreak", "step": 0, "counters": {"front_x": 1, "kinetic_j": 2.5} }
+  ]
+}
