@@ -1,4 +1,4 @@
-# ziXn — Forge the Ground
+# ziXn
 _A high‑performance C‑ABI terrain continuum library for **granular**, **snow**, and **slurry** materials, built for real‑time engines (Unreal, Unity, custom)._
 
 ---
