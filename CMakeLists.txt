@@ -27,6 +27,8 @@ if(ZX_BUILD_SHARED)
     core/src/zx_tiles.cpp
     core/src/zx_apic_ref.cpp
     core/src/zx_writeback.cpp
+    core/src/zx_constitutive_ref.cpp
+    core/src/zx_validation.cpp
   )
 else()
   add_library(zx STATIC
@@ -34,8 +36,14 @@ else()
     core/src/zx_tiles.cpp
     core/src/zx_apic_ref.cpp
     core/src/zx_writeback.cpp
+    core/src/zx_constitutive_ref.cpp
+    core/src/zx_validation.cpp
   )
 endif()
+
+add_executable(zx_cli tools/zx_cli.cpp)
+target_include_directories(zx_cli PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+target_link_libraries(zx_cli PRIVATE zx)
 
 target_include_directories(zx
   PUBLIC
@@ -100,6 +108,34 @@ if(ZX_ENABLE_TESTS)
   target_include_directories(writeback_smoke PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
   target_link_libraries(writeback_smoke PRIVATE zx)
   add_test(NAME writeback_smoke COMMAND writeback_smoke)
+
+  add_executable(constitutive_ref_test
+    tests/constitutive_ref_test.cpp
+  )
+  target_include_directories(constitutive_ref_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(constitutive_ref_test PRIVATE zx)
+  add_test(NAME constitutive_ref_test COMMAND constitutive_ref_test)
+
+  add_executable(constitutive_plastic_work_test
+    tests/constitutive_plastic_work_test.cpp
+  )
+  target_include_directories(constitutive_plastic_work_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(constitutive_plastic_work_test PRIVATE zx)
+  add_test(NAME constitutive_plastic_work_test COMMAND constitutive_plastic_work_test)
+
+  add_executable(mc_return_map_test
+    tests/mc_return_map_test.cpp
+  )
+  target_include_directories(mc_return_map_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(mc_return_map_test PRIVATE zx)
+  add_test(NAME mc_return_map_test COMMAND mc_return_map_test)
+
+  add_executable(validation_tests
+    tests/validation_tests.cpp
+  )
+  target_include_directories(validation_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(validation_tests PRIVATE zx)
+  add_test(NAME validation_tests COMMAND validation_tests)
 endif()
 
 
