@@ -26,20 +26,42 @@ static inline void scal(size_t n, float alpha, float* x){
     for (size_t i=0;i<n;++i) x[i] *= alpha;
 }
 
+/**
+ * @brief Copy n float elements from source to destination.
+ *
+ * Copies exactly n elements from the array pointed to by x to the array
+ * pointed to by y.
+ *
+ * @param n Number of elements to copy.
+ * @param x Source pointer (must point to at least n elements).
+ * @param y Destination pointer (must point to at least n elements).
+ *
+ * @note The source and destination ranges must not overlap; overlapping
+ * ranges lead to undefined behavior.
+ */
 static inline void copy(size_t n, const float* x, float* y){
     std::copy(x, x+n, y);
 }
 
-/** \brief Solve Ax=b using PCG with optional preconditioner.
- * @param n Dimension of A
- * @param b Right-hand side vector (size n)
- * @param x In: initial guess; Out: solution (size n)
- * @param apply_A Callback to compute y=Ax
- * @param apply_prec Callback to compute z=M^{-1} r (may be NULL)
- * @param user User pointer passed to callbacks
- * @param opts Solver options (must not be NULL)
- * @param out_final_resid Out: final residual norm (may be NULL)
- * @return Iterations used (<= max_iters); 0 on error (x unchanged)
+/**
+ * @brief Solve the symmetric positive-definite linear system A x = b using the
+ *        Preconditioned Conjugate Gradient (PCG) method.
+ *
+ * Runs up to opts->max_iters iterations (at least 1) and stops when the
+ * Euclidean norm of the residual r = b - A x is <= max(tol_abs, tol_rel * ||b||).
+ * If apply_prec is non-NULL it is used to compute z = M^{-1} r; otherwise the
+ * residual is used directly (no preconditioning).
+ *
+ * @param n Dimension of A (number of rows/columns and vector length).
+ * @param b Right-hand side vector (length n).
+ * @param x In: initial guess; Out: final solution (length n). On error x is left unchanged.
+ * @param apply_A Callback invoked as apply_A(input, output, user) to compute output := A * input.
+ * @param apply_prec Optional callback invoked as apply_prec(r, z, user) to compute z := M^{-1} r; may be NULL.
+ * @param opts Solver options (must not be NULL): controls max_iters, tol_abs, tol_rel.
+ * @param out_final_resid If non-NULL, receives the final residual norm ||b - A x||; may be set to 0 when ||b|| == 0.
+ *
+ * @return Number of iterations actually performed (<= opts->max_iters). Returns 0 on invalid input or degenerate ||b|| == 0;
+ *         a numerical failure (non-positive or non-finite p^T A p) also terminates the iteration early.
  */
 ZX_API uint32_t ZX_CALL zx_pcg_solve(size_t n,
                                      const float* b,

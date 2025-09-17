@@ -13,9 +13,29 @@
 
 extern "C" {
 
-/** \brief Compute dam-break metrics on a single-tile coarse grid.
- * @param p Dam-break parameters (must not be NULL)
- * @return Metrics: front advance and kinetic energy
+/**
+ * @brief Simulate a single-tile coarse-grid dam-break and compute front advance and kinetic energy.
+ *
+ * Runs a short HBP-based diffusion on a single tile initialized with the left half moving
+ * (initial head velocity) and the right half at rest. Applies immediate Darcy-like damping
+ * in the bed region, advances the coarse-grid proxy for p->steps time steps, and then
+ * computes:
+ *  - front_x: the maximum x-coordinate (distance) where horizontal velocity vx > 0.05,
+ *    returned in the same length units as p->h;
+ *  - kinetic_j: total kinetic energy sum(0.5 * m * v^2) over all nodes.
+ *
+ * If p is NULL or any of p->tiles, p->h, p->dt, or p->steps is zero/non-positive, a
+ * zero-initialized zx_dambreak_metrics is returned.
+ *
+ * @param p Dam-break parameters (must not be NULL). Relevant fields used include:
+ *          - p->h: grid spacing (length unit for front_x),
+ *          - p->dt: time step,
+ *          - p->steps: number of diffusion steps,
+ *          - p->init_head_u: initial velocity applied to the left half,
+ *          - p->bed_k and other HBP-related fields for damping behavior.
+ * @return zx_dambreak_metrics Metrics containing:
+ *         - front_x: front advance distance (same units as p->h),
+ *         - kinetic_j: total kinetic energy (energy units implied by mass/velocity).
  */
 ZX_API zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak_params* p)
 {
@@ -80,9 +100,25 @@ ZX_API zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak
     return M;
 }
 
-/** \brief Wheel bogging proxy with Darcy drag and viscous diffusion.
- * @param p Bogging parameters (must not be NULL)
- * @return Metrics: sink depth and drag proxy
+/**
+ * @brief Simulates wheel-induced bogging on a single coarse-grid tile and returns drag and sink metrics.
+ *
+ * Runs a proxy simulation where a circular wheel footprint applies a horizontal pull velocity
+ * and a vertical push onto a coarse BxBxB tile. Local Darcy-like drag is applied per-node,
+ * the coarse-grid viscous/diffusive update is advanced for the specified number of steps,
+ * and final surface-layer states are reduced into simple metrics.
+ *
+ * The function performs input validation and returns zeroed metrics if `p` is null or if
+ * `p->h`, `p->dt`, or `p->steps` are non-positive.
+ *
+ * @param p Pointer to bogging parameters (must not be NULL). Controls wheel radius, pull velocity,
+ *          push depth/velocity, HBP parameters used to compute local drag (via zx_bog_beta_hbp),
+ *          and time-stepping.
+ *
+ * @return zx_bogging_metrics
+ *   - drag_N: Sum over the surface footprint of positive differences (wheel_pull_u - local vx),
+ *             i.e., an integrated drag proxy in velocity units.
+ *   - sink_depth_m: Non-negative sink depth proxy computed as max(0, wheel_push_w * dt * steps).
  */
 ZX_API zx_bogging_metrics ZX_CALL zx_integration_wheel_bogging_run(const zx_bogging_params* p)
 {
@@ -130,9 +166,16 @@ ZX_API zx_bogging_metrics ZX_CALL zx_integration_wheel_bogging_run(const zx_bogg
     return M;
 }
 
-/** \brief Puddle creep proxy: push and diffuse to compute creep distance.
- * @param p Puddle parameters (must not be NULL)
- * @return Metric: creep distance in x
+/**
+ * @brief Computes puddle-creep distance along x by pushing and diffusing momentum on a single coarse tile.
+ *
+ * Performs timestep iterations applying Darcy-like damping and coarse-grid diffusion (HBP). If the input
+ * pointer is NULL or any of p->h, p->dt, or p->steps are non-positive/zero, a zeroed metrics struct is returned.
+ * The reported creep distance is the maximum x index whose node horizontal velocity (vx) exceeds 0.05, converted
+ * to physical distance by multiplying by p->h.
+ *
+ * @param p Puddle simulation parameters (must not be NULL; p->h, p->dt, and p->steps must be positive).
+ * @return zx_puddle_metrics Metrics with creep_dist_x set to the creep distance along x (same units as p->h).
  */
 ZX_API zx_puddle_metrics ZX_CALL zx_integration_puddle_creep_run(const zx_puddle_params* p)
 {
