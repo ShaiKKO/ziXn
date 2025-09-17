@@ -76,6 +76,7 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
       sx1 = static_cast<int32_t>(sw);
     }
     auto n = static_cast<uint32_t>(sx1 - sx0);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     std::memcpy(&dst_row[cx0], &src_row[sx0], n * sizeof(float));
   }
 }

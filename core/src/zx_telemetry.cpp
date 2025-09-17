@@ -222,10 +222,10 @@ extern "C"
     export_header(f, ctx->samples.front());
     for (const auto& s : ctx->samples)
     {
-      constexpr size_t kCsvRowReserve = 64U;
-      constexpr int kSigDigits        = 9;
+      constexpr size_t k_csv_row_reserve = 64U;
+      constexpr int k_sig_digits         = 9;
       std::string row;
-      row.reserve(kCsvRowReserve);
+      row.reserve(k_csv_row_reserve);
       row.append(s.scene);
       row.push_back(',');
       row.append(std::to_string(s.step));
@@ -233,7 +233,8 @@ extern "C"
       {
         row.push_back(',');
         std::ostringstream oss;
-        oss << std::setprecision(kSigDigits) << std::defaultfloat << static_cast<double>(kv.second);
+        oss << std::setprecision(k_sig_digits) << std::defaultfloat
+            << static_cast<double>(kv.second);
         row.append(oss.str());
       }
       row.push_back('\n');
@@ -275,11 +276,11 @@ extern "C"
                f);
     for (size_t i = 0; i < ctx->samples.size(); ++i)
     {
-      const auto& s                 = ctx->samples[i];
-      constexpr size_t kLineReserve = 128U;
-      constexpr int kSigDigits      = 9;
+      const auto& s                   = ctx->samples[i];
+      constexpr size_t k_line_reserve = 128U;
+      constexpr int k_sig_digits      = 9;
       std::string line;
-      line.reserve(kLineReserve);
+      line.reserve(k_line_reserve);
       line.append("    { \"scene\": \"");
       line.append(s.scene);
       line.append("\", \"step\": ");
@@ -288,15 +289,16 @@ extern "C"
       std::fputs(line.c_str(), f);
       for (size_t k = 0; k < s.counters.size(); ++k)
       {
-        const auto& kv               = s.counters[k];
-        constexpr size_t kKvsReserve = 64U;
+        const auto& kv                 = s.counters[k];
+        constexpr size_t k_kvs_reserve = 64U;
         std::string kvs;
-        kvs.reserve(kKvsReserve);
+        kvs.reserve(k_kvs_reserve);
         kvs.append("\"");
         kvs.append(kv.first);
         kvs.append("\": ");
         std::ostringstream oss;
-        oss << std::setprecision(kSigDigits) << std::defaultfloat << static_cast<double>(kv.second);
+        oss << std::setprecision(k_sig_digits) << std::defaultfloat
+            << static_cast<double>(kv.second);
         kvs.append(oss.str());
         if (k + 1 < s.counters.size())
         {
@@ -313,10 +315,10 @@ extern "C"
                f);
     for (size_t i = 0; i < ctx->errors.size(); ++i)
     {
-      const auto& e                    = ctx->errors[i];
-      constexpr size_t kErrLineReserve = 160U;
+      const auto& e                       = ctx->errors[i];
+      constexpr size_t k_err_line_reserve = 160U;
       std::string eline;
-      eline.reserve(kErrLineReserve);
+      eline.reserve(k_err_line_reserve);
       eline.append("    { \"scene\": \"");
       eline.append(e.scene);
       eline.append("\", \"step\": ");
