@@ -106,12 +106,18 @@ extern "C"
       return;
     ctx->last_enters = 0;
     ctx->last_exits  = 0;
-    if (enters)
+    if (enters != nullptr)
+    {
       *enters = 0;
-    if (exits)
+    }
+    if (exits != nullptr)
+    {
       *exits = 0;
-    if (prefetch_count)
+    }
+    if (prefetch_count != nullptr)
+    {
       *prefetch_count = 0;
+    }
     const int R = (int) active_radius;
     // Mark hot tiles within radius
     for (int z = -R; z <= R; ++z)
@@ -126,8 +132,10 @@ extern "C"
           {
             s.active = true;
             ctx->last_enters++;
-            if (enters)
+            if (enters != nullptr)
+            {
               (*enters)++;
+            }
             ctx->active_count++;
           }
         }
@@ -148,8 +156,10 @@ extern "C"
       {
         s.active = false;
         ctx->last_exits++;
-        if (exits)
+        if (exits != nullptr)
+        {
           (*exits)++;
+        }
         if (ctx->active_count > 0)
           ctx->active_count--;
       }
@@ -157,7 +167,9 @@ extern "C"
         to_erase.push_back(k);
     }
     for (auto k : to_erase)
+    {
       ctx->states.erase(k);
+    }
 
     // Force pinned tiles to remain active
     for (const auto& kv : ctx->pinned)
@@ -173,7 +185,7 @@ extern "C"
       s.cold_frames = 0;
     }
 
-    if (prefetch_count)
+    if (prefetch_count != nullptr)
     {
       const int PR    = (int) ctx->opts.prefetch_rings;
       *prefetch_count = (uint32_t) ((2 * (R + PR) + 1) * (2 * (R + PR) + 1) * (2 * (R + PR) + 1) -
@@ -219,20 +231,32 @@ extern "C"
   {
     if (!ctx)
     {
-      if (enters)
+      if (enters != nullptr)
+      {
         *enters = 0;
-      if (exits)
+      }
+      if (exits != nullptr)
+      {
         *exits = 0;
-      if (churn)
+      }
+      if (churn != nullptr)
+      {
         *churn = 0;
+      }
       return;
     }
-    if (enters)
+    if (enters != nullptr)
+    {
       *enters = ctx->last_enters;
-    if (exits)
+    }
+    if (exits != nullptr)
+    {
       *exits = ctx->last_exits;
-    if (churn)
+    }
+    if (churn != nullptr)
+    {
       *churn = ctx->last_enters + ctx->last_exits;
+    }
   }
 
   /**
@@ -244,6 +268,6 @@ extern "C"
    */
   uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
   {
-    return ctx ? ctx->active_count : 0;
+    return (ctx != nullptr) ? ctx->active_count : 0;
   }
 }

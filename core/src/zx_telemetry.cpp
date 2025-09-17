@@ -13,26 +13,26 @@
 
 struct zx_sample
 {
-  std::string scene;
-  uint32_t step;
-  std::vector<std::pair<std::string, float>> counters;
+  std::string scene{};
+  uint32_t step{0};
+  std::vector<std::pair<std::string, float>> counters{};
 };
 
 struct zx_telemetry
 {
-  std::mutex mtx;
-  std::vector<zx_sample> samples;
-  uint32_t capacity;
-  zx_sample current;
-  bool in_step;
+  std::mutex mtx{};
+  std::vector<zx_sample> samples{};
+  uint32_t capacity{0};
+  zx_sample current{};
+  bool in_step{false};
   struct err
   {
-    std::string scene;
-    uint32_t step;
-    std::string code;
-    std::string msg;
+    std::string scene{};
+    uint32_t step{0};
+    std::string code{};
+    std::string msg{};
   };
-  std::vector<err> errors;
+  std::vector<err> errors{};
 };
 
 extern "C"
@@ -55,9 +55,10 @@ extern "C"
    */
   zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity)
   {
-    zx_telemetry* t = new zx_telemetry();
-    t->capacity     = capacity ? capacity : 1024;
-    t->in_step      = false;
+    auto* t                                    = new zx_telemetry();
+    static constexpr uint32_t kDefaultCapacity = 1024u;
+    t->capacity                                = (capacity != 0u) ? capacity : kDefaultCapacity;
+    t->in_step                                 = false;
     return t;
   }
 
@@ -90,7 +91,7 @@ extern "C"
       return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
     ctx->current       = zx_sample{};
-    ctx->current.scene = scene ? scene : "";
+    ctx->current.scene = (scene != nullptr) ? scene : "";
     ctx->current.step  = step_index;
     ctx->in_step       = true;
   }
@@ -107,7 +108,7 @@ extern "C"
    */
   void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name, float value)
   {
-    if (!ctx || !name)
+    if ((ctx == nullptr) || (name == nullptr))
       return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
     if (!ctx->in_step)
@@ -127,7 +128,7 @@ extern "C"
    */
   void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx)
   {
-    if (!ctx)
+    if (ctx == nullptr)
       return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
     if (!ctx->in_step)
@@ -153,11 +154,11 @@ extern "C"
   void ZX_CALL zx_telemetry_add_error(zx_telemetry* ctx, const char* scene, uint32_t step_index,
                                       const char* code, const char* message)
   {
-    if (!ctx || !code || !message)
+    if ((ctx == nullptr) || (code == nullptr) || (message == nullptr))
       return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
     zx_telemetry::err e;
-    e.scene = scene ? scene : "";
+    e.scene = (scene != nullptr) ? scene : "";
     e.step  = step_index;
     e.code  = code;
     e.msg   = message;
