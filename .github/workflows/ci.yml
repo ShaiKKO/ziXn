@@ -64,6 +64,13 @@ jobs:
 
       - name: Build zx_cli
         run: cmake --build build --config Release --target zx_cli
+
+      - name: Verify zx_cli.exe exists
+        shell: pwsh
+        run: |
+          if (-not (Test-Path .\build\Release\zx_cli.exe)) {
+            Write-Error 'zx_cli.exe not found in build/Release'
+          }
       - name: Format check (clang-format)
         shell: bash
         run: |

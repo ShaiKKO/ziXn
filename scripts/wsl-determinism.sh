@@ -11,7 +11,18 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${ROOT_DIR}/wsl-build"
-BIN="${BUILD_DIR}/zx_cli"
+# Default multi-config (Windows/MSVC) uses configuration subfolder; single-config (Makefiles/Ninja) does not.
+CONFIG="${CONFIG:-Release}"
+# Detect candidate binary locations cross-platform
+BIN_CANDIDATES=(
+  "${BUILD_DIR}/zx_cli"
+  "${BUILD_DIR}/${CONFIG}/zx_cli.exe"
+  "${BUILD_DIR}/zx_cli.exe"
+)
+BIN=""
+for c in "${BIN_CANDIDATES[@]}"; do
+  if [ -f "$c" ]; then BIN="$c"; break; fi
+done
 OUT_A="${BUILD_DIR}/telem_a.json"
 OUT_B="${BUILD_DIR}/telem_b.json"
 SCENE="dambreak"
@@ -27,11 +38,21 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ ! -x "${BIN}" ]]; then
+# Ensure binary exists; if not, configure and build, passing --config for multi-config generators
+if [[ -z "${BIN}" ]]; then
   echo "zx_cli not found, configuring & building fresh..." >&2
   rm -rf "${BUILD_DIR}"
   cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
-  cmake --build "${BUILD_DIR}" -j
+  cmake --build "${BUILD_DIR}" --config "${CONFIG}" -j
+  # Re-resolve after build
+  for c in "${BIN_CANDIDATES[@]}"; do
+    if [ -f "$c" ]; then BIN="$c"; break; fi
+  done
+fi
+
+if [[ -z "${BIN}" ]]; then
+  echo "ERROR: zx_cli not found after build in ${BUILD_DIR} (checked ${BIN_CANDIDATES[*]})" >&2
+  exit 1
 fi
 
 "${BIN}" --mode scene --scene "${SCENE}" --deterministic 1 --seed "${SEED}" --fallback "${FALLBACK}" --telemetry-out "${OUT_A}"
