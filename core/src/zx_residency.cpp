@@ -26,22 +26,58 @@ extern "C" {
  * @param opts Options for enter/exit frames and prefetch rings (must not be NULL)
  * @return Residency handle; caller owns and must destroy
  */
-ZX_API zx_residency* ZX_CALL zx_residency_create(const zx_residency_opts* opts){
+ZX_API zx_residency* ZX_CALL /**
+ * @brief Allocate and initialize a new residency context.
+ *
+ * Creates a new zx_residency instance on the heap and copies the supplied
+ * options into the new context.
+ *
+ * @param opts Pointer to options used to initialize the context. Must be non-null.
+ * @return zx_residency* Pointer to the newly allocated residency context.
+ *         The caller takes ownership and must free it with zx_residency_destroy().
+ */
+zx_residency_create(const zx_residency_opts* opts){
     zx_residency* r = new zx_residency(); r->opts = *opts; return r;
 }
 
-/** \brief Destroy residency context. */
+/**
+ * @brief Destroys and frees a residency context.
+ *
+ * Deletes the given zx_residency instance and releases its resources.
+ * Passing nullptr is safe and has no effect. After calling this, the pointer
+ * must not be used.
+ *
+ * @param ctx Pointer to the residency context to destroy.
+ */
 ZX_API void ZX_CALL zx_residency_destroy(zx_residency* ctx){ delete ctx; }
 
-/** \brief Advance residency one frame centered at (cx,cy,cz) with active radius (tiles).
- * @param ctx Residency handle (no-op if NULL)
- * @param cx Center X (tiles)
- * @param cy Center Y (tiles)
- * @param cz Center Z (tiles)
- * @param active_radius Active radius in tiles
- * @param enters Out: newly entered tiles this tick (may be NULL)
- * @param exits Out: newly exited tiles this tick (may be NULL)
- * @param prefetch_count Out: current prefetch ring size (may be NULL)
+/**
+ * @brief Advance residency state by one frame around a tile center.
+ *
+ * Advances per-tile hot/cold counters for a frame centered at (cx,cy,cz) using
+ * an active cubic radius (in tiles). Tiles within the cube are considered
+ * "hot" this tick; all others cool down. Tiles transition to active when their
+ * hot counter reaches opts.enter_frames and deactivate when their cold counter
+ * reaches opts.exit_frames. Inactive tiles with prolonged coldness
+ * (cold_frames > exit_frames*2) are pruned from the internal map.
+ *
+ * Side effects:
+ * - Mutates ctx->states (per-tile TileState) and ctx->active_count.
+ * - Increments `*enters`/`*exits` for newly activated/deactivated tiles if those
+ *   output pointers are non-null.
+ * - Writes a computed prefetch ring size to `*prefetch_count` if non-null.
+ *
+ * @param ctx Residency handle (no-op if null).
+ * @param cx Center X coordinate in tiles.
+ * @param cy Center Y coordinate in tiles.
+ * @param cz Center Z coordinate in tiles.
+ * @param active_radius Radius (in tiles) defining the cubic hot region.
+ * @param enters Optional out parameter; incremented by the number of tiles
+ *        that became active this tick.
+ * @param exits Optional out parameter; incremented by the number of tiles
+ *        that became inactive this tick.
+ * @param prefetch_count Optional out parameter receiving the size of the
+ *        prefetch ring computed from `active_radius` and `opts.prefetch_rings`.
  */
 ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
                                       int cx, int cy, int cz,
@@ -79,7 +115,13 @@ ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
     }
 }
 
-/** \brief Get the current active tile count for the last tick. */
+/**
+ * @brief Returns the number of tiles currently marked active (from the last tick).
+ *
+ * If `ctx` is null, returns 0.
+ *
+ * @return uint32_t Current active tile count.
+ */
 ZX_API uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx){ return ctx?ctx->active_count:0; }
 
 }

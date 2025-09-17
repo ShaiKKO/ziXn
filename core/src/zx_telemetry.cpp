@@ -33,20 +33,42 @@ extern "C" {
  * @param capacity Ring capacity (samples); 0 for default
  * @return New telemetry handle
  */
-ZX_API zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity){
+ZX_API zx_telemetry* ZX_CALL /**
+ * @brief Allocate and initialize a telemetry context.
+ *
+ * Creates a new zx_telemetry instance with the given sample capacity. If
+ * `capacity` is zero, a default capacity of 1024 is used. The returned object
+ * is heap-allocated and the caller is responsible for destroying it.
+ *
+ * @param capacity Maximum number of samples to retain; if zero, defaults to 1024.
+ * @return zx_telemetry* Pointer to the newly allocated telemetry object (owner must call zx_telemetry_destroy).
+ */
+zx_telemetry_create(uint32_t capacity){
     zx_telemetry* t = new zx_telemetry();
     t->capacity = capacity ? capacity : 1024;
     t->in_step = false;
     return t;
 }
 
-/** \brief Destroy telemetry and release memory. */
+/**
+ * @brief Destroy a telemetry context and free its resources.
+ *
+ * Deletes the provided zx_telemetry object, releasing memory and any owned resources.
+ * It is safe to pass nullptr (no action is performed).
+ *
+ * @param ctx Pointer to the telemetry context to destroy.
+ */
 ZX_API void ZX_CALL zx_telemetry_destroy(zx_telemetry* ctx){ delete ctx; }
 
-/** \brief Begin a step (no-op if ctx==NULL). scene may be NULL.
- * @param ctx Telemetry handle
- * @param scene Scene identifier (may be NULL)
- * @param step_index Step index
+/**
+ * @brief Start a new telemetry step and begin collecting counters.
+ *
+ * Begins a step by resetting the active sample, setting its scene (empty if NULL)
+ * and step index, and marking the telemetry context as being "in step".
+ * This function is a no-op if the provided telemetry handle is NULL.
+ *
+ * @param scene Optional scene identifier; if NULL the scene is set to an empty string.
+ * @param step_index Index of the step to begin.
  */
 ZX_API void ZX_CALL zx_telemetry_begin_step(zx_telemetry* ctx, const char* scene, uint32_t step_index){
     if (!ctx) return;
@@ -54,10 +76,15 @@ ZX_API void ZX_CALL zx_telemetry_begin_step(zx_telemetry* ctx, const char* scene
     ctx->current = zx_sample{}; ctx->current.scene = scene ? scene : ""; ctx->current.step = step_index; ctx->in_step = true;
 }
 
-/** \brief Set a counter during an active step (no-op if ctx==NULL/not in step).
- * @param ctx Telemetry handle
- * @param name Counter name (must not be NULL)
- * @param value Counter value
+/**
+ * @brief Record a named counter for the currently active telemetry step.
+ *
+ * If a step is active, appends the (name, value) pair to the in-progress sample in a
+ * thread-safe manner. This function is a no-op if there is no active step or if the
+ * telemetry context or `name` is null.
+ *
+ * @param name Counter name (must not be null).
+ * @param value Counter value to record for the active step.
  */
 ZX_API void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name, float value){
     if (!ctx || !name) return;
@@ -66,7 +93,16 @@ ZX_API void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name
     ctx->current.counters.emplace_back(std::string(name), value);
 }
 
-/** \brief End current step (no-op if ctx==NULL or not in a step). */
+/**
+ * @brief Finalize and commit the active telemetry step.
+ *
+ * If a step is active, moves the accumulated current sample into the internal
+ * samples buffer and marks the telemetry as not in a step. If the buffer has
+ * reached its configured capacity, the oldest sample is removed to make room.
+ *
+ * This function is a no-op when called with a null context or when no step is
+ * currently active. The operation is performed under the telemetry mutex.
+ */
 ZX_API void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx){
     if (!ctx) return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
@@ -76,7 +112,18 @@ ZX_API void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx){
     ctx->in_step = false;
 }
 
-/** \brief Add an error entry with scene/step context. */
+/**
+ * @brief Record an error entry associated with a scene and step.
+ *
+ * Appends an error record into the telemetry's internal error log in a thread-safe manner.
+ * If `scene` is null it is stored as an empty string. If `ctx`, `code`, or `message` is null
+ * the function is a no-op.
+ *
+ * @param scene Optional scene context for the error (nullable).
+ * @param step_index Step index associated with the error.
+ * @param code Short error code string (must not be null).
+ * @param message Human-readable error message (must not be null).
+ */
 ZX_API void ZX_CALL zx_telemetry_add_error(zx_telemetry* ctx, const char* scene, uint32_t step_index, const char* code, const char* message){
     if (!ctx || !code || !message) return;
     std::lock_guard<std::mutex> lock(ctx->mtx);
@@ -84,16 +131,34 @@ ZX_API void ZX_CALL zx_telemetry_add_error(zx_telemetry* ctx, const char* scene,
     ctx->errors.push_back(std::move(e));
 }
 
+/**
+ * @brief Writes a CSV header row for a sample to the given file.
+ *
+ * Writes "scene,step" followed by each counter name from the sample's
+ * counters (in order) as CSV columns, then a newline.
+ *
+ * @param f Destination file stream (must be non-null and open for writing).
+ * @param s Sample whose counter names are used to build the header row.
+ */
 static void export_header(FILE* f, const zx_sample& s){
     std::fprintf(f, "scene,step");
     for (const auto& kv : s.counters) std::fprintf(f, ",%s", kv.first.c_str());
     std::fprintf(f, "\n");
 }
 
-/** \brief Export recent samples to CSV.
- * @param ctx Telemetry handle
- * @param path Output file path
- * @return 0 on success, negative on error
+/**
+ * @brief Export buffered telemetry samples to a CSV file.
+ *
+ * Writes the stored samples as CSV rows with a header derived from the first sample.
+ * Each row contains: scene, step, then counter values in the same order as the header.
+ * The function is thread-safe (acquires the telemetry mutex) and will create the output
+ * file even when there are no samples (resulting file will be empty aside from being created).
+ *
+ * @param ctx Telemetry handle.
+ * @param path Filesystem path to write the CSV output.
+ * @return int 0 on success;
+ *             -1 if either `ctx` or `path` is null;
+ *             -2 if the output file cannot be opened for writing.
  */
 ZX_API int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path){
     if (!ctx || !path) return -1;
@@ -109,10 +174,19 @@ ZX_API int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path){
     std::fclose(f); return 0;
 }
 
-/** \brief Export recent samples to JSON.
- * @param ctx Telemetry handle
- * @param path Output file path
- * @return 0 on success, negative on error
+/**
+ * @brief Export the in-memory telemetry buffer to a JSON file.
+ *
+ * Writes a JSON object with two top-level arrays: "samples" and "errors".
+ * - "samples" contains objects of the form:
+ *   { "scene": "<string>", "step": <uint>, "counters": { "<name>": <value>, ... } }
+ *   Numeric counter values are written with up to 9 significant digits.
+ * - "errors" contains objects of the form:
+ *   { "scene": "<string>", "step": <uint>, "code": "<string>", "message": "<string>" }
+ *
+ * @param ctx Telemetry handle whose buffered samples and errors will be exported.
+ * @param path Filesystem path to write the JSON output to.
+ * @return int 0 on success; -1 if an argument is null; -2 if the output file could not be opened.
  */
 ZX_API int ZX_CALL zx_telemetry_export_json(zx_telemetry* ctx, const char* path){
     if (!ctx || !path) return -1;

@@ -17,6 +17,14 @@
 #include "zx/zx_lod.h"
 #include "zx/zx_determinism.h"
 
+/**
+ * @brief Print command-line usage and available modes for the ziXn CLI.
+ *
+ * Prints usage patterns and option summaries for all supported modes:
+ * "inclined", "collapse", "anisotropy", "presets", "scene", and "bench"
+ * (including both bench-lod and bench-up2 variants), along with their
+ * expected command-line arguments and optional flags.
+ */
 static void print_usage() {
     std::printf("ziXn CLI\n");
     std::printf("Usage:\n");
@@ -29,6 +37,35 @@ static void print_usage() {
     std::printf("  zx_cli --mode bench --bench-up2  [--size N] [--iters K]     (runs scalar and AVX2)\n");
 }
 
+/**
+ * @brief Command-line entry point for the ZX validation and benchmarking CLI.
+ *
+ * Parses command-line options and dispatches one of several modes:
+ * - "inclined": compute critical angle for an inclined-plane validation.
+ * - "collapse": compute column-collapse runout ratio.
+ * - "anisotropy": project a velocity vector using anisotropic contact model.
+ * - "presets": emit JSON describing built-in presets (optionally to a file).
+ * - "bench": run microbenchmarks for LOD downsample/upsample and border checks.
+ * - "scene": run a small predefined integration scene (dambreak, bogging, puddle)
+ *   and optionally export telemetry JSON.
+ *
+ * Recognized flags include (--mode, --phi, --ar, --mulong, --mulat, --vn, --v0, --v1,
+ * --out, --telemetry-out, --scene, --deterministic, --seed, --fallback,
+ * --fallback-thresholds, --bench-lod, --bench-up2, --size, --iters, --simd, --help).
+ *
+ * Behavior notes:
+ * - When running "presets" with --out, the program attempts to open the named file;
+ *   failure to open the file results in an error (exit code 2).
+ * - "bench" requires either --bench-lod or --bench-up2; a too-small --size (<16)
+ *   prints an error and exits with code 2.
+ * - "scene" requires --scene and supports optional determinism/seed, LOD fallback
+ *   policy, and telemetry export via --telemetry-out.
+ *
+ * Return:
+ * - 0 on successful completion of the selected mode.
+ * - 1 for missing/invalid usage or unrecognized mode.
+ * - 2 for filesystem or benchmark size errors (e.g., fopen failure, size too small).
+ */
 int main(int argc, char** argv) {
     const char* mode = nullptr;
     float phi_deg = 30.0f;

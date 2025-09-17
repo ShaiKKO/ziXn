@@ -29,9 +29,16 @@ static const PresetRow kPresets[] = {
 /** \brief Number of available presets. */
 int zx_preset_count(void) { return (int)(sizeof(kPresets)/sizeof(kPresets[0])); }
 
-/** \brief Return preset name by index (stable).
- * @param index Preset index (0..N-1)
- * @return Name string or empty string on invalid index
+/**
+ * @brief Return the stable name of a preset by index.
+ *
+ * Returns a pointer to the internal, null-terminated preset name for the
+ * given index. The returned string is owned by the library and remains valid
+ * for the lifetime of the program; do not attempt to free it.
+ *
+ * @param index Preset index (0 .. zx_preset_count()-1). If out of range, an empty
+ *              string ("") is returned.
+ * @return const char* Pointer to the preset name or an empty string on invalid index.
  */
 const char* zx_preset_name(int index)
 {
@@ -39,13 +46,18 @@ const char* zx_preset_name(int index)
     return kPresets[index].name;
 }
 
-/** \brief Populate physics parameters for a preset by name.
- * @param name Preset identifier (must not be NULL)
- * @param out_elastic Out elastic params (may be NULL)
- * @param out_mc Out Mohr–Coulomb params (may be NULL)
- * @param out_ns_params Out NorSand params (may be NULL)
- * @param out_ns_state Out NorSand state (may be NULL)
- * @return 1 on success, 0 otherwise
+/**
+ * @brief Populate solver parameter structures from a named authoring preset.
+ *
+ * Looks up a preset by exact, case-sensitive name and copies its parameter
+ * values into any non-null output pointers.
+ *
+ * @param name Preset identifier (must not be NULL). Matching is exact and case-sensitive.
+ * @param out_elastic If non-null, receives the preset's elastic parameters.
+ * @param out_mc If non-null, receives the preset's Mohr–Coulomb parameters.
+ * @param out_ns_params If non-null, receives the preset's NorSand parameters.
+ * @param out_ns_state If non-null, receives the preset's NorSand state.
+ * @return int 1 if a preset with the given name was found and values copied, 0 otherwise.
  */
 int zx_preset_get(const char* name, zx_elastic_params* out_elastic, zx_mc_params* out_mc, zx_norsand_params* out_ns_params, zx_norsand_state* out_ns_state)
 {

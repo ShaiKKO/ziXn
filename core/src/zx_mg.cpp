@@ -52,6 +52,15 @@ static void restrict_full_weighting(const std::vector<float>& fine, std::vector<
     coarse[nc-1] = 0.5f * (fine[nf-2] + fine[nf-1]);
 }
 
+/**
+ * @brief Prolongates a coarse-grid vector to a fine grid using linear interpolation.
+ *
+ * Copies coarse values into the even indices of fine and fills odd indices with the
+ * average of neighboring coarse values: fine[2*i] = coarse[i], fine[2*i+1] = 0.5*(coarse[i] + coarse[i+1]).
+ *
+ * @param coarse Source vector on the coarse grid.
+ * @param fine Destination vector on the fine grid; must be preallocated with size = 2*coarse.size() - 1.
+ */
 static void prolong_linear(const std::vector<float>& coarse, std::vector<float>& fine){
     const size_t nc = coarse.size();
     // nf = 2*nc - 1
@@ -90,7 +99,25 @@ extern "C" {
  * @param opts Options (must not be NULL)
  * @return Context pointer or NULL on failure
  */
-ZX_API zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts* opts){
+ZX_API zx_mg_context* ZX_CALL /**
+ * @brief Create a multigrid context configured for the 1D Poisson problem.
+ *
+ * Constructs a zx_mg_context containing a hierarchy of levels for a 1D Poisson
+ * discretization, initializing per-level vectors (solution x, RHS r, auxiliary z,
+ * and temporary workspace tmp) and a level-specific scaling factor h2inv.
+ *
+ * The routine validates inputs (requires n >= 3 and non-null opts) and builds
+ * levels starting from the finest grid of size n. Each subsequent coarser level
+ * has size ceil(n_coarse) = (n_fine + 1)/2 (so roughly nf ≈ 2*nc - 1). Construction
+ * stops when the next level would be smaller than 3 points or when opts->max_levels
+ * is reached. The h2inv value is multiplied by 4.0 at each coarsening step to
+ * reflect the change in grid spacing for the discrete Poisson stencil.
+ *
+ * @param n Number of grid points on the finest (level 0) grid; must be >= 3.
+ * @param opts Pointer to solver options (copied into the returned context); must be non-null.
+ * @return zx_mg_context* Pointer to the newly allocated multigrid context on success, or nullptr on failure.
+ */
+zx_mg_create_poisson1d(size_t n, const zx_mg_opts* opts){
     if (n < 3 || !opts) return nullptr;
     zx_mg_context* ctx = new zx_mg_context();
     ctx->opts = *opts;
@@ -112,10 +139,18 @@ ZX_API zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts*
 /** \brief Destroy multigrid context. */
 ZX_API void ZX_CALL zx_mg_destroy(zx_mg_context* ctx){ delete ctx; }
 
-/** \brief Preconditioner apply compatible with zx_pcg: z = M^{-1} r.
- * @param r Input residual vector (size n)
- * @param z Output preconditioned vector (size n)
- * @param user_ctx Multigrid context (zx_mg_context*)
+/**
+ * @brief Apply the multigrid preconditioner: compute z = M^{-1} r for a 1D Poisson hierarchy.
+ *
+ * Loads the input residual into the finest-level right-hand side, runs a V-cycle, and writes
+ * the computed finest-level solution into z.
+ *
+ * The caller must provide arrays r and z of length equal to the finest level size configured
+ * in the multigrid context. If any of r, z, or the context pointer is null, the function
+ * returns immediately without modifying z.
+ *
+ * @param r Input residual vector on the finest grid (length = finest level n).
+ * @param z Output vector that receives the preconditioned result (length = finest level n).
  */
 ZX_API void ZX_CALL zx_mg_prec_apply(const float* r, float* z, void* user_ctx){
     zx_mg_context* ctx = (zx_mg_context*)user_ctx;

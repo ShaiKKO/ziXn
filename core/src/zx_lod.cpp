@@ -127,6 +127,26 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
 }
 
 #if defined(__x86_64__) || defined(_M_X64)
+/**
+ * @brief AVX2-accelerated 2x bilinear upsampling of a single-channel float image.
+ *
+ * Performs a 2x bilinear upsample from src (sw x sh, stride sp) into dst (dw x dh, stride dp)
+ * using AVX2 vector gathers and per-column precomputed indices/fractions. If inputs are
+ * invalid (null pointers or dw != sw*2 or dh != sh*2) the function falls back to the scalar
+ * implementation (up2_scalar).
+ *
+ * The implementation:
+ * - Precomputes x index pairs and fractional x weights for all vector lanes in a row.
+ * - Iterates rows, computes y index/weight per row, then evaluates bilinear interpolation
+ *   across 8/16-column AVX2 blocks using _mm256_i32gather_ps and fused arithmetic.
+ * - Handles remaining vector-width tails with 8-wide AVX2 loops and a final scalar tail.
+ * - Optionally supports a 32-column block repetition when ZX_LOD_ENABLE_AVX2_BLOCK32 is defined.
+ *
+ * Notes:
+ * - Targeted for AVX2; compiled with ZX_TARGET_AVX2 attribute.
+ * - Writes dw*dh samples into dst; expects single-channel float data.
+ * - No return value; side effect is writing the upsampled image into dst.
+ */
 static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                     float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
