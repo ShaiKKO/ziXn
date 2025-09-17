@@ -1,5 +1,8 @@
 {
   "samples": [
-    { "scene": "dambreak", "step": 0, "counters": {"front_x": 1, "kinetic_j": 2.5} }
+    { "scene": "dambreak", "step": 0, "counters": {"front_x": 1, "kinetic_j": 2.5, "particle_count": 0, "active_tiles": 1, "fallback_activations": 0, "fallback_active_frames": 0, "fallback_blend_frames": 0} }
+  ],
+  "errors": [
+    { "scene": "dambreak", "step": 0, "code": "E_SAMPLE", "message": "sample error triage" }
   ]
 }

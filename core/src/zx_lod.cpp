@@ -1,6 +1,23 @@
 /*!
  * \file zx_lod.cpp
- * \brief Presentation LOD filters implementation.
+ * \brief Presentation LOD filters implementation (scalar + AVX2 dispatch).
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+ *
+ * Fallback state machine (hysteresis + blend):
+ *
+ *  State vars: active_frames, inactive_frames, blend_remaining, activations
+ *
+ *  Diagram (frames):
+ *    [pressure=1]  active_frames++  -----------------------------\
+ *                    if first activation: blend_remaining=blend  |
+ *                    if active_frames >= enter -> use_coarse=1   |
+ *    [pressure=0]  inactive_frames++                            |
+ *                    if inactive_frames >= exit -> use_coarse=0  |
+ *                    else retain use_coarse                      |
+ *    Each frame: if blend_remaining>0 then blend_remaining--     |
+ *  --------------------------------------------------------------/
+ *  Pressure condition: (active_tiles > active_tiles_max) || (last_step_ms > step_ms_max)
  */
 
 #include "zx/zx_lod.h"
@@ -8,6 +25,7 @@
 #include <cmath>
 #include <cstdint>
 #include <mutex>
+#include <vector>
 #if defined(__x86_64__) || defined(_M_X64)
 #include <immintrin.h>
 #endif
@@ -112,8 +130,132 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
 static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                     float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
-    // Placeholder: fallback to scalar until optimized AVX2 bilinear is implemented
-    up2_scalar(src,sw,sh,sp,dst,dw,dh,dp);
+    if (!src || !dst || dw != sw*2 || dh != sh*2) { up2_scalar(src,sw,sh,sp,dst,dw,dh,dp); return; }
+    const uint32_t vecW = (dw/8)*8;
+    const uint32_t NV = (vecW/8);
+    // Precompute x indices and fractional tx for all vector lanes across the row
+    std::vector<int> pre_ix0; std::vector<int> pre_ix1; std::vector<float> pre_tx;
+    pre_ix0.resize((size_t)NV*8u); pre_ix1.resize((size_t)NV*8u); pre_tx.resize((size_t)NV*8u);
+    __m256 half = _mm256_set1_ps(0.5f);
+    __m256 neg_quarter = _mm256_set1_ps(-0.25f);
+    __m256i zero = _mm256_set1_epi32(0);
+    __m256i xmax = _mm256_set1_epi32((int)sw - 1);
+    for (uint32_t x=0, i=0; x<vecW; x+=8, ++i){
+        __m256i vx = _mm256_setr_epi32((int)x+0,(int)x+1,(int)x+2,(int)x+3,(int)x+4,(int)x+5,(int)x+6,(int)x+7);
+        __m256 vxf = _mm256_cvtepi32_ps(vx);
+        __m256 vfx = _mm256_add_ps(_mm256_mul_ps(vxf, half), neg_quarter);
+        __m256 vfloor = _mm256_floor_ps(vfx);
+        __m256i vx0 = _mm256_cvttps_epi32(vfloor);
+        vx0 = _mm256_max_epi32(zero, _mm256_min_epi32(vx0, xmax));
+        __m256 vtx = _mm256_sub_ps(vfx, vfloor);
+        __m256i vx1 = _mm256_min_epi32(_mm256_add_epi32(vx0, _mm256_set1_epi32(1)), xmax);
+        // store into scalar arrays to avoid template attribute warnings on __m256* vector elements
+        size_t base = (size_t)i * 8u;
+        alignas(32) int x0buf[8]; alignas(32) int x1buf[8]; alignas(32) float txbuf[8];
+        _mm256_store_si256((__m256i*)x0buf, vx0);
+        _mm256_store_si256((__m256i*)x1buf, vx1);
+        _mm256_store_ps(txbuf, vtx);
+        for (int k=0; k<8; ++k){ pre_ix0[base+k] = x0buf[k]; pre_ix1[base+k] = x1buf[k]; pre_tx[base+k] = txbuf[k]; }
+    }
+    for (uint32_t y = 0; y < dh; ++y) {
+        float fy = (float)((double)(y + 0.5) * 0.5 - 0.5);
+        float ty_scalar; __m256 vty; int y0i, y1i; {
+            float f0 = std::floor((double)fy);
+            y0i = (int)f0; if (y0i < 0) y0i = 0; if (y0i > (int)sh-1) y0i = (int)sh-1;
+            y1i = y0i + 1; if (y1i > (int)sh-1) y1i = (int)sh-1;
+            float ty = fy - (float)std::floor((double)fy);
+            ty_scalar = ty;
+            vty = _mm256_set1_ps(ty_scalar);
+        }
+        const float* row0 = src + (size_t)y0i * sp;
+        const float* row1 = src + (size_t)y1i * sp;
+        // process 16 columns per iteration where possible
+        uint32_t x = 0; uint32_t i = 0;
+        for (; x + 16 <= vecW; x += 16, i += 2){
+            const int* px0a = &pre_ix0[(size_t)i*8u]; const int* px1a = &pre_ix1[(size_t)i*8u]; const float* ptxa = &pre_tx[(size_t)i*8u];
+            const int* px0b = &pre_ix0[(size_t)(i+1)*8u]; const int* px1b = &pre_ix1[(size_t)(i+1)*8u]; const float* ptxb = &pre_tx[(size_t)(i+1)*8u];
+            __m256i vx0a = _mm256_loadu_si256((const __m256i*)px0a); __m256i vx1a = _mm256_loadu_si256((const __m256i*)px1a); __m256 vtxa = _mm256_loadu_ps(ptxa);
+            __m256i vx0b = _mm256_loadu_si256((const __m256i*)px0b); __m256i vx1b = _mm256_loadu_si256((const __m256i*)px1b); __m256 vtxb = _mm256_loadu_ps(ptxb);
+            // prefetch further ahead
+            _mm_prefetch((const char*)(row0 + x + 64), _MM_HINT_T0);
+            _mm_prefetch((const char*)(row1 + x + 64), _MM_HINT_T0);
+            __m256 a0 = _mm256_i32gather_ps(row0, vx0a, 4);
+            __m256 b0 = _mm256_i32gather_ps(row0, vx1a, 4);
+            __m256 c0 = _mm256_i32gather_ps(row1, vx0a, 4);
+            __m256 d0 = _mm256_i32gather_ps(row1, vx1a, 4);
+            __m256 ab0 = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(b0,a0)), a0);
+            __m256 cd0 = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(d0,c0)), c0);
+            __m256 out0 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd0,ab0)), ab0);
+            _mm256_storeu_ps(dst + (size_t)y*dp + x, out0);
+
+            __m256 a1 = _mm256_i32gather_ps(row0, vx0b, 4);
+            __m256 b1 = _mm256_i32gather_ps(row0, vx1b, 4);
+            __m256 c1 = _mm256_i32gather_ps(row1, vx0b, 4);
+            __m256 d1 = _mm256_i32gather_ps(row1, vx1b, 4);
+            __m256 ab1 = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(b1,a1)), a1);
+            __m256 cd1 = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(d1,c1)), c1);
+            __m256 out1 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd1,ab1)), ab1);
+            _mm256_storeu_ps(dst + (size_t)y*dp + x + 8, out1);
+        }
+#ifdef ZX_LOD_ENABLE_AVX2_BLOCK32
+        // Optional: process 32 columns per iteration when enough width remains
+        while (x + 32 <= vecW){
+            // two iterations of the 16-col body
+            for (int rep=0; rep<2; ++rep){
+                const int* px0a = &pre_ix0[(size_t)i*8u]; const int* px1a = &pre_ix1[(size_t)i*8u]; const float* ptxa = &pre_tx[(size_t)i*8u];
+                const int* px0b = &pre_ix0[(size_t)(i+1)*8u]; const int* px1b = &pre_ix1[(size_t)(i+1)*8u]; const float* ptxb = &pre_tx[(size_t)(i+1)*8u];
+                __m256i vx0a = _mm256_loadu_si256((const __m256i*)px0a); __m256i vx1a = _mm256_loadu_si256((const __m256i*)px1a); __m256 vtxa = _mm256_loadu_ps(ptxa);
+                __m256i vx0b = _mm256_loadu_si256((const __m256i*)px0b); __m256i vx1b = _mm256_loadu_si256((const __m256i*)px1b); __m256 vtxb = _mm256_loadu_ps(ptxb);
+                _mm_prefetch((const char*)(row0 + x + 64), _MM_HINT_T0);
+                _mm_prefetch((const char*)(row1 + x + 64), _MM_HINT_T0);
+                __m256 a0 = _mm256_i32gather_ps(row0, vx0a, 4);
+                __m256 b0 = _mm256_i32gather_ps(row0, vx1a, 4);
+                __m256 c0 = _mm256_i32gather_ps(row1, vx0a, 4);
+                __m256 d0 = _mm256_i32gather_ps(row1, vx1a, 4);
+                __m256 ab0 = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(b0,a0)), a0);
+                __m256 cd0 = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(d0,c0)), c0);
+                __m256 out0 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd0,ab0)), ab0);
+                _mm256_storeu_ps(dst + (size_t)y*dp + x, out0);
+
+                __m256 a1 = _mm256_i32gather_ps(row0, vx0b, 4);
+                __m256 b1 = _mm256_i32gather_ps(row0, vx1b, 4);
+                __m256 c1 = _mm256_i32gather_ps(row1, vx0b, 4);
+                __m256 d1 = _mm256_i32gather_ps(row1, vx1b, 4);
+                __m256 ab1 = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(b1,a1)), a1);
+                __m256 cd1 = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(d1,c1)), c1);
+                __m256 out1 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd1,ab1)), ab1);
+                _mm256_storeu_ps(dst + (size_t)y*dp + x + 8, out1);
+
+                x += 16; i += 2;
+            }
+        }
+#endif
+        for (; x < vecW; x += 8, ++i){
+            const int* px0 = &pre_ix0[(size_t)i*8u]; const int* px1 = &pre_ix1[(size_t)i*8u]; const float* ptx = &pre_tx[(size_t)i*8u];
+            __m256i vx0 = _mm256_loadu_si256((const __m256i*)px0);
+            __m256i vx1 = _mm256_loadu_si256((const __m256i*)px1);
+            __m256 vtx = _mm256_loadu_ps(ptx);
+            // gathers
+            __m256 a = _mm256_i32gather_ps(row0, vx0, 4);
+            __m256 b = _mm256_i32gather_ps(row0, vx1, 4);
+            __m256 c = _mm256_i32gather_ps(row1, vx0, 4);
+            __m256 d = _mm256_i32gather_ps(row1, vx1, 4);
+            __m256 ab = _mm256_add_ps(_mm256_mul_ps(vtx, _mm256_sub_ps(b,a)), a);
+            __m256 cd = _mm256_add_ps(_mm256_mul_ps(vtx, _mm256_sub_ps(d,c)), c);
+            __m256 out = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd,ab)), ab);
+            _mm256_storeu_ps(dst + (size_t)y*dp + x, out);
+        }
+        // tail
+        for (; x < dw; ++x){
+            float fx = (float)((double)(x + 0.5) * 0.5 - 0.5);
+            int x0 = (int)std::floor((double)fx); if (x0 < 0) x0 = 0; if (x0 > (int)sw-1) x0 = (int)sw-1;
+            int x1 = x0 + 1; if (x1 > (int)sw-1) x1 = (int)sw-1;
+            float tx = fx - (float)std::floor((double)fx);
+            float a = row0[x0], b = row0[x1]; float c = row1[x0], d = row1[x1];
+            float ab = a + tx*(b - a); float cd = c + tx*(d - c);
+            dst[(size_t)y*dp + x] = ab + ty_scalar*(cd - ab);
+        }
+    }
 }
 #endif
 

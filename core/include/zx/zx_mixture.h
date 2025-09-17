@@ -4,6 +4,7 @@
 \author Colin Macritchie (Ripple Group, LLC)
 \version 1.0.0
 \date 2025-09-16
+\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
 */
 
 #ifndef ZX_MIXTURE_H
@@ -32,22 +33,24 @@ typedef struct zx_mixture_params {
     float phi_max;
 } zx_mixture_params;
 
-/* Darcy drag coefficient β = μ / k, with k clamped to k_min. */
+/** \brief Darcy drag coefficient β = μ / k, with k clamped to k_min. */
 ZX_API float ZX_CALL zx_beta_darcy(float mu, float k, float k_min);
 
-/* Porosity update using mass conservation proxy: phi_{t+dt} = clamp(phi - dt * (1-phi)*div_vs). */
+/** \brief Porosity update using mass conservation proxy.
+ * phi_{t+dt} = clamp(phi - dt * (1-phi)*div_vs).
+ */
 ZX_API float ZX_CALL zx_update_porosity(float phi,
                                         float solid_divergence,
                                         float dt,
                                         float phi_min,
                                         float phi_max);
 
-/* Isotropic effective pressure: p_eff = p_total - alpha * p_pore. */
+/** \brief Isotropic effective pressure: p_eff = p_total - alpha * p_pore. */
 ZX_API float ZX_CALL zx_effective_pressure(float p_total,
                                            float p_pore,
                                            float alpha_biot);
 
-/* Symmetric drag forces on solid and fluid phases for a single point. */
+/** \brief Symmetric drag forces on solid and fluid phases for a single point. */
 ZX_API void ZX_CALL zx_mixture_drag_force(float beta,
                                           float vfx, float vfy, float vfz,
                                           float vsx, float vsy, float vsz,
@@ -56,8 +59,7 @@ ZX_API void ZX_CALL zx_mixture_drag_force(float beta,
                                           /* out */ float* Fs_x, float* Fs_y, float* Fs_z,
                                           /* out */ float* Ff_x, float* Ff_y, float* Ff_z);
 
-/*!
- * \brief Expose bog memory knob β ≈ μ/k with explicit clamps.
+/** \brief Expose bog memory knob β ≈ μ/k with explicit clamps.
  * Units: beta [Pa·s/m^2] when mu in [Pa·s], k in [m^2].
  */
 ZX_API float ZX_CALL zx_bog_beta_darcy(float mu,
@@ -66,8 +68,7 @@ ZX_API float ZX_CALL zx_bog_beta_darcy(float mu,
                                        float beta_min,
                                        float beta_max);
 
-/*!
- * \brief Bog memory beta using HB-P effective viscosity at shear-rate gamma_dot.
+/** \brief Bog memory beta using HB-P effective viscosity at shear-rate gamma_dot.
  * Computes mu_eff via zx_hbp_mu_eff_policy, then returns clamped beta = mu_eff / max(k,k_min),
  * further clamped into [beta_min, beta_max].
  */

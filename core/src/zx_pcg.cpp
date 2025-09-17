@@ -2,6 +2,7 @@
  * \file zx_pcg.cpp
  * \brief Preconditioned Conjugate Gradient (PCG) solver (CPU reference).
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_pcg.h"
@@ -29,6 +30,17 @@ static inline void copy(size_t n, const float* x, float* y){
     std::copy(x, x+n, y);
 }
 
+/** \brief Solve Ax=b using PCG with optional preconditioner.
+ * @param n Dimension of A
+ * @param b Right-hand side vector (size n)
+ * @param x In: initial guess; Out: solution (size n)
+ * @param apply_A Callback to compute y=Ax
+ * @param apply_prec Callback to compute z=M^{-1} r (may be NULL)
+ * @param user User pointer passed to callbacks
+ * @param opts Solver options (must not be NULL)
+ * @param out_final_resid Out: final residual norm (may be NULL)
+ * @return Iterations used (<= max_iters); 0 on error (x unchanged)
+ */
 ZX_API uint32_t ZX_CALL zx_pcg_solve(size_t n,
                                      const float* b,
                                      float* x,

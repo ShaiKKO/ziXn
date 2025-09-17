@@ -28,6 +28,7 @@
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/ContinuousCoverage.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/ContinuousMemCheck.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/ContinuousSubmit.dir
+/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/abi_conformance_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/zx_abi_smoke.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/apic_basis_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/apic_ref_test.dir
@@ -61,6 +62,7 @@
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/lod_fallback_blend_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/lod_fallback_sweep_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/determinism_tests.dir
+/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/determinism_strict_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/checksum_parity_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/determinism_ordering_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/residency_hysteresis_test.dir
@@ -70,6 +72,7 @@
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/hbp_clamp_policy_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/hbp_stability_bound_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/telemetry_schema_test.dir
+/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/telemetry_depth_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/edit_cache.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/rebuild_cache.dir

@@ -1,6 +1,8 @@
 /*!
  * \file zx_presets.cpp
  * \brief Authoring presets mapped to solver parameters.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_presets.h"
@@ -24,14 +26,27 @@ static const PresetRow kPresets[] = {
     { "Packed Snow", { 5.0e6f, 0.30f }, { 25.0f, 3.0f }, { 0.8f, 0.25f, 0.07f, 1.0e4f, 1.00f, 1.0f, 0.5f }, { 1.00f } }
 };
 
+/** \brief Number of available presets. */
 int zx_preset_count(void) { return (int)(sizeof(kPresets)/sizeof(kPresets[0])); }
 
+/** \brief Return preset name by index (stable).
+ * @param index Preset index (0..N-1)
+ * @return Name string or empty string on invalid index
+ */
 const char* zx_preset_name(int index)
 {
     if (index < 0 || index >= zx_preset_count()) return "";
     return kPresets[index].name;
 }
 
+/** \brief Populate physics parameters for a preset by name.
+ * @param name Preset identifier (must not be NULL)
+ * @param out_elastic Out elastic params (may be NULL)
+ * @param out_mc Out Mohr–Coulomb params (may be NULL)
+ * @param out_ns_params Out NorSand params (may be NULL)
+ * @param out_ns_state Out NorSand state (may be NULL)
+ * @return 1 on success, 0 otherwise
+ */
 int zx_preset_get(const char* name, zx_elastic_params* out_elastic, zx_mc_params* out_mc, zx_norsand_params* out_ns_params, zx_norsand_state* out_ns_state)
 {
     for (int i=0;i<zx_preset_count();++i) {

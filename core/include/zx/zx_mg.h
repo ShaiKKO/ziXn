@@ -4,6 +4,7 @@
 \author Colin Macritchie (Ripple Group, LLC)
 \version 1.0.0
 \date 2025-09-16
+\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
 */
 
 #ifndef ZX_MG_H
@@ -28,12 +29,17 @@ typedef struct zx_mg_opts {
     float omega;            /* weighted Jacobi relaxation (0,1] */
 } zx_mg_opts;
 
-/* Build a 1D Poisson hierarchy for size n (n>=3). Returns nullptr on failure. */
+/** \brief Build a 1D Poisson hierarchy for size n (n>=3).
+ * @param n Problem size (>=3)
+ * @param opts Options (may be NULL for defaults)
+ * @return Context pointer or NULL on failure
+ */
 ZX_API zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts* opts);
 
+/** \brief Destroy multigrid context. */
 ZX_API void ZX_CALL zx_mg_destroy(zx_mg_context* ctx);
 
-/* Preconditioner apply compatible with zx_pcg: z = M^{-1} r */
+/** \brief Preconditioner apply compatible with zx_pcg: z = M^{-1} r. */
 ZX_API void ZX_CALL zx_mg_prec_apply(const float* r, float* z, void* user_ctx);
 
 #ifdef __cplusplus

@@ -1,6 +1,8 @@
 /*!
  * \file zx_contact_ref.cpp
  * \brief CPU reference for grid-node contact projection.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_contact_ref.h"
@@ -12,7 +14,7 @@ static inline void sub3(const float a[3], const float b[3], float out[3]) { out[
 static inline void add3s(const float a[3], const float s, const float b[3], float out[3]) { out[0]=a[0]+s*b[0]; out[1]=a[1]+s*b[1]; out[2]=a[2]+s*b[2]; }
 static inline float len3(const float a[3]) { return std::sqrt(dot3(a,a)); }
 
-void zx_contact_project(const float v_in[3], const float n[3], float mu, float phi, float kappa_n, float v_out[3], int* out_sat)
+extern "C" ZX_API void ZX_CALL zx_contact_project(const float v_in[3], const float n[3], float mu, float phi, float kappa_n, float v_out[3], int* out_sat)
 {
     // Split into normal and tangential components
     const float vn = dot3(v_in, n);

@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <chrono>
+#include <vector>
 #include "zx/zx_integration.h"
 #include "zx/zx_telemetry.h"
 #include "zx/zx_residency.h"
@@ -24,6 +25,8 @@ static void print_usage() {
     std::printf("  zx_cli --mode anisotropy --mulong <mu0> --mulat <mu1> --vn <vn> --v0 <v_t0> --v1 <v_t1>\n");
     std::printf("  zx_cli --mode presets [--out <path>]\n");
     std::printf("  zx_cli --mode scene --scene {dambreak|bogging|puddle} [--telemetry-out <path>] [--deterministic 0|1] [--seed <u64>] [--fallback on|off|auto] [--fallback-thresholds <tiles> <ms> <enter> <exit> <blend>]\n");
+    std::printf("  zx_cli --mode bench --bench-lod [--size N] [--iters K] [--simd auto|scalar|avx2]\n");
+    std::printf("  zx_cli --mode bench --bench-up2  [--size N] [--iters K]     (runs scalar and AVX2)\n");
 }
 
 int main(int argc, char** argv) {
@@ -37,6 +40,7 @@ int main(int argc, char** argv) {
     int deterministic = 0; unsigned long long seed = 0ULL;
     const char* fallback_mode = "off"; // off|on|auto
     zx_lod_fallback_policy fbp{1000000u, 1e9f, 2u, 2u, 3u};
+    int bench_lod = 0; int bench_up2 = 0; int bench_size = 1024; int bench_iters = 100; const char* simd_mode = "auto";
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--mode") == 0 && i+1 < argc) { mode = argv[++i]; }
         else if (std::strcmp(argv[i], "--phi") == 0 && i+1 < argc) { phi_deg = std::atof(argv[++i]); }
@@ -59,6 +63,16 @@ int main(int argc, char** argv) {
             fbp.enter_frames = (uint32_t)std::strtoul(argv[++i], nullptr, 10);
             fbp.exit_frames  = (uint32_t)std::strtoul(argv[++i], nullptr, 10);
             fbp.blend_frames = (uint32_t)std::strtoul(argv[++i], nullptr, 10);
+        } else if (std::strcmp(argv[i], "--bench-lod") == 0) {
+            bench_lod = 1;
+        } else if (std::strcmp(argv[i], "--bench-up2") == 0) {
+            bench_up2 = 1;
+        } else if (std::strcmp(argv[i], "--size") == 0 && i+1 < argc) {
+            bench_size = std::atoi(argv[++i]);
+        } else if (std::strcmp(argv[i], "--iters") == 0 && i+1 < argc) {
+            bench_iters = std::atoi(argv[++i]);
+        } else if (std::strcmp(argv[i], "--simd") == 0 && i+1 < argc) {
+            simd_mode = argv[++i];
         }
     }
     if (!mode) { print_usage(); return 1; }
@@ -99,6 +113,64 @@ int main(int argc, char** argv) {
         std::fprintf(f, "  ]\n}\n");
         if (out_path) std::fclose(f);
         return 0;
+    } else if (std::strcmp(mode, "bench") == 0) {
+        if (!bench_lod && !bench_up2) { print_usage(); return 1; }
+        if (std::strcmp(simd_mode, "scalar")==0) zx_lod_set_simd_override(0);
+        else if (std::strcmp(simd_mode, "avx2")==0) zx_lod_set_simd_override(2);
+        else zx_lod_set_simd_override(-1);
+        const int W = bench_size, H = bench_size;
+        if (W < 16 || H < 16) { std::fprintf(stderr, "size too small\n"); return 2; }
+        std::vector<float> A((size_t)W*H), B((size_t)W*H);
+        for (int y=0;y<H;++y) for (int x=0;x<W;++x){ A[(size_t)y*W+x] = (float)((x*13 + y*7) & 255) * 0.01f; }
+        for (int y=0;y<H;++y){ B[(size_t)y*W+0] = A[(size_t)y*W + (W-1)]; for (int x=1;x<W;++x){ B[(size_t)y*W+x] = (float)((x*3 + y*5) & 255) * 0.02f; } }
+        int dw = W/2, dh = H/2; std::vector<float> D((size_t)dw*dh);
+        if (bench_up2) {
+            // Prepare a synthetic downsampled image as input for upsample
+            for (int y=0;y<dh;++y) for (int x=0;x<dw;++x){ D[(size_t)y*dw+x] = (float)(((x*17 + y*11) ^ 0x55) & 255) * 0.007f; }
+            std::vector<float> U((size_t)W*H);
+            // Warm-up
+            zx_lod_set_simd_override(0); zx_lod_upsample_2x(D.data(), dw,dh,dw, U.data(), W,H,W);
+            zx_lod_set_simd_override(2); zx_lod_upsample_2x(D.data(), dw,dh,dw, U.data(), W,H,W);
+            // Scalar timing
+            zx_lod_set_simd_override(0);
+            auto ts0 = std::chrono::steady_clock::now();
+            for (int it=0; it<bench_iters; ++it){ zx_lod_upsample_2x(D.data(), dw,dh,dw, U.data(), W,H,W); }
+            auto ts1 = std::chrono::steady_clock::now();
+            double ms_scalar = std::chrono::duration<double, std::milli>(ts1-ts0).count();
+            // AVX2 timing (may fall back to scalar if unsupported)
+            zx_lod_set_simd_override(2);
+            auto tv0 = std::chrono::steady_clock::now();
+            for (int it=0; it<bench_iters; ++it){ zx_lod_upsample_2x(D.data(), dw,dh,dw, U.data(), W,H,W); }
+            auto tv1 = std::chrono::steady_clock::now();
+            double ms_avx2 = std::chrono::duration<double, std::milli>(tv1-tv0).count();
+            double sumU=0.0; for (size_t i=0;i<U.size();++i) sumU += U[i];
+            std::printf("bench_up2 size=%dx%d iters=%d\n", W,H,bench_iters);
+            std::printf("upsample_2x scalar: %.3f ms\n", ms_scalar);
+            std::printf("upsample_2x  avx2*: %.3f ms\n", ms_avx2);
+            if (ms_avx2 > 0.0) std::printf("speedup (scalar/avx2): %.2fx\n", ms_scalar / ms_avx2);
+            std::printf("checksum=%.6f\n", sumU);
+            return 0;
+        }
+        auto t0 = std::chrono::steady_clock::now();
+        for (int it=0; it<bench_iters; ++it){ zx_lod_downsample_2x(A.data(), W,H,W, D.data(), dw,dh,dw); }
+        auto t1 = std::chrono::steady_clock::now();
+        double ms_ds = std::chrono::duration<double, std::milli>(t1-t0).count();
+        float accum=0.0f; auto t2 = std::chrono::steady_clock::now();
+        for (int it=0; it<bench_iters; ++it){ accum += zx_lod_border_consistency_check(A.data(), W,H,W, B.data(), W,H,W, 0); }
+        auto t3 = std::chrono::steady_clock::now();
+        double ms_bc = std::chrono::duration<double, std::milli>(t3-t2).count();
+        // Upsample microbench: from dw x dh back to W x H
+        std::vector<float> U((size_t)W*H);
+        auto t4 = std::chrono::steady_clock::now();
+        for (int it=0; it<bench_iters; ++it){ zx_lod_upsample_2x(D.data(), dw,dh,dw, U.data(), W,H,W); }
+        auto t5 = std::chrono::steady_clock::now();
+        double ms_us = std::chrono::duration<double, std::milli>(t5-t4).count();
+        double us_sum=0.0; for (size_t i=0;i<U.size();++i) us_sum += U[i];
+        std::printf("bench_lod size=%dx%d iters=%d simd=%s\n", W,H,bench_iters, simd_mode);
+        std::printf("downsample_2x: %.3f ms (dst0=%.3f)\n", ms_ds, D.empty()? 0.0f : D[0]);
+        std::printf("border_check:  %.3f ms (accum=%.6f)\n", ms_bc, accum);
+        std::printf("upsample_2x:   %.3f ms (sum=%.3f)\n", ms_us, us_sum);
+        return 0;
     } else if (std::strcmp(mode, "scene") == 0) {
         if (!scene_name) { print_usage(); return 1; }
         if (deterministic) { zx_set_determinism(1); }
@@ -137,6 +209,9 @@ int main(int argc, char** argv) {
                 zx_telemetry_set_counter(telem, "residency_churn_enter", (float)churn_en);
                 zx_telemetry_set_counter(telem, "residency_churn_exit", (float)churn_ex);
                 zx_telemetry_set_counter(telem, "residency_prefetch_sum", (float)pf_sum);
+                // Uniform counters across scenes
+                zx_telemetry_set_counter(telem, "particle_count", 0.0f);
+                zx_telemetry_set_counter(telem, "active_tiles", (float)active_max);
                 if (zx_lod_is_enabled()){
                     zx_telemetry_set_counter(telem, "fallback_activations", (float)fbs.activations);
                     zx_telemetry_set_counter(telem, "fallback_active_frames", (float)active_frames);
@@ -170,6 +245,8 @@ int main(int argc, char** argv) {
                 zx_telemetry_set_counter(telem, "residency_churn_enter", (float)churn_en);
                 zx_telemetry_set_counter(telem, "residency_churn_exit", (float)churn_ex);
                 zx_telemetry_set_counter(telem, "residency_prefetch_sum", (float)pf_sum);
+                zx_telemetry_set_counter(telem, "particle_count", 0.0f);
+                zx_telemetry_set_counter(telem, "active_tiles", (float)active_max);
                 if (zx_lod_is_enabled()){
                     zx_telemetry_set_counter(telem, "fallback_activations", (float)fbs.activations);
                     zx_telemetry_set_counter(telem, "fallback_active_frames", (float)active_frames);
@@ -202,6 +279,8 @@ int main(int argc, char** argv) {
                 zx_telemetry_set_counter(telem, "residency_churn_enter", (float)churn_en);
                 zx_telemetry_set_counter(telem, "residency_churn_exit", (float)churn_ex);
                 zx_telemetry_set_counter(telem, "residency_prefetch_sum", (float)pf_sum);
+                zx_telemetry_set_counter(telem, "particle_count", 0.0f);
+                zx_telemetry_set_counter(telem, "active_tiles", (float)active_max);
                 if (zx_lod_is_enabled()){
                     zx_telemetry_set_counter(telem, "fallback_activations", (float)fbs.activations);
                     zx_telemetry_set_counter(telem, "fallback_active_frames", (float)active_frames);

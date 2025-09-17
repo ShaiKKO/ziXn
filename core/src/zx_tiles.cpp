@@ -2,6 +2,7 @@
  * \file zx_tiles.cpp
  * \brief Allocation and initialization for tiles and particle SoA.
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_tiles.h"

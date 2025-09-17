@@ -78,6 +78,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/ContinuousCoverage.dir/DependInfo.cmake"
   "CMakeFiles/ContinuousMemCheck.dir/DependInfo.cmake"
   "CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake"
+  "CMakeFiles/abi_conformance_test.dir/DependInfo.cmake"
   "CMakeFiles/zx_abi_smoke.dir/DependInfo.cmake"
   "CMakeFiles/apic_basis_test.dir/DependInfo.cmake"
   "CMakeFiles/apic_ref_test.dir/DependInfo.cmake"
@@ -111,6 +112,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/lod_fallback_blend_test.dir/DependInfo.cmake"
   "CMakeFiles/lod_fallback_sweep_test.dir/DependInfo.cmake"
   "CMakeFiles/determinism_tests.dir/DependInfo.cmake"
+  "CMakeFiles/determinism_strict_test.dir/DependInfo.cmake"
   "CMakeFiles/checksum_parity_test.dir/DependInfo.cmake"
   "CMakeFiles/determinism_ordering_test.dir/DependInfo.cmake"
   "CMakeFiles/residency_hysteresis_test.dir/DependInfo.cmake"
@@ -120,4 +122,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/hbp_clamp_policy_test.dir/DependInfo.cmake"
   "CMakeFiles/hbp_stability_bound_test.dir/DependInfo.cmake"
   "CMakeFiles/telemetry_schema_test.dir/DependInfo.cmake"
+  "CMakeFiles/telemetry_depth_test.dir/DependInfo.cmake"
   )
