@@ -42,19 +42,18 @@ extern "C"
    * @param capacity Ring capacity (samples); 0 for default
    * @return New telemetry handle
    */
-  zx_telemetry*
-      ZX_CALL /**
-               * @brief Allocate and initialize a telemetry context.
-               *
-               * Creates a new zx_telemetry instance with the given sample capacity. If
-               * `capacity` is zero, a default capacity of 1024 is used. The returned object
-               * is heap-allocated and the caller is responsible for destroying it.
-               *
-               * @param capacity Maximum number of samples to retain; if zero, defaults to 1024.
-               * @return zx_telemetry* Pointer to the newly allocated telemetry object (owner must
-               * call zx_telemetry_destroy).
-               */
-              zx_telemetry_create(uint32_t capacity)
+  /**
+   * @brief Allocate and initialize a telemetry context.
+   *
+   * Creates a new zx_telemetry instance with the given sample capacity. If
+   * `capacity` is zero, a default capacity of 1024 is used. The returned object
+   * is heap-allocated and the caller is responsible for destroying it.
+   *
+   * @param capacity Maximum number of samples to retain; if zero, defaults to 1024.
+   * @return zx_telemetry* Pointer to the newly allocated telemetry object (owner must
+   * call zx_telemetry_destroy).
+   */
+  ZX_API zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity)
   {
     zx_telemetry* t = new zx_telemetry();
     t->capacity     = capacity ? capacity : 1024;
@@ -70,7 +69,7 @@ extern "C"
    *
    * @param ctx Pointer to the telemetry context to destroy.
    */
-  void ZX_CALL zx_telemetry_destroy(zx_telemetry* ctx)
+  ZX_API void ZX_CALL zx_telemetry_destroy(zx_telemetry* ctx)
   {
     delete ctx;
   }
@@ -85,7 +84,7 @@ extern "C"
    * @param scene Optional scene identifier; if NULL the scene is set to an empty string.
    * @param step_index Index of the step to begin.
    */
-  void ZX_CALL zx_telemetry_begin_step(zx_telemetry* ctx, const char* scene, uint32_t step_index)
+  ZX_API void ZX_CALL zx_telemetry_begin_step(zx_telemetry* ctx, const char* scene, uint32_t step_index)
   {
     if (!ctx)
       return;
@@ -106,7 +105,7 @@ extern "C"
    * @param name Counter name (must not be null).
    * @param value Counter value to record for the active step.
    */
-  void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name, float value)
+  ZX_API void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name, float value)
   {
     if (!ctx || !name)
       return;
@@ -126,7 +125,7 @@ extern "C"
    * This function is a no-op when called with a null context or when no step is
    * currently active. The operation is performed under the telemetry mutex.
    */
-  void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx)
+  ZX_API void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx)
   {
     if (!ctx)
       return;
@@ -151,7 +150,7 @@ extern "C"
    * @param code Short error code string (must not be null).
    * @param message Human-readable error message (must not be null).
    */
-  void ZX_CALL zx_telemetry_add_error(zx_telemetry* ctx, const char* scene, uint32_t step_index,
+  ZX_API void ZX_CALL zx_telemetry_add_error(zx_telemetry* ctx, const char* scene, uint32_t step_index,
                                       const char* code, const char* message)
   {
     if (!ctx || !code || !message)
@@ -196,7 +195,7 @@ extern "C"
    *             -1 if either `ctx` or `path` is null;
    *             -2 if the output file cannot be opened for writing.
    */
-  int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path)
+  ZX_API int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path)
   {
     if (!ctx || !path)
       return -1;
@@ -235,7 +234,7 @@ extern "C"
    * @param path Filesystem path to write the JSON output to.
    * @return int 0 on success; -1 if an argument is null; -2 if the output file could not be opened.
    */
-  int ZX_CALL zx_telemetry_export_json(zx_telemetry* ctx, const char* path)
+  ZX_API int ZX_CALL zx_telemetry_export_json(zx_telemetry* ctx, const char* path)
   {
     if (!ctx || !path)
       return -1;
