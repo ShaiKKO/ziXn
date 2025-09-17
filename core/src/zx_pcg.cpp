@@ -74,7 +74,7 @@ extern "C"
    * input or degenerate ||b|| == 0; a numerical failure (non-positive or non-finite p^T A p) also
    * terminates the iteration early.
    */
-  ZX_API uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_A_fn apply_A,
+  uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_A_fn apply_A,
                                 zx_apply_prec_fn apply_prec, void* user, const zx_pcg_opts* opts,
                                 float* out_final_resid)
   {

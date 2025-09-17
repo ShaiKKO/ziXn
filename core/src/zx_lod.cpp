@@ -636,13 +636,13 @@ static void recompute_dispatch()
 #endif
 }
 
-ZX_API void ZX_CALL zx_lod_set_simd_override(int mode)
+void ZX_CALL zx_lod_set_simd_override(int mode)
 {
   g_simd_override = mode;
   recompute_dispatch();
 }
 
-ZX_API void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)
+void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)
 {
   if (s)
   {
@@ -653,9 +653,8 @@ ZX_API void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)
   }
 }
 
-ZX_API int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p,
-                                          uint32_t residency_active_tiles, float last_step_ms,
-                                          zx_lod_fallback_state* s)
+int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p, uint32_t residency_active_tiles,
+                                   float last_step_ms, zx_lod_fallback_state* s)
 {
   if (!p || !s)
     return 0;
@@ -690,20 +689,20 @@ ZX_API int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p,
 static int g_lod_enabled                   = 0;
 static zx_lod_fallback_policy g_lod_policy = {1000000u, 1e9f, 2u, 2u, 3u};
 
-ZX_API void ZX_CALL zx_lod_set_enabled(int on)
+void ZX_CALL zx_lod_set_enabled(int on)
 {
   g_lod_enabled = (on != 0);
 }
-ZX_API int ZX_CALL zx_lod_is_enabled(void)
+int ZX_CALL zx_lod_is_enabled(void)
 {
   return g_lod_enabled;
 }
-ZX_API void ZX_CALL zx_lod_set_default_policy(const zx_lod_fallback_policy* p)
+void ZX_CALL zx_lod_set_default_policy(const zx_lod_fallback_policy* p)
 {
   if (p)
     g_lod_policy = *p;
 }
-ZX_API void ZX_CALL zx_lod_get_default_policy(zx_lod_fallback_policy* out)
+void ZX_CALL zx_lod_get_default_policy(zx_lod_fallback_policy* out)
 {
   if (out)
     *out = g_lod_policy;
