@@ -33,12 +33,12 @@ void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
   *lambda        = (E * nu) / ((1.0f + nu) * (1.0f - 2.0f * nu));
 }
 
-void zx_stress_invariants(const float s[ZX_MAT3_SIZE], float* I1, float* J2)
+void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
 {
   const float I1v = s[0] + s[4] + s[8];
   float p         = I1v / 3.0f;
   // deviatoric = s - pI
-  float dev[ZX_MAT3_SIZE];
+  float dev[zx_mat3_size];
   std::memcpy(dev, s, sizeof(dev));
   dev[0] -= p;
   dev[4] -= p;
@@ -52,7 +52,7 @@ void zx_stress_invariants(const float s[ZX_MAT3_SIZE], float* I1, float* J2)
 }
 
 void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const zx_cap_params* cap,
-                      const float sigma_trial[ZX_MAT3_SIZE], float sigma_out[ZX_MAT3_SIZE],
+                      const float sigma_trial[zx_mat3_size], float sigma_out[zx_mat3_size],
                       float* delta_gamma_out)
 {
   float I1, J2;
@@ -77,13 +77,13 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   // Deviatoric decomposition
   float dev[9];
   float p = I1 / 3.0f;
-  for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+  for (int i = 0; i < (int) zx_mat3_size; ++i)
     dev[i] = sigma_trial[i];
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
   float s2 = 0.0f;
-  for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+  for (int i = 0; i < (int) zx_mat3_size; ++i)
     s2 += dev[i] * dev[i];
   float s_norm = std::sqrt(std::max(1e-30f, s2));
 
@@ -101,8 +101,8 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   }
 
   float p_new = I1_new / 3.0f;
-  float sigma_proj[ZX_MAT3_SIZE];
-  for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+  float sigma_proj[zx_mat3_size];
+  for (int i = 0; i < (int) zx_mat3_size; ++i)
     sigma_proj[i] = scale * dev[i];
   sigma_proj[0] += p_new;
   sigma_proj[4] += p_new;
@@ -111,14 +111,14 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   // Line search to ensure non-negative plastic work with associated flow
   // Flow direction N = ∂f/∂σ ≈ alpha*I + dev/(2*sqrt(J2)+eps)
   const float eps       = 1e-6f;
-  float N[ZX_MAT3_SIZE] = {0};
+  float N[zx_mat3_size] = {0};
   // alpha*I contribution
   N[0] += dp->alpha;
   N[4] += dp->alpha;
   N[8] += dp->alpha;
   // deviatoric contribution from trial
   float denom = 2.0f * std::max(sqrtJ2, eps);
-  for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+  for (int i = 0; i < (int) zx_mat3_size; ++i)
     N[i] += dev[i] / denom;
 
   // Plastic multiplier proxy from distance to yield
@@ -127,26 +127,26 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   auto dot9 = [](const float* a, const float* b)
   {
     float s = 0;
-    for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+    for (int i = 0; i < (int) zx_mat3_size; ++i)
       s += a[i] * b[i];
     return s;
   };
   auto sub9 = [](const float* a, const float* b, float* o)
   {
-    for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+    for (int i = 0; i < (int) zx_mat3_size; ++i)
       o[i] = a[i] - b[i];
   };
 
   float step = 1.0f;
-  float sigma_candidate[ZX_MAT3_SIZE];
+  float sigma_candidate[zx_mat3_size];
   for (int iter = 0; iter < 10; ++iter)
   {
-    for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+    for (int i = 0; i < (int) zx_mat3_size; ++i)
       sigma_candidate[i] = sigma_trial[i] + step * (sigma_proj[i] - sigma_trial[i]);
-    float d_eps_p[ZX_MAT3_SIZE];
-    for (int i = 0; i < (int) ZX_MAT3_SIZE; ++i)
+    float d_eps_p[zx_mat3_size];
+    for (int i = 0; i < (int) zx_mat3_size; ++i)
       d_eps_p[i] = (dgamma * step) * N[i];
-    float d_sigma[ZX_MAT3_SIZE];
+    float d_sigma[zx_mat3_size];
     sub9(sigma_candidate, sigma_trial, d_sigma);
     float W = dot9(d_sigma, d_eps_p);  // plastic work increment
     if (W >= -1e-6f)
@@ -201,7 +201,7 @@ static void eig3_sym(const float s[9], float eval[3])
 }
 
 void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float dilatancy_deg,
-                      const float sigma_trial[ZX_MAT3_SIZE], float sigma_out[ZX_MAT3_SIZE],
+                      const float sigma_trial[zx_mat3_size], float sigma_out[zx_mat3_size],
                       float* delta_gamma_out, float* eps_v_pl)
 {
   (void) ep;  // reserved for scaling in full implementation
@@ -274,8 +274,8 @@ float zx_norsand_state_parameter(const zx_norsand_state* st, float p_mean,
 }
 
 void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params* ns,
-                           zx_norsand_state* state, const float sigma_trial[ZX_MAT3_SIZE],
-                           float sigma_out[ZX_MAT3_SIZE], float* delta_gamma_out, float* eps_v_pl)
+                           zx_norsand_state* state, const float sigma_trial[zx_mat3_size],
+                           float sigma_out[zx_mat3_size], float* delta_gamma_out, float* eps_v_pl)
 {
   (void) ep;
   float I1, J2;

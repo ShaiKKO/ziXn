@@ -41,7 +41,7 @@ ZX_API void ZX_CALL zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp);
 ZX_API void ZX_CALL zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu);
 
 /* Compute invariants and deviatoric part of stress. sigma is 3x3 row-major. */
-ZX_API void ZX_CALL zx_stress_invariants(const float sigma[ZX_MAT3_SIZE], float* I1, float* J2);
+ZX_API void ZX_CALL zx_stress_invariants(const float sigma[zx_mat3_size], float* I1, float* J2);
 
 /* Return map onto DP (+optional compression cap).
  * Inputs: elastic params, DP params, cap params, trial Cauchy stress (row-major).
@@ -49,16 +49,16 @@ ZX_API void ZX_CALL zx_stress_invariants(const float sigma[ZX_MAT3_SIZE], float*
  */
 ZX_API void ZX_CALL zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp,
                                      const zx_cap_params* cap,
-                                     const float sigma_trial[ZX_MAT3_SIZE],
-                                     float sigma_out[ZX_MAT3_SIZE], float* delta_gamma_out);
+                                     const float sigma_trial[zx_mat3_size],
+                                     float sigma_out[zx_mat3_size], float* delta_gamma_out);
 
 /* Mohr–Coulomb return mapping in principal stress space with non-associated flow.
  * Inputs: elastic params (for scaling), MC params, dilatancy_deg (ψ), trial Cauchy stress.
  * State: eps_v_pl (plastic volumetric strain) updated if non-null.
  */
 ZX_API void ZX_CALL zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc,
-                                     float dilatancy_deg, const float sigma_trial[ZX_MAT3_SIZE],
-                                     float sigma_out[ZX_MAT3_SIZE], float* delta_gamma_out,
+                                     float dilatancy_deg, const float sigma_trial[zx_mat3_size],
+                                     float sigma_out[zx_mat3_size], float* delta_gamma_out,
                                      float* eps_v_pl /* in/out, may be null */);
 
 /* NorSand parameters and state */
@@ -91,8 +91,8 @@ ZX_API float ZX_CALL zx_norsand_state_parameter(const zx_norsand_state* st, floa
  */
 ZX_API void ZX_CALL zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params* ns,
                                           zx_norsand_state* state,
-                                          const float sigma_trial[ZX_MAT3_SIZE],
-                                          float sigma_out[ZX_MAT3_SIZE], float* delta_gamma_out,
+                                          const float sigma_trial[zx_mat3_size],
+                                          float sigma_out[zx_mat3_size], float* delta_gamma_out,
                                           float* eps_v_pl /* in/out, may be null */);
 
 #endif /* ZX_CONSTITUTIVE_REF_H */

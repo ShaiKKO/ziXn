@@ -6,6 +6,7 @@
  */
 
 #include "zx/zx_writeback.h"
+#include <algorithm>
 #include <string.h>
 
 /**
