@@ -39,8 +39,12 @@ extern "C"
 #include <stddef.h>
 #include <stdint.h>
 
-  /* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
-  static constexpr uint32_t zx_abi_version = 0x00010000U;  // NOLINT(cppcoreguidelines-macro-usage)
+/* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
+#ifndef ZX_ABI_VERSION
+#define ZX_ABI_VERSION 0x00010000U
+#endif
+  static constexpr uint32_t zx_abi_version =
+      ZX_ABI_VERSION;  // NOLINT(cppcoreguidelines-macro-usage)
 
   /* Common fixed sizes */
   static constexpr size_t zx_mat3_size = 9U;
