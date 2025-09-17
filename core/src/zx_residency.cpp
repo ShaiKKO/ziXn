@@ -215,7 +215,7 @@ extern "C"
   }
 
   void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
-                                    int z1)
+                                    int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
   {
     if (ctx == nullptr)
     {
@@ -263,8 +263,9 @@ extern "C"
     ctx->opts.prefetch_rings = rings;
   }
 
-  void ZX_CALL zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters,
-                                           uint32_t* exits, uint32_t* churn)
+  void ZX_CALL
+  zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
+                              uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
   {
     if (ctx == nullptr)
     {

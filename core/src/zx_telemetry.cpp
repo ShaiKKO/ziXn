@@ -15,26 +15,26 @@
 
 struct zx_sample
 {
-  std::string scene{};
-  uint32_t step{0};
-  std::vector<std::pair<std::string, float>> counters{};
+  std::string scene;
+  uint32_t step;
+  std::vector<std::pair<std::string, float>> counters;
 };
 
 struct zx_telemetry
 {
-  std::mutex mtx{};
-  std::vector<zx_sample> samples{};
-  uint32_t capacity{0};
-  zx_sample current{};
-  bool in_step{false};
-  struct err
+  std::mutex mtx;
+  std::vector<zx_sample> samples;
+  uint32_t capacity;
+  zx_sample current;
+  bool in_step;
+  struct ErrorRecord
   {
-    std::string scene{};
-    uint32_t step{0};
+    std::string scene;
+    uint32_t step;
     std::string code;
     std::string msg;
   };
-  std::vector<err> errors;
+  std::vector<ErrorRecord> errors;
 };
 
 extern "C"
@@ -57,9 +57,9 @@ extern "C"
    */
   zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity)
   {
-    auto* t                                      = new zx_telemetry();
+    auto* t = new zx_telemetry();  // NOLINT(cppcoreguidelines-owning-memory)
     static constexpr uint32_t k_default_capacity = 1024U;
-    t->capacity                                  = (capacity != 0u) ? capacity : k_default_capacity;
+    t->capacity                                  = (capacity != 0U) ? capacity : k_default_capacity;
     t->in_step                                   = false;
     return t;
   }
@@ -218,13 +218,13 @@ extern "C"
    */
   int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path)
   {
-    if (!ctx || !path)
+    if ((ctx == nullptr) || (path == nullptr))
     {
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     FILE* f = std::fopen(path, "wb");
-    if (!f)
+    if (f == nullptr)
     {
       return -2;
     }
@@ -274,13 +274,13 @@ extern "C"
    */
   int ZX_CALL zx_telemetry_export_json(zx_telemetry* ctx, const char* path)
   {
-    if (!ctx || !path)
+    if ((ctx == nullptr) || (path == nullptr))
     {
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     FILE* f = std::fopen(path, "wb");
-    if (!f)
+    if (f == nullptr)
     {
       return -2;
     }
@@ -295,11 +295,11 @@ extern "C"
       constexpr int k_sig_digits      = 9;
       std::string line;
       line.reserve(k_line_reserve);
-      line.append("    { \"scene\": \"");
+      line.append(R"(    { "scene": ")");
       line.append(s.scene);
-      line.append("\", \"step\": ");
+      line.append(R"(", "step": )");
       line.append(std::to_string(s.step));
-      line.append(", \"counters\": {");
+      line.append(R"(, "counters": {)");
       std::fputs(line.c_str(), f);
       for (size_t k = 0; k < s.counters.size(); ++k)
       {
@@ -333,13 +333,13 @@ extern "C"
       constexpr size_t k_err_line_reserve = 160U;
       std::string eline;
       eline.reserve(k_err_line_reserve);
-      eline.append("    { \"scene\": \"");
+      eline.append(R"(    { "scene": ")");
       eline.append(e.scene);
-      eline.append("\", \"step\": ");
+      eline.append(R"(", "step": )");
       eline.append(std::to_string(e.step));
-      eline.append(", \"code\": \"");
+      eline.append(R"(, "code": ")");
       eline.append(e.code);
-      eline.append("\", \"message\": \"");
+      eline.append(R"(, "message": ")");
       eline.append(e.msg);
       eline.append("\" }");
       if (i + 1 < ctx->errors.size())
