@@ -31,10 +31,10 @@ struct zx_telemetry
   {
     std::string scene{};
     uint32_t step{0};
-    std::string code{};
-    std::string msg{};
+    std::string code;
+    std::string msg;
   };
-  std::vector<err> errors{};
+  std::vector<err> errors;
 };
 
 extern "C"
@@ -57,10 +57,10 @@ extern "C"
    */
   zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity)
   {
-    auto* t                                    = new zx_telemetry();
-    static constexpr uint32_t kDefaultCapacity = 1024u;
-    t->capacity                                = (capacity != 0u) ? capacity : kDefaultCapacity;
-    t->in_step                                 = false;
+    auto* t                                      = new zx_telemetry();
+    static constexpr uint32_t k_default_capacity = 1024U;
+    t->capacity                                  = (capacity != 0u) ? capacity : k_default_capacity;
+    t->in_step                                   = false;
     return t;
   }
 
