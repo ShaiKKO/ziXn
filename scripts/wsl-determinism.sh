@@ -28,7 +28,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ! -x "${BIN}" ]]; then
-  echo "zx_cli not found, building..." >&2
+  echo "zx_cli not found, configuring & building fresh..." >&2
+  rm -rf "${BUILD_DIR}"
+  cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
   cmake --build "${BUILD_DIR}" -j
 fi
 

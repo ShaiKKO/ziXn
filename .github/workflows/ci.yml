@@ -7,9 +7,37 @@ on:
     branches: [ main, master ]
 
 jobs:
+  format:
+    name: Auto-format (clang-format)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install clang-format (Ubuntu)
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+      - name: Validate style configs present
+        run: |
+          test -f .clang-format || { echo '.clang-format missing'; exit 1; }
+          test -f .clang-tidy || { echo '.clang-tidy missing'; exit 1; }
+      - name: Run clang-format (in-place)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git ls-files "core/src/*.{c,cpp}" "core/include/**/*.{h,hpp}" "kernels/*.hlsl" \
+            | tr '\n' '\0' | xargs -0 -r -I{} clang-format -i -style=file {}
+      - name: Auto-commit formatted changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto-format (clang-format)"
+          branch: ${{ github.head_ref || github.ref_name }}
+
   build:
     name: Build and Test
     runs-on: ${{ matrix.os }}
+    needs: format
     strategy:
       fail-fast: false
       matrix:
@@ -17,7 +45,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install clang-tidy (Windows)
+      - name: Install LLVM (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install llvm -y
 
@@ -29,11 +57,25 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y clang-tidy
 
+      - name: Install clang-format (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Install clang-format (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install clang-format
+
+      - name: Ensure clang-format on PATH (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: echo "C:\\Program Files\\LLVM\\bin" >> $env:GITHUB_PATH
+
       - name: Configure
         run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
       - name: Build
         run: cmake --build build --config Release --parallel
       - name: Format check (clang-format)
+        shell: bash
         run: |
           if command -v clang-format >/dev/null 2>&1; then
             git ls-files "core/src/*.{c,cpp}" "core/include/**/*.{h,hpp}" "kernels/*.hlsl" | tr '\n' '\0' | xargs -0 -I{} clang-format --dry-run -Werror -style=file {}
@@ -51,5 +93,69 @@ jobs:
         run: |
           ctest --test-dir build --output-on-failure -C Release
           ctest --test-dir build --output-on-failure -C Release -R "determinism_tests|checksum_parity_test"
+
+      - name: Determinism script (WSL)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          bash scripts/wsl-determinism.sh --scene dambreak --seed 42 --fallback off
+
+      - name: Upload ctest logs (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-logs-${{ matrix.os }}
+          path: build/Testing
+
+  bugbot-context:
+    name: Cursor BugBot Context
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare context
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          printf "COMMIT_MSG<<'EOF'\n" >> "$GITHUB_ENV"
+          git log -1 --pretty=%B >> "$GITHUB_ENV"
+          printf "\nEOF\n" >> "$GITHUB_ENV"
+          git diff --name-status "$BASE_SHA"..."${{ github.sha }}" > changed_files.txt || true
+          printf "CHANGED_FILES<<'EOF'\n" >> "$GITHUB_ENV"
+          cat changed_files.txt >> "$GITHUB_ENV"
+          printf "\nEOF\n" >> "$GITHUB_ENV"
+
+      - name: Post BugBot context comment
+        uses: actions/github-script@v7
+        env:
+          COMMIT_MSG: ${{ env.COMMIT_MSG }}
+          CHANGED_FILES: ${{ env.CHANGED_FILES }}
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const sha = context.sha;
+            const branch = context.ref.replace('refs/heads/','');
+            const actor = context.actor;
+            const oses = ['windows-latest','ubuntu-latest','macos-latest'];
+            const artifacts = oses.map(os => ({ name: `ctest-logs-${os}` }));
+            const body = `<!-- cursor-bugbot:context v1 -->\n` +
+              `Commit: ${sha}\n` +
+              `Branch: ${branch}\n` +
+              `Author: @${actor}\n` +
+              `\nChanged files (base->HEAD):\n\n\`\n${process.env.CHANGED_FILES || ''}\n\`` +
+              `\n\nCommit message:\n\n\`\n${process.env.COMMIT_MSG || ''}\n\`` +
+              `\n\nArtifacts (per-OS ctest logs):\n` + artifacts.map(a => `- ${a.name}`).join('\n') +
+              `\n\nIf you're a bot, parse the fenced blocks above.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
 
 
