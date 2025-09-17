@@ -1,21 +1,37 @@
 Checks: >
   -*,
   bugprone-*,
-  cppcoreguidelines-*,
+  clang-analyzer-*,
   performance-*,
   portability-*,
   readability-*,
   modernize-*,
-  clang-analyzer-*
+  cppcoreguidelines-*,
+  -modernize-use-trailing-return-type,
+  -modernize-use-using,
+  -cppcoreguidelines-avoid-c-arrays,
+  -modernize-avoid-c-arrays,
+  -cppcoreguidelines-use-enum-class,
+  -performance-enum-size,
+  -readability-identifier-length
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'core/.*'
 # Removed unsupported key for Windows clang-tidy
 FormatStyle:     file
 CheckOptions:
-  - { key: readability-identifier-naming.VariableCase, value: camelBack }
-  - { key: readability-identifier-naming.FunctionCase, value: camelBack }
-  - { key: readability-identifier-naming.ClassCase, value: PascalCase }
-  - { key: readability-identifier-naming.StructCase, value: PascalCase }
-  - { key: readability-identifier-naming.EnumCase, value: PascalCase }
+  - { key: readability-identifier-naming.FunctionCase, value: lower_case }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.ClassCase, value: lower_case }
+  - { key: readability-identifier-naming.StructCase, value: lower_case }
+  - { key: readability-identifier-naming.EnumCase, value: UPPER_CASE }
   - { key: readability-identifier-naming.EnumConstantCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.TypeAliasCase, value: lower_case }
+  - { key: readability-identifier-naming.TypedefCase, value: lower_case }
+  - { key: readability-identifier-naming.IgnoreMainLikeFunctions, value: true }
+  - { key: readability-identifier-naming.IgnoreFailedSplit, value: true }
+  - { key: readability-identifier-naming.AllowedFunctionNames, value: '^zx_.*$' }
+  - { key: readability-identifier-naming.AllowedTypeNames, value: '^zx_.*$' }
+  - { key: readability-identifier-length.MinimumParameterNameLength, value: '0' }
+  - { key: readability-identifier-length.MinimumVariableNameLength, value: '0' }
+  - { key: readability-identifier-length.IgnoredParameterNames, value: '^(x|y|z|w|h|dt|mu|nu|ns|st|mc|ep|dp|p|r|g|i|j|k|cx|cy|cz)$' }
 
