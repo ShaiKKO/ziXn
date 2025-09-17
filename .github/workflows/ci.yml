@@ -61,6 +61,9 @@ jobs:
         run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
       - name: Build
         run: cmake --build build --config Release --parallel
+
+      - name: Build zx_cli
+        run: cmake --build build --config Release --target zx_cli
       - name: Format check (clang-format)
         shell: bash
         run: |
@@ -78,7 +81,7 @@ jobs:
 
       - name: Test
         run: |
-          ctest --test-dir build --output-on-failure -C Release
+          ctest --test-dir build --output-on-failure -C Release -E "determinism_script"
           ctest --test-dir build --output-on-failure -C Release -R "determinism_tests|checksum_parity_test"
 
       # Determinism script step removed for non-Linux matrix
