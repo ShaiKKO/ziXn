@@ -7,7 +7,9 @@
 
 #include "zx/zx_telemetry.h"
 #include <cstdio>
+#include <iomanip>
 #include <mutex>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -220,18 +222,19 @@ extern "C"
     export_header(f, ctx->samples.front());
     for (const auto& s : ctx->samples)
     {
+      constexpr size_t kCsvRowReserve = 64U;
+      constexpr int kSigDigits        = 9;
       std::string row;
-      row.reserve(64);
+      row.reserve(kCsvRowReserve);
       row.append(s.scene);
       row.push_back(',');
       row.append(std::to_string(s.step));
       for (const auto& kv : s.counters)
       {
         row.push_back(',');
-        // 9 significant digits formatting
-        char buf[64];
-        std::snprintf(buf, sizeof(buf), "%.9g", static_cast<double>(kv.second));
-        row.append(buf);
+        std::ostringstream oss;
+        oss << std::setprecision(kSigDigits) << std::defaultfloat << static_cast<double>(kv.second);
+        row.append(oss.str());
       }
       row.push_back('\n');
       std::fputs(row.c_str(), f);
@@ -266,12 +269,17 @@ extern "C"
     {
       return -2;
     }
-    std::fputs("{\n  \"samples\": [\n", f);
+    std::fputs(R"({
+  "samples": [
+)",
+               f);
     for (size_t i = 0; i < ctx->samples.size(); ++i)
     {
-      const auto& s = ctx->samples[i];
+      const auto& s                 = ctx->samples[i];
+      constexpr size_t kLineReserve = 128U;
+      constexpr int kSigDigits      = 9;
       std::string line;
-      line.reserve(128);
+      line.reserve(kLineReserve);
       line.append("    { \"scene\": \"");
       line.append(s.scene);
       line.append("\", \"step\": ");
@@ -280,28 +288,35 @@ extern "C"
       std::fputs(line.c_str(), f);
       for (size_t k = 0; k < s.counters.size(); ++k)
       {
-        const auto& kv = s.counters[k];
+        const auto& kv               = s.counters[k];
+        constexpr size_t kKvsReserve = 64U;
         std::string kvs;
-        kvs.reserve(64);
+        kvs.reserve(kKvsReserve);
         kvs.append("\"");
         kvs.append(kv.first);
         kvs.append("\": ");
-        char buf[64];
-        std::snprintf(buf, sizeof(buf), "%.9g", static_cast<double>(kv.second));
-        kvs.append(buf);
+        std::ostringstream oss;
+        oss << std::setprecision(kSigDigits) << std::defaultfloat << static_cast<double>(kv.second);
+        kvs.append(oss.str());
         if (k + 1 < s.counters.size())
+        {
           kvs.append(", ");
+        }
         std::fputs(kvs.c_str(), f);
       }
       std::fputs("} }", f);
       std::fputs((i + 1 < ctx->samples.size() ? ",\n" : "\n"), f);
     }
-    std::fputs("  ],\n  \"errors\": [\n", f);
+    std::fputs(R"(  ],
+  "errors": [
+)",
+               f);
     for (size_t i = 0; i < ctx->errors.size(); ++i)
     {
-      const auto& e = ctx->errors[i];
+      const auto& e                    = ctx->errors[i];
+      constexpr size_t kErrLineReserve = 160U;
       std::string eline;
-      eline.reserve(160);
+      eline.reserve(kErrLineReserve);
       eline.append("    { \"scene\": \"");
       eline.append(e.scene);
       eline.append("\", \"step\": ");
@@ -312,11 +327,16 @@ extern "C"
       eline.append(e.msg);
       eline.append("\" }");
       if (i + 1 < ctx->errors.size())
+      {
         eline.append(",");
+      }
       eline.push_back('\n');
       std::fputs(eline.c_str(), f);
     }
-    std::fputs("  ]\n}\n", f);
+    std::fputs(R"(  ]
+}
+)",
+               f);
     std::fclose(f);
     return 0;
   }

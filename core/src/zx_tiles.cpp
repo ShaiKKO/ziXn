@@ -11,7 +11,7 @@
 
 static void zx_memzero(void* p, size_t n)
 {
-  if ((p != nullptr) && (n != 0u))
+  if ((p != nullptr) && (n != 0U))
   {
     std::memset(p, 0, n);
   }
@@ -47,11 +47,11 @@ extern "C"
     zx_memzero(soa.mass, sizeof(float) * n);
     soa.volume = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.volume, sizeof(float) * n);
-    constexpr size_t kMat3 = (size_t) zx_mat3_size;
-    soa.F                  = static_cast<float*>(alloc_fn(sizeof(float) * n * kMat3, user));
-    zx_memzero(soa.F, sizeof(float) * n * kMat3);
-    soa.C = static_cast<float*>(alloc_fn(sizeof(float) * n * kMat3, user));
-    zx_memzero(soa.C, sizeof(float) * n * kMat3);
+    constexpr auto k_mat3 = static_cast<size_t>(zx_mat3_size);
+    soa.F                 = static_cast<float*>(alloc_fn(sizeof(float) * n * k_mat3, user));
+    zx_memzero(soa.F, sizeof(float) * n * k_mat3);
+    soa.C = static_cast<float*>(alloc_fn(sizeof(float) * n * k_mat3, user));
+    zx_memzero(soa.C, sizeof(float) * n * k_mat3);
     soa.mat_id = static_cast<uint16_t*>(alloc_fn(sizeof(uint16_t) * n, user));
     zx_memzero(soa.mat_id, sizeof(uint16_t) * n);
     soa.flags = static_cast<uint16_t*>(alloc_fn(sizeof(uint16_t) * n, user));

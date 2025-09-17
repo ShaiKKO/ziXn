@@ -60,7 +60,9 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
     {
       continue;
     }
-    float* dst_row       = t->disp + (static_cast<size_t>(y) * static_cast<size_t>(dst_pitch));
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    float* dst_row = t->disp + (static_cast<size_t>(y) * static_cast<size_t>(dst_pitch));
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     const float* src_row = src + (static_cast<size_t>(sy) * static_cast<size_t>(sw));
     int32_t sx0          = cx0 - x0;
     sx0                  = std::max(sx0, 0);
