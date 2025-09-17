@@ -176,10 +176,14 @@ extern "C"
    */
   static void export_header(FILE* f, const zx_sample& s)
   {
-    std::fprintf(f, "scene,step");
+    std::string line = "scene,step";
     for (const auto& kv : s.counters)
-      std::fprintf(f, ",%s", kv.first.c_str());
-    std::fprintf(f, "\n");
+    {
+      line.push_back(',');
+      line.append(kv.first);
+    }
+    line.push_back('\n');
+    std::fputs(line.c_str(), f);
   }
 
   /**
@@ -199,11 +203,15 @@ extern "C"
   int ZX_CALL zx_telemetry_export_csv(zx_telemetry* ctx, const char* path)
   {
     if (!ctx || !path)
+    {
       return -1;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     FILE* f = std::fopen(path, "wb");
     if (!f)
+    {
       return -2;
+    }
     if (ctx->samples.empty())
     {
       std::fclose(f);
@@ -212,10 +220,21 @@ extern "C"
     export_header(f, ctx->samples.front());
     for (const auto& s : ctx->samples)
     {
-      std::fprintf(f, "%s,%u", s.scene.c_str(), s.step);
+      std::string row;
+      row.reserve(64);
+      row.append(s.scene);
+      row.push_back(',');
+      row.append(std::to_string(s.step));
       for (const auto& kv : s.counters)
-        std::fprintf(f, ",%.9g", kv.second);
-      std::fprintf(f, "\n");
+      {
+        row.push_back(',');
+        // 9 significant digits formatting
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%.9g", static_cast<double>(kv.second));
+        row.append(buf);
+      }
+      row.push_back('\n');
+      std::fputs(row.c_str(), f);
     }
     std::fclose(f);
     return 0;
@@ -238,35 +257,66 @@ extern "C"
   int ZX_CALL zx_telemetry_export_json(zx_telemetry* ctx, const char* path)
   {
     if (!ctx || !path)
+    {
       return -1;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     FILE* f = std::fopen(path, "wb");
     if (!f)
+    {
       return -2;
-    std::fprintf(f, "{\n  \"samples\": [\n");
+    }
+    std::fputs("{\n  \"samples\": [\n", f);
     for (size_t i = 0; i < ctx->samples.size(); ++i)
     {
       const auto& s = ctx->samples[i];
-      std::fprintf(f, "    { \"scene\": \"%s\", \"step\": %u, \"counters\": {", s.scene.c_str(),
-                   s.step);
+      std::string line;
+      line.reserve(128);
+      line.append("    { \"scene\": \"");
+      line.append(s.scene);
+      line.append("\", \"step\": ");
+      line.append(std::to_string(s.step));
+      line.append(", \"counters\": {");
+      std::fputs(line.c_str(), f);
       for (size_t k = 0; k < s.counters.size(); ++k)
       {
         const auto& kv = s.counters[k];
-        std::fprintf(f, "\"%s\": %.9g%s", kv.first.c_str(), kv.second,
-                     (k + 1 < s.counters.size() ? ", " : ""));
+        std::string kvs;
+        kvs.reserve(64);
+        kvs.append("\"");
+        kvs.append(kv.first);
+        kvs.append("\": ");
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%.9g", static_cast<double>(kv.second));
+        kvs.append(buf);
+        if (k + 1 < s.counters.size())
+          kvs.append(", ");
+        std::fputs(kvs.c_str(), f);
       }
-      std::fprintf(f, "} }%s\n", (i + 1 < ctx->samples.size() ? "," : ""));
+      std::fputs("} }", f);
+      std::fputs((i + 1 < ctx->samples.size() ? ",\n" : "\n"), f);
     }
-    std::fprintf(f, "  ],\n  \"errors\": [\n");
+    std::fputs("  ],\n  \"errors\": [\n", f);
     for (size_t i = 0; i < ctx->errors.size(); ++i)
     {
       const auto& e = ctx->errors[i];
-      std::fprintf(
-          f, "    { \"scene\": \"%s\", \"step\": %u, \"code\": \"%s\", \"message\": \"%s\" }%s\n",
-          e.scene.c_str(), e.step, e.code.c_str(), e.msg.c_str(),
-          (i + 1 < ctx->errors.size() ? "," : ""));
+      std::string eline;
+      eline.reserve(160);
+      eline.append("    { \"scene\": \"");
+      eline.append(e.scene);
+      eline.append("\", \"step\": ");
+      eline.append(std::to_string(e.step));
+      eline.append(", \"code\": \"");
+      eline.append(e.code);
+      eline.append("\", \"message\": \"");
+      eline.append(e.msg);
+      eline.append("\" }");
+      if (i + 1 < ctx->errors.size())
+        eline.append(",");
+      eline.push_back('\n');
+      std::fputs(eline.c_str(), f);
     }
-    std::fprintf(f, "  ]\n}\n");
+    std::fputs("  ]\n}\n", f);
     std::fclose(f);
     return 0;
   }

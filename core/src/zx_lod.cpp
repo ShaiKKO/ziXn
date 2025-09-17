@@ -51,12 +51,18 @@ typedef void (*pp_up2_fn)(const float*, uint32_t, uint32_t, uint32_t, float*, ui
 static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                          uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (!src || !dst)
+  if (src == nullptr || dst == nullptr)
+  {
     return;
-  if (sw < 2 || sh < 2)
+  }
+  if (sw < 2 || sh < 2 || dw == 0 || dh == 0 || sp < sw || dp < dw)
+  {
     return;
+  }
   if (dw * 2 != sw || dh * 2 != sh)
+  {
     return;
+  }
   for (uint32_t y = 0; y < dh; ++y)
   {
     for (uint32_t x = 0; x < dw; ++x)
@@ -136,10 +142,18 @@ static void init_down2_impl()
 static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                        uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (!src || !dst)
+  if (src == nullptr || dst == nullptr)
+  {
     return;
+  }
+  if (sw == 0 || sh == 0 || dw == 0 || dh == 0 || sp < sw || dp < dw)
+  {
+    return;
+  }
   if (dw != sw * 2 || dh != sh * 2)
+  {
     return;
+  }
   for (uint32_t y = 0; y < dh; ++y)
   {
     float fy = (y + 0.5f) * 0.5f - 0.5f;
