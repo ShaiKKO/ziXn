@@ -1,5 +1,84 @@
 ---
 name: Engineering Standards (ziXn)
-description: High-level quality bar, docs/licenses, Doxygen headers, Windows/MSVC C++17, CI rules. Referenced by PRs and code edits.
+description: Distinguished Engineer quality bar for ziXn. Enforces code quality, testing, docs, ABI, performance, determinism, CI gates, and Doxygen license headers. Applies to every run.
 alwaysApply: true
 ---
+
+# Engineering Standards (2025)
+
+These standards are executed every run. Treat ziXn as a Distinguished Engineer project: no shortcuts, placeholders, or partial work. Changes must be production-grade and integrated end-to-end.
+
+## Scope and platform
+
+- Primary platform: Windows (MSVC 2019/2022), C++17.
+- C-ABI first for public headers; internal code may use modern C++ where ABI-safe.
+- Build system: CMake; formatting via clang-format; static analysis via clang-tidy.
+
+## Code quality (musts)
+
+- No TODOs, placeholders, or simplified implementations. Either deliver the feature or do not merge.
+- Braces required for all control statements. Explicit `nullptr` checks; no implicit pointer-to-bool.
+- Prefer C++ casts over C-style; avoid pointer arithmetic. If unavoidable, parenthesize and add a localized NOLINT with justification.
+- Replace magic numbers with named `constexpr` or documented constants. Use uppercase suffixes (`F`, `U`).
+- Headers include only what they use; source files own implementation details. Avoid hidden global state.
+- Error handling must use clear status/enum codes or strong types. No silent failures.
+
+## ABI and naming (public vs internal)
+
+- Public ABI headers: use `ZX_API` only on declarations; never on definitions. Maintain C naming: lower_snake_case for functions, UPPER_SNAKE_CASE for enums/typedefs. Add focused NOLINTs where ABI prevents modernization.
+- Internal headers/sources: prefer `using`, `enum class`, RAII, `std::array`, `constexpr`, strong types, and narrow interfaces.
+
+## Documentation (Doxygen + license headers)
+
+- Every source and header file must start with a Doxygen header including ownership and license notice.
+- Owner: Colin Macritchie / Ripple Group, LLC.
+
+```cpp
+/**
+ * @file <filename>
+ * @brief <one-line summary>
+ * @details <short description of purpose, invariants, and threading model>
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
+ */
+```
+
+## Testing and validation
+
+- Unit tests for all public functions and critical internal units. Integration tests for scenarios (dam-break, wheel bogging, puddle creep, LOD, anisotropy, heave).
+- Determinism tests must pass when flags are enabled; omit non-deterministic telemetry (timings) in that mode.
+- Minimum coverage target: 85% of core logic (line) and 80% (branch) where practical. New code must not reduce coverage.
+- Tests must be fast, hermetic, and reproducible (fixed seeds, fixed inputs).
+
+## Telemetry and determinism
+
+- Telemetry schema stable; counters well-named and documented. No varargs formatting in core; prefer streams or safe builders.
+- Determinism mode must produce byte-identical results; use ordered reductions and stable accumulation when enabled.
+
+## Performance and safety
+
+- Clear big-O expectations in hot paths; avoid accidental quadratic behavior. Use constant-time guards for bounds.
+- Thread safety: protect shared state; prefer immutable data passed by value/reference.
+
+## CI gates (fail the build if violated)
+
+- clang-format check passes or auto-fix job commits before build stages.
+- clang-tidy clean (warnings-as-errors) with project-approved suppressions (localized NOLINT only when justified).
+- Build Release on `windows-latest`; run unit and integration tests; upload required artifacts.
+- Verify `zx_cli.exe` presence before any script that uses it.
+
+## Commit/PR hygiene
+
+- Conventional commits (feat/fix/docs/refactor/test/ci/build/chore).
+- PRs must include: objective, constraints, acceptance criteria, risks/mitigations, validation evidence (test names, run URLs), and rollout notes.
+
+## Authoring guidance
+
+- Prefer small, composable functions. Avoid deep nesting; use guard clauses.
+- Keep comments concise, explaining "why" over "how". No redundant comments.
+- Do not weaken ABI stability for style-only changes.
+
+## Enforcement
+
+- If a change cannot meet these standards, do not merge. Escalate ambiguities as explicit questions with proposed options and trade-offs.
