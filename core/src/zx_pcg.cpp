@@ -74,13 +74,13 @@ extern "C"
    * input or degenerate ||b|| == 0; a numerical failure (non-positive or non-finite p^T A p) also
    * terminates the iteration early.
    */
-  uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_A_fn apply_A,
+  uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_a_fn apply_A,
                                 zx_apply_prec_fn apply_prec, void* user, const zx_pcg_opts* opts,
                                 float* out_final_resid)
   {
     if (!b || !x || !apply_A || !opts || n == 0)
       return 0;
-    const uint32_t max_iters = std::max<uint32_t>(1, opts->max_iters);
+    const uint32_t max_iters = std::max<uint32_t>(1u, opts->max_iters);
     const float tol_abs      = (opts->tol_abs > 0.0f) ? opts->tol_abs : 0.0f;
     const float tol_rel      = (opts->tol_rel > 0.0f) ? opts->tol_rel : 0.0f;
 
