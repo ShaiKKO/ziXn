@@ -1,6 +1,8 @@
 /*!
  * \file zx_authoring.cpp
  * \brief UI mapping and clamps for presets.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_authoring.h"

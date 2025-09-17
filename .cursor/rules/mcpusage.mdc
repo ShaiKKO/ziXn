@@ -1,0 +1,45 @@
+---
+description:Always include context scaffold per thought
+Objective: 1–2 lines stating the exact outcome.
+Constraints: key limits (perf targets, platform, API/ABI, security, budgets).
+Acceptance criteria: measurable pass/fail, tests/benchmarks, outputs.
+Risks & mitigations: top 2–3 risks + how you’ll handle them.
+Thought structure and linkage
+Choose thought_type intentionally: analysis → synthesis → conclusion (use evaluation for tradeoffs, decision for selections).
+Choose strategy: systematic for implementation, strategic for planning, analytical for perf/bugs, integrative for cross-cutting.
+Link thoughts: set builds_on_thoughts, supports_thoughts, contradicts_thoughts to previous IDs.
+Add tags: domain and axis (e.g., simd, lod, windows, perf, testing, api, abi, security, ux).
+Alternatives and decisions
+Record at least one alternative with brief pros/cons.
+Explicitly mark the chosen option and why; note deferrals.
+Capture implications on API/ABI/backcompat and rollout risks.
+Operational cadence
+For each TODO: create one planning thought (analysis), one solution thought (synthesis), one exit thought (conclusion).
+Pass request_analysis=true and request_validation=true.
+Include response_language (e.g., en) and confidence (1–5).
+Timebox when applicable; define checkpoints and rollback criteria.
+Evidence and validation
+Reference data sources (benchmarks, logs, specs); summarize evidence.
+Define validation method: tests (names), metrics (e.g., ms, GB/s), thresholds, and reproducibility (seed, env).
+Note instrumentation/telemetry needed and how to interpret results.
+Platform and environment details
+Specify target OS/toolchain/hardware (e.g., Windows/MSVC/AVX2).
+State assumptions (alignment, pitch, threading model).
+Security/privacy constraints (no PII, license compliance).
+Reproducibility and determinism
+Provide deterministic seeds/inputs where relevant.
+Include exact commands, flags, and env vars to reproduce.
+Task hygiene
+Map each MCP plan to a TODO ID; update TODO status before and after work.
+Use clear IDs for thoughts to enable linking; avoid ad-hoc identifiers.
+Keep tags consistent across a project; prefer a controlled vocabulary.
+Parallelization and dependency management
+Identify independent steps and suggest parallel execution.
+Call out dependencies and gate criteria; propose stub/fallbacks if blocked.
+Communication quality
+Keep objectives/criteria bulletized; avoid fluff.
+Summarize decisions and next actions at the end of each conclusion thought.
+Escalate ambiguities as explicit questions with options.
+globs:
+alwaysApply: true
+---

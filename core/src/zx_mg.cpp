@@ -2,6 +2,7 @@
  * \file zx_mg.cpp
  * \brief Geometric Multigrid preconditioner (1D Poisson V-cycle) implementation.
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_mg.h"
@@ -53,7 +54,6 @@ static void restrict_full_weighting(const std::vector<float>& fine, std::vector<
 
 static void prolong_linear(const std::vector<float>& coarse, std::vector<float>& fine){
     const size_t nc = coarse.size();
-    const size_t nf = fine.size();
     // nf = 2*nc - 1
     for (size_t i=0;i<nc;++i) fine[2*i] = coarse[i];
     for (size_t i=0;i<nc-1;++i) fine[2*i+1] = 0.5f * (coarse[i] + coarse[i+1]);
@@ -85,6 +85,11 @@ static void vcycle(zx_mg_context* ctx, size_t level_idx){
 
 extern "C" {
 
+/** \brief Build a 1D Poisson hierarchy for size n (n>=3).
+ * @param n Problem size (>=3)
+ * @param opts Options (must not be NULL)
+ * @return Context pointer or NULL on failure
+ */
 ZX_API zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts* opts){
     if (n < 3 || !opts) return nullptr;
     zx_mg_context* ctx = new zx_mg_context();
@@ -104,8 +109,14 @@ ZX_API zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts*
     return ctx;
 }
 
+/** \brief Destroy multigrid context. */
 ZX_API void ZX_CALL zx_mg_destroy(zx_mg_context* ctx){ delete ctx; }
 
+/** \brief Preconditioner apply compatible with zx_pcg: z = M^{-1} r.
+ * @param r Input residual vector (size n)
+ * @param z Output preconditioned vector (size n)
+ * @param user_ctx Multigrid context (zx_mg_context*)
+ */
 ZX_API void ZX_CALL zx_mg_prec_apply(const float* r, float* z, void* user_ctx){
     zx_mg_context* ctx = (zx_mg_context*)user_ctx;
     if (!ctx || !r || !z) return;

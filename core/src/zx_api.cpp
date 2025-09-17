@@ -12,11 +12,7 @@
 
 /* ABI version defined in public header */
 
-static zx_status ZX_CALL zx_errstr_impl(zx_status s, const char** out)
-{
-    (void)out; (void)s; /* placeholder until logging/error system lands */
-    return ZX_OK;
-}
+/* Remove unused stub to silence -Wunused-function; error_string_impl is the public API */
 
 static zx_status ZX_CALL create_context_stub(const zx_context_desc* d, zx_context* out)
 {
@@ -89,8 +85,9 @@ static const char* ZX_CALL error_string_impl(zx_status s)
 ZX_API zx_status ZX_CALL zxGetProcTable(uint32_t abi_version, zx_procs* out_procs)
 {
     if (!out_procs) return ZX_E_INVALID;
-    if (abi_version != ZX_ABI_VERSION) return ZX_E_UNSUPPORTED;
+    /* Zero on entry so callers never observe stale pointers on failure */
     memset(out_procs, 0, sizeof(*out_procs));
+    if (abi_version != ZX_ABI_VERSION) return ZX_E_UNSUPPORTED;
     out_procs->size = sizeof(zx_procs);
     out_procs->version = ZX_ABI_VERSION;
     out_procs->create_context = &create_context_stub;

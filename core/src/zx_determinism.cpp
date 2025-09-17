@@ -2,6 +2,7 @@
  * \file zx_determinism.cpp
  * \brief Global determinism controls (CPU reference path).
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_determinism.h"

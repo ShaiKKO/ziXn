@@ -2,6 +2,7 @@
  * \file zx_integration.cpp
  * \brief Dam-break over porous bed (coarse proxy) metrics implementation.
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_integration.h"
@@ -12,6 +13,10 @@
 
 extern "C" {
 
+/** \brief Compute dam-break metrics on a single-tile coarse grid.
+ * @param p Dam-break parameters (must not be NULL)
+ * @return Metrics: front advance and kinetic energy
+ */
 ZX_API zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak_params* p)
 {
     zx_dambreak_metrics M{0.0f, 0.0f};
@@ -70,10 +75,15 @@ ZX_API zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak
     M.front_x = max_ix * p->h;
     M.kinetic_j = ke;
     // Could export churn/fallback counters via telemetry externally
+    (void)churn_enter; (void)churn_exit; (void)pf_count;
     zx_residency_destroy(rez);
     return M;
 }
 
+/** \brief Wheel bogging proxy with Darcy drag and viscous diffusion.
+ * @param p Bogging parameters (must not be NULL)
+ * @return Metrics: sink depth and drag proxy
+ */
 ZX_API zx_bogging_metrics ZX_CALL zx_integration_wheel_bogging_run(const zx_bogging_params* p)
 {
     zx_bogging_metrics M{0.0f, 0.0f};
@@ -120,6 +130,10 @@ ZX_API zx_bogging_metrics ZX_CALL zx_integration_wheel_bogging_run(const zx_bogg
     return M;
 }
 
+/** \brief Puddle creep proxy: push and diffuse to compute creep distance.
+ * @param p Puddle parameters (must not be NULL)
+ * @return Metric: creep distance in x
+ */
 ZX_API zx_puddle_metrics ZX_CALL zx_integration_puddle_creep_run(const zx_puddle_params* p)
 {
     zx_puddle_metrics M{0.0f};

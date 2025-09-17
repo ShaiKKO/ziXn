@@ -2,6 +2,7 @@
  * \file zx_apic_ref.cpp
  * \brief CPU reference APIC/MLS transfers used for validation.
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_apic_ref.h"

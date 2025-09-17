@@ -45,6 +45,7 @@ typedef enum zx_mu_clamp_policy {
  *              + tau_y * f(gamma_dot), with f = (1-exp(-m*gamma_dot))/max(gamma_dot,eps)
  * and the correct limit f(0) = m. Clamps into [mu_min, mu_max].
  */
+/* Preconditions: params!=NULL; returns clamped value in [mu_min,mu_max] or a safe default if invalid. */
 ZX_API float ZX_CALL zx_hbp_mu_eff(float gamma_dot,
                                    const zx_hbp_params* params,
                                    float mu_min,
@@ -59,9 +60,11 @@ ZX_API float ZX_CALL zx_hbp_mu_eff_policy(float gamma_dot,
                                           float softness_k);
 
 /* Validate and sanitize parameters (returns 0 if unchanged, 1 if adjusted, <0 on error). */
+/* Returns 1 if adjusted, 0 if unchanged, <0 on error; no-op if inout==NULL. */
 ZX_API int ZX_CALL zx_hbp_validate_params(zx_hbp_params* inout);
 
 /* CFL-like stability upper bound for explicit diffusion: dt_max = (h^2 * rho_min) / (6 * mu_max). */
+/* Returns 0 if inputs invalid. */
 ZX_API float ZX_CALL zx_hbp_dt_stable_upper_bound(float h, float mu_max, float rho_min);
 
 /*!
@@ -73,6 +76,7 @@ ZX_API float ZX_CALL zx_hbp_dt_stable_upper_bound(float h, float mu_max, float r
  *
  * Stable for dt <= h^2/(6*nu_max) with nu_max = mu_max / rho_min.
  */
+/* Preconditions: pool!=NULL, tile_count>0, h>0, dt>0, params!=NULL; otherwise no-op. */
 ZX_API void ZX_CALL zx_hbp_update_coarse_grid(zx_tile* pool,
                                               uint32_t tile_count,
                                               float h,

@@ -65,6 +65,7 @@ CMAKE_BINARY_DIR = /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build
 # The main recursive "all" target.
 all: CMakeFiles/zx.dir/all
 all: CMakeFiles/zx_cli.dir/all
+all: CMakeFiles/abi_conformance_test.dir/all
 all: CMakeFiles/zx_abi_smoke.dir/all
 all: CMakeFiles/apic_basis_test.dir/all
 all: CMakeFiles/apic_ref_test.dir/all
@@ -98,6 +99,7 @@ all: CMakeFiles/lod_fallback_threshold_test.dir/all
 all: CMakeFiles/lod_fallback_blend_test.dir/all
 all: CMakeFiles/lod_fallback_sweep_test.dir/all
 all: CMakeFiles/determinism_tests.dir/all
+all: CMakeFiles/determinism_strict_test.dir/all
 all: CMakeFiles/checksum_parity_test.dir/all
 all: CMakeFiles/determinism_ordering_test.dir/all
 all: CMakeFiles/residency_hysteresis_test.dir/all
@@ -107,6 +109,7 @@ all: CMakeFiles/hbp_viscous_update_test.dir/all
 all: CMakeFiles/hbp_clamp_policy_test.dir/all
 all: CMakeFiles/hbp_stability_bound_test.dir/all
 all: CMakeFiles/telemetry_schema_test.dir/all
+all: CMakeFiles/telemetry_depth_test.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -144,6 +147,7 @@ clean: CMakeFiles/ContinuousTest.dir/clean
 clean: CMakeFiles/ContinuousCoverage.dir/clean
 clean: CMakeFiles/ContinuousMemCheck.dir/clean
 clean: CMakeFiles/ContinuousSubmit.dir/clean
+clean: CMakeFiles/abi_conformance_test.dir/clean
 clean: CMakeFiles/zx_abi_smoke.dir/clean
 clean: CMakeFiles/apic_basis_test.dir/clean
 clean: CMakeFiles/apic_ref_test.dir/clean
@@ -177,6 +181,7 @@ clean: CMakeFiles/lod_fallback_threshold_test.dir/clean
 clean: CMakeFiles/lod_fallback_blend_test.dir/clean
 clean: CMakeFiles/lod_fallback_sweep_test.dir/clean
 clean: CMakeFiles/determinism_tests.dir/clean
+clean: CMakeFiles/determinism_strict_test.dir/clean
 clean: CMakeFiles/checksum_parity_test.dir/clean
 clean: CMakeFiles/determinism_ordering_test.dir/clean
 clean: CMakeFiles/residency_hysteresis_test.dir/clean
@@ -186,6 +191,7 @@ clean: CMakeFiles/hbp_viscous_update_test.dir/clean
 clean: CMakeFiles/hbp_clamp_policy_test.dir/clean
 clean: CMakeFiles/hbp_stability_bound_test.dir/clean
 clean: CMakeFiles/telemetry_schema_test.dir/clean
+clean: CMakeFiles/telemetry_depth_test.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -195,12 +201,12 @@ clean: CMakeFiles/telemetry_schema_test.dir/clean
 CMakeFiles/zx.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/zx.dir/build.make CMakeFiles/zx.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/zx.dir/build.make CMakeFiles/zx.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96 "Built target zx"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96 "Built target zx"
 .PHONY : CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/zx.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 19
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/zx.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/zx.dir/rule
@@ -226,7 +232,7 @@ CMakeFiles/zx_cli.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/zx_cli.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/zx_cli.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/zx_cli.dir/rule
@@ -969,6 +975,32 @@ CMakeFiles/ContinuousSubmit.dir/clean:
 .PHONY : CMakeFiles/ContinuousSubmit.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/abi_conformance_test.dir
+
+# All Build rule for target.
+CMakeFiles/abi_conformance_test.dir/all: CMakeFiles/zx.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=1 "Built target abi_conformance_test"
+.PHONY : CMakeFiles/abi_conformance_test.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/abi_conformance_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/abi_conformance_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
+.PHONY : CMakeFiles/abi_conformance_test.dir/rule
+
+# Convenience name for target.
+abi_conformance_test: CMakeFiles/abi_conformance_test.dir/rule
+.PHONY : abi_conformance_test
+
+# clean rule for target.
+CMakeFiles/abi_conformance_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/clean
+.PHONY : CMakeFiles/abi_conformance_test.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/zx_abi_smoke.dir
 
 # All Build rule for target.
@@ -980,7 +1012,7 @@ CMakeFiles/zx_abi_smoke.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/zx_abi_smoke.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/zx_abi_smoke.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/zx_abi_smoke.dir/rule
@@ -1001,7 +1033,7 @@ CMakeFiles/zx_abi_smoke.dir/clean:
 CMakeFiles/apic_basis_test.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/apic_basis_test.dir/build.make CMakeFiles/apic_basis_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/apic_basis_test.dir/build.make CMakeFiles/apic_basis_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=4,5 "Built target apic_basis_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=6,7 "Built target apic_basis_test"
 .PHONY : CMakeFiles/apic_basis_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1027,12 +1059,12 @@ CMakeFiles/apic_basis_test.dir/clean:
 CMakeFiles/apic_ref_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/apic_ref_test.dir/build.make CMakeFiles/apic_ref_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/apic_ref_test.dir/build.make CMakeFiles/apic_ref_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=6,7 "Built target apic_ref_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=8 "Built target apic_ref_test"
 .PHONY : CMakeFiles/apic_ref_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/apic_ref_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/apic_ref_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/apic_ref_test.dir/rule
@@ -1053,12 +1085,12 @@ CMakeFiles/apic_ref_test.dir/clean:
 CMakeFiles/counters_smoke.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/counters_smoke.dir/build.make CMakeFiles/counters_smoke.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/counters_smoke.dir/build.make CMakeFiles/counters_smoke.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=19,20 "Built target counters_smoke"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=20,21 "Built target counters_smoke"
 .PHONY : CMakeFiles/counters_smoke.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/counters_smoke.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/counters_smoke.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/counters_smoke.dir/rule
@@ -1079,12 +1111,12 @@ CMakeFiles/counters_smoke.dir/clean:
 CMakeFiles/writeback_smoke.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/writeback_smoke.dir/build.make CMakeFiles/writeback_smoke.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/writeback_smoke.dir/build.make CMakeFiles/writeback_smoke.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=75,76 "Built target writeback_smoke"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=77 "Built target writeback_smoke"
 .PHONY : CMakeFiles/writeback_smoke.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/writeback_smoke.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/writeback_smoke.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/writeback_smoke.dir/rule
@@ -1105,12 +1137,12 @@ CMakeFiles/writeback_smoke.dir/clean:
 CMakeFiles/constitutive_ref_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/constitutive_ref_test.dir/build.make CMakeFiles/constitutive_ref_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/constitutive_ref_test.dir/build.make CMakeFiles/constitutive_ref_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=17,18 "Built target constitutive_ref_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=18,19 "Built target constitutive_ref_test"
 .PHONY : CMakeFiles/constitutive_ref_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/constitutive_ref_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/constitutive_ref_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/constitutive_ref_test.dir/rule
@@ -1131,12 +1163,12 @@ CMakeFiles/constitutive_ref_test.dir/clean:
 CMakeFiles/constitutive_plastic_work_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/constitutive_plastic_work_test.dir/build.make CMakeFiles/constitutive_plastic_work_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/constitutive_plastic_work_test.dir/build.make CMakeFiles/constitutive_plastic_work_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=15,16 "Built target constitutive_plastic_work_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=16,17 "Built target constitutive_plastic_work_test"
 .PHONY : CMakeFiles/constitutive_plastic_work_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/constitutive_plastic_work_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/constitutive_plastic_work_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/constitutive_plastic_work_test.dir/rule
@@ -1157,12 +1189,12 @@ CMakeFiles/constitutive_plastic_work_test.dir/clean:
 CMakeFiles/mc_return_map_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mc_return_map_test.dir/build.make CMakeFiles/mc_return_map_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mc_return_map_test.dir/build.make CMakeFiles/mc_return_map_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=53,54 "Built target mc_return_map_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=54 "Built target mc_return_map_test"
 .PHONY : CMakeFiles/mc_return_map_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mc_return_map_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mc_return_map_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/mc_return_map_test.dir/rule
@@ -1183,7 +1215,7 @@ CMakeFiles/mc_return_map_test.dir/clean:
 CMakeFiles/validation_tests.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/validation_tests.dir/build.make CMakeFiles/validation_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/validation_tests.dir/build.make CMakeFiles/validation_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=72 "Built target validation_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=73,74 "Built target validation_tests"
 .PHONY : CMakeFiles/validation_tests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1209,12 +1241,12 @@ CMakeFiles/validation_tests.dir/clean:
 CMakeFiles/norsand_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norsand_test.dir/build.make CMakeFiles/norsand_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/norsand_test.dir/build.make CMakeFiles/norsand_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=60,61 "Built target norsand_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=61 "Built target norsand_test"
 .PHONY : CMakeFiles/norsand_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/norsand_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/norsand_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/norsand_test.dir/rule
@@ -1235,12 +1267,12 @@ CMakeFiles/norsand_test.dir/clean:
 CMakeFiles/heave_validation_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/heave_validation_test.dir/build.make CMakeFiles/heave_validation_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/heave_validation_test.dir/build.make CMakeFiles/heave_validation_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=36,37 "Built target heave_validation_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=38 "Built target heave_validation_test"
 .PHONY : CMakeFiles/heave_validation_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/heave_validation_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/heave_validation_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/heave_validation_test.dir/rule
@@ -1261,7 +1293,7 @@ CMakeFiles/heave_validation_test.dir/clean:
 CMakeFiles/anisotropic_contact_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/anisotropic_contact_test.dir/build.make CMakeFiles/anisotropic_contact_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/anisotropic_contact_test.dir/build.make CMakeFiles/anisotropic_contact_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=1 "Built target anisotropic_contact_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=2,3 "Built target anisotropic_contact_test"
 .PHONY : CMakeFiles/anisotropic_contact_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1287,12 +1319,12 @@ CMakeFiles/anisotropic_contact_test.dir/clean:
 CMakeFiles/wheel_heave_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/wheel_heave_test.dir/build.make CMakeFiles/wheel_heave_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/wheel_heave_test.dir/build.make CMakeFiles/wheel_heave_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=73,74 "Built target wheel_heave_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=75,76 "Built target wheel_heave_test"
 .PHONY : CMakeFiles/wheel_heave_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/wheel_heave_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/wheel_heave_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/wheel_heave_test.dir/rule
@@ -1313,12 +1345,12 @@ CMakeFiles/wheel_heave_test.dir/clean:
 CMakeFiles/foot_heave_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/foot_heave_test.dir/build.make CMakeFiles/foot_heave_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/foot_heave_test.dir/build.make CMakeFiles/foot_heave_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=27,28 "Built target foot_heave_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=29,30 "Built target foot_heave_test"
 .PHONY : CMakeFiles/foot_heave_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/foot_heave_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/foot_heave_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/foot_heave_test.dir/rule
@@ -1339,12 +1371,12 @@ CMakeFiles/foot_heave_test.dir/clean:
 CMakeFiles/anisotropy_scene_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/anisotropy_scene_test.dir/build.make CMakeFiles/anisotropy_scene_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/anisotropy_scene_test.dir/build.make CMakeFiles/anisotropy_scene_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=2,3 "Built target anisotropy_scene_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=4,5 "Built target anisotropy_scene_test"
 .PHONY : CMakeFiles/anisotropy_scene_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/anisotropy_scene_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/anisotropy_scene_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/anisotropy_scene_test.dir/rule
@@ -1370,7 +1402,7 @@ CMakeFiles/presets_test.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/presets_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/presets_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/presets_test.dir/rule
@@ -1391,12 +1423,12 @@ CMakeFiles/presets_test.dir/clean:
 CMakeFiles/authoring_map_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/authoring_map_test.dir/build.make CMakeFiles/authoring_map_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/authoring_map_test.dir/build.make CMakeFiles/authoring_map_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=8,9 "Built target authoring_map_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=9,10 "Built target authoring_map_test"
 .PHONY : CMakeFiles/authoring_map_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/authoring_map_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/authoring_map_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/authoring_map_test.dir/rule
@@ -1417,12 +1449,12 @@ CMakeFiles/authoring_map_test.dir/clean:
 CMakeFiles/lod_filters_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_filters_test.dir/build.make CMakeFiles/lod_filters_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_filters_test.dir/build.make CMakeFiles/lod_filters_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=47,48 "Built target lod_filters_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=48,49 "Built target lod_filters_test"
 .PHONY : CMakeFiles/lod_filters_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_filters_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_filters_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_filters_test.dir/rule
@@ -1443,12 +1475,12 @@ CMakeFiles/lod_filters_test.dir/clean:
 CMakeFiles/lod_alignment_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_alignment_test.dir/build.make CMakeFiles/lod_alignment_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_alignment_test.dir/build.make CMakeFiles/lod_alignment_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=38,39 "Built target lod_alignment_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=39,40 "Built target lod_alignment_test"
 .PHONY : CMakeFiles/lod_alignment_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_alignment_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_alignment_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_alignment_test.dir/rule
@@ -1469,12 +1501,12 @@ CMakeFiles/lod_alignment_test.dir/clean:
 CMakeFiles/lod_crack_free_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_crack_free_test.dir/build.make CMakeFiles/lod_crack_free_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_crack_free_test.dir/build.make CMakeFiles/lod_crack_free_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=40,41 "Built target lod_crack_free_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=41,42 "Built target lod_crack_free_test"
 .PHONY : CMakeFiles/lod_crack_free_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_crack_free_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_crack_free_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_crack_free_test.dir/rule
@@ -1495,12 +1527,12 @@ CMakeFiles/lod_crack_free_test.dir/clean:
 CMakeFiles/lod_mip_random_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_mip_random_test.dir/build.make CMakeFiles/lod_mip_random_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_mip_random_test.dir/build.make CMakeFiles/lod_mip_random_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=51,52 "Built target lod_mip_random_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=52,53 "Built target lod_mip_random_test"
 .PHONY : CMakeFiles/lod_mip_random_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_mip_random_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_mip_random_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_mip_random_test.dir/rule
@@ -1521,12 +1553,12 @@ CMakeFiles/lod_mip_random_test.dir/clean:
 CMakeFiles/lod_mip_chain_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_mip_chain_test.dir/build.make CMakeFiles/lod_mip_chain_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_mip_chain_test.dir/build.make CMakeFiles/lod_mip_chain_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=49,50 "Built target lod_mip_chain_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=50,51 "Built target lod_mip_chain_test"
 .PHONY : CMakeFiles/lod_mip_chain_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_mip_chain_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_mip_chain_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_mip_chain_test.dir/rule
@@ -1547,12 +1579,12 @@ CMakeFiles/lod_mip_chain_test.dir/clean:
 CMakeFiles/mixture_assembly_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mixture_assembly_test.dir/build.make CMakeFiles/mixture_assembly_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mixture_assembly_test.dir/build.make CMakeFiles/mixture_assembly_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=58,59 "Built target mixture_assembly_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=59,60 "Built target mixture_assembly_test"
 .PHONY : CMakeFiles/mixture_assembly_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mixture_assembly_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mixture_assembly_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/mixture_assembly_test.dir/rule
@@ -1573,12 +1605,12 @@ CMakeFiles/mixture_assembly_test.dir/clean:
 CMakeFiles/bog_memory_knob_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bog_memory_knob_test.dir/build.make CMakeFiles/bog_memory_knob_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bog_memory_knob_test.dir/build.make CMakeFiles/bog_memory_knob_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=10,11 "Built target bog_memory_knob_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=11,12 "Built target bog_memory_knob_test"
 .PHONY : CMakeFiles/bog_memory_knob_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/bog_memory_knob_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bog_memory_knob_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/bog_memory_knob_test.dir/rule
@@ -1604,7 +1636,7 @@ CMakeFiles/pcg_smoke_test.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/pcg_smoke_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/pcg_smoke_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/pcg_smoke_test.dir/rule
@@ -1630,7 +1662,7 @@ CMakeFiles/mg_pcg_test.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mg_pcg_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mg_pcg_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/mg_pcg_test.dir/rule
@@ -1651,7 +1683,7 @@ CMakeFiles/mg_pcg_test.dir/clean:
 CMakeFiles/mg_prec_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mg_prec_test.dir/build.make CMakeFiles/mg_prec_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mg_prec_test.dir/build.make CMakeFiles/mg_prec_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=57 "Built target mg_prec_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=57,58 "Built target mg_prec_test"
 .PHONY : CMakeFiles/mg_prec_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1677,12 +1709,12 @@ CMakeFiles/mg_prec_test.dir/clean:
 CMakeFiles/dambreak_integration_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dambreak_integration_test.dir/build.make CMakeFiles/dambreak_integration_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dambreak_integration_test.dir/build.make CMakeFiles/dambreak_integration_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=21,22 "Built target dambreak_integration_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=22,23 "Built target dambreak_integration_test"
 .PHONY : CMakeFiles/dambreak_integration_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/dambreak_integration_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/dambreak_integration_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/dambreak_integration_test.dir/rule
@@ -1703,12 +1735,12 @@ CMakeFiles/dambreak_integration_test.dir/clean:
 CMakeFiles/bogging_puddle_integration_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bogging_puddle_integration_test.dir/build.make CMakeFiles/bogging_puddle_integration_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bogging_puddle_integration_test.dir/build.make CMakeFiles/bogging_puddle_integration_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=12,13 "Built target bogging_puddle_integration_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=13,14 "Built target bogging_puddle_integration_test"
 .PHONY : CMakeFiles/bogging_puddle_integration_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/bogging_puddle_integration_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/bogging_puddle_integration_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/bogging_puddle_integration_test.dir/rule
@@ -1729,12 +1761,12 @@ CMakeFiles/bogging_puddle_integration_test.dir/clean:
 CMakeFiles/lod_fallback_threshold_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_threshold_test.dir/build.make CMakeFiles/lod_fallback_threshold_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_threshold_test.dir/build.make CMakeFiles/lod_fallback_threshold_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=45,46 "Built target lod_fallback_threshold_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=47 "Built target lod_fallback_threshold_test"
 .PHONY : CMakeFiles/lod_fallback_threshold_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_fallback_threshold_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_fallback_threshold_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_fallback_threshold_test.dir/rule
@@ -1755,7 +1787,7 @@ CMakeFiles/lod_fallback_threshold_test.dir/clean:
 CMakeFiles/lod_fallback_blend_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_blend_test.dir/build.make CMakeFiles/lod_fallback_blend_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_blend_test.dir/build.make CMakeFiles/lod_fallback_blend_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=42 "Built target lod_fallback_blend_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=43,44 "Built target lod_fallback_blend_test"
 .PHONY : CMakeFiles/lod_fallback_blend_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1781,12 +1813,12 @@ CMakeFiles/lod_fallback_blend_test.dir/clean:
 CMakeFiles/lod_fallback_sweep_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_sweep_test.dir/build.make CMakeFiles/lod_fallback_sweep_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/lod_fallback_sweep_test.dir/build.make CMakeFiles/lod_fallback_sweep_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=43,44 "Built target lod_fallback_sweep_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=45,46 "Built target lod_fallback_sweep_test"
 .PHONY : CMakeFiles/lod_fallback_sweep_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lod_fallback_sweep_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/lod_fallback_sweep_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/lod_fallback_sweep_test.dir/rule
@@ -1807,12 +1839,12 @@ CMakeFiles/lod_fallback_sweep_test.dir/clean:
 CMakeFiles/determinism_tests.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_tests.dir/build.make CMakeFiles/determinism_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_tests.dir/build.make CMakeFiles/determinism_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=25,26 "Built target determinism_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=27,28 "Built target determinism_tests"
 .PHONY : CMakeFiles/determinism_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/determinism_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/determinism_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/determinism_tests.dir/rule
@@ -1827,18 +1859,44 @@ CMakeFiles/determinism_tests.dir/clean:
 .PHONY : CMakeFiles/determinism_tests.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/determinism_strict_test.dir
+
+# All Build rule for target.
+CMakeFiles/determinism_strict_test.dir/all: CMakeFiles/zx.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=25,26 "Built target determinism_strict_test"
+.PHONY : CMakeFiles/determinism_strict_test.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/determinism_strict_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/determinism_strict_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
+.PHONY : CMakeFiles/determinism_strict_test.dir/rule
+
+# Convenience name for target.
+determinism_strict_test: CMakeFiles/determinism_strict_test.dir/rule
+.PHONY : determinism_strict_test
+
+# clean rule for target.
+CMakeFiles/determinism_strict_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/clean
+.PHONY : CMakeFiles/determinism_strict_test.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/checksum_parity_test.dir
 
 # All Build rule for target.
 CMakeFiles/checksum_parity_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checksum_parity_test.dir/build.make CMakeFiles/checksum_parity_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/checksum_parity_test.dir/build.make CMakeFiles/checksum_parity_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=14 "Built target checksum_parity_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=15 "Built target checksum_parity_test"
 .PHONY : CMakeFiles/checksum_parity_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/checksum_parity_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/checksum_parity_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/checksum_parity_test.dir/rule
@@ -1859,12 +1917,12 @@ CMakeFiles/checksum_parity_test.dir/clean:
 CMakeFiles/determinism_ordering_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_ordering_test.dir/build.make CMakeFiles/determinism_ordering_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_ordering_test.dir/build.make CMakeFiles/determinism_ordering_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=23,24 "Built target determinism_ordering_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=24 "Built target determinism_ordering_test"
 .PHONY : CMakeFiles/determinism_ordering_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/determinism_ordering_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/determinism_ordering_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/determinism_ordering_test.dir/rule
@@ -1890,7 +1948,7 @@ CMakeFiles/residency_hysteresis_test.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/residency_hysteresis_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/residency_hysteresis_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/residency_hysteresis_test.dir/rule
@@ -1916,7 +1974,7 @@ CMakeFiles/residency_prefetch_test.dir/all: CMakeFiles/zx.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/residency_prefetch_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/residency_prefetch_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/residency_prefetch_test.dir/rule
@@ -1937,12 +1995,12 @@ CMakeFiles/residency_prefetch_test.dir/clean:
 CMakeFiles/hbp_mu_eff_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_mu_eff_test.dir/build.make CMakeFiles/hbp_mu_eff_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_mu_eff_test.dir/build.make CMakeFiles/hbp_mu_eff_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=30,31 "Built target hbp_mu_eff_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=32,33 "Built target hbp_mu_eff_test"
 .PHONY : CMakeFiles/hbp_mu_eff_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hbp_mu_eff_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/hbp_mu_eff_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/hbp_mu_eff_test.dir/rule
@@ -1963,12 +2021,12 @@ CMakeFiles/hbp_mu_eff_test.dir/clean:
 CMakeFiles/hbp_viscous_update_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_viscous_update_test.dir/build.make CMakeFiles/hbp_viscous_update_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_viscous_update_test.dir/build.make CMakeFiles/hbp_viscous_update_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=34,35 "Built target hbp_viscous_update_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=36,37 "Built target hbp_viscous_update_test"
 .PHONY : CMakeFiles/hbp_viscous_update_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hbp_viscous_update_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/hbp_viscous_update_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/hbp_viscous_update_test.dir/rule
@@ -1989,12 +2047,12 @@ CMakeFiles/hbp_viscous_update_test.dir/clean:
 CMakeFiles/hbp_clamp_policy_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_clamp_policy_test.dir/build.make CMakeFiles/hbp_clamp_policy_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_clamp_policy_test.dir/build.make CMakeFiles/hbp_clamp_policy_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=29 "Built target hbp_clamp_policy_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=31 "Built target hbp_clamp_policy_test"
 .PHONY : CMakeFiles/hbp_clamp_policy_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hbp_clamp_policy_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/hbp_clamp_policy_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/hbp_clamp_policy_test.dir/rule
@@ -2015,12 +2073,12 @@ CMakeFiles/hbp_clamp_policy_test.dir/clean:
 CMakeFiles/hbp_stability_bound_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_stability_bound_test.dir/build.make CMakeFiles/hbp_stability_bound_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hbp_stability_bound_test.dir/build.make CMakeFiles/hbp_stability_bound_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=32,33 "Built target hbp_stability_bound_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=34,35 "Built target hbp_stability_bound_test"
 .PHONY : CMakeFiles/hbp_stability_bound_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hbp_stability_bound_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/hbp_stability_bound_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/hbp_stability_bound_test.dir/rule
@@ -2041,12 +2099,12 @@ CMakeFiles/hbp_stability_bound_test.dir/clean:
 CMakeFiles/telemetry_schema_test.dir/all: CMakeFiles/zx.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_schema_test.dir/build.make CMakeFiles/telemetry_schema_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_schema_test.dir/build.make CMakeFiles/telemetry_schema_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=70,71 "Built target telemetry_schema_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=71,72 "Built target telemetry_schema_test"
 .PHONY : CMakeFiles/telemetry_schema_test.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/telemetry_schema_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 21
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/telemetry_schema_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
 .PHONY : CMakeFiles/telemetry_schema_test.dir/rule
@@ -2059,6 +2117,32 @@ telemetry_schema_test: CMakeFiles/telemetry_schema_test.dir/rule
 CMakeFiles/telemetry_schema_test.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_schema_test.dir/build.make CMakeFiles/telemetry_schema_test.dir/clean
 .PHONY : CMakeFiles/telemetry_schema_test.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/telemetry_depth_test.dir
+
+# All Build rule for target.
+CMakeFiles/telemetry_depth_test.dir/all: CMakeFiles/zx.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles --progress-num=70 "Built target telemetry_depth_test"
+.PHONY : CMakeFiles/telemetry_depth_test.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/telemetry_depth_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 20
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/telemetry_depth_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles 0
+.PHONY : CMakeFiles/telemetry_depth_test.dir/rule
+
+# Convenience name for target.
+telemetry_depth_test: CMakeFiles/telemetry_depth_test.dir/rule
+.PHONY : telemetry_depth_test
+
+# clean rule for target.
+CMakeFiles/telemetry_depth_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/clean
+.PHONY : CMakeFiles/telemetry_depth_test.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

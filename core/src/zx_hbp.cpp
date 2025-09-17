@@ -2,6 +2,7 @@
  * \file zx_hbp.cpp
  * \brief Herschel–Bulkley–Papanastasiou coarse-grid viscous update (CPU reference).
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_hbp.h"

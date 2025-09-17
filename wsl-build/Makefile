@@ -562,6 +562,19 @@ ContinuousSubmit/fast:
 .PHONY : ContinuousSubmit/fast
 
 #=============================================================================
+# Target rules for targets named abi_conformance_test
+
+# Build rule for target.
+abi_conformance_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 abi_conformance_test
+.PHONY : abi_conformance_test
+
+# fast build rule for target.
+abi_conformance_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/build
+.PHONY : abi_conformance_test/fast
+
+#=============================================================================
 # Target rules for targets named zx_abi_smoke
 
 # Build rule for target.
@@ -991,6 +1004,19 @@ determinism_tests/fast:
 .PHONY : determinism_tests/fast
 
 #=============================================================================
+# Target rules for targets named determinism_strict_test
+
+# Build rule for target.
+determinism_strict_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 determinism_strict_test
+.PHONY : determinism_strict_test
+
+# fast build rule for target.
+determinism_strict_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/build
+.PHONY : determinism_strict_test/fast
+
+#=============================================================================
 # Target rules for targets named checksum_parity_test
 
 # Build rule for target.
@@ -1106,6 +1132,19 @@ telemetry_schema_test: cmake_check_build_system
 telemetry_schema_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_schema_test.dir/build.make CMakeFiles/telemetry_schema_test.dir/build
 .PHONY : telemetry_schema_test/fast
+
+#=============================================================================
+# Target rules for targets named telemetry_depth_test
+
+# Build rule for target.
+telemetry_depth_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 telemetry_depth_test
+.PHONY : telemetry_depth_test
+
+# fast build rule for target.
+telemetry_depth_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/build
+.PHONY : telemetry_depth_test/fast
 
 core/src/zx_api.o: core/src/zx_api.cpp.o
 .PHONY : core/src/zx_api.o
@@ -1587,6 +1626,30 @@ core/src/zx_writeback.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/zx.dir/build.make CMakeFiles/zx.dir/core/src/zx_writeback.cpp.s
 .PHONY : core/src/zx_writeback.cpp.s
 
+tests/abi_conformance_test.o: tests/abi_conformance_test.cpp.o
+.PHONY : tests/abi_conformance_test.o
+
+# target to build an object file
+tests/abi_conformance_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/tests/abi_conformance_test.cpp.o
+.PHONY : tests/abi_conformance_test.cpp.o
+
+tests/abi_conformance_test.i: tests/abi_conformance_test.cpp.i
+.PHONY : tests/abi_conformance_test.i
+
+# target to preprocess a source file
+tests/abi_conformance_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/tests/abi_conformance_test.cpp.i
+.PHONY : tests/abi_conformance_test.cpp.i
+
+tests/abi_conformance_test.s: tests/abi_conformance_test.cpp.s
+.PHONY : tests/abi_conformance_test.s
+
+# target to generate assembly for a file
+tests/abi_conformance_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/abi_conformance_test.dir/build.make CMakeFiles/abi_conformance_test.dir/tests/abi_conformance_test.cpp.s
+.PHONY : tests/abi_conformance_test.cpp.s
+
 tests/abi_smoke.o: tests/abi_smoke.cpp.o
 .PHONY : tests/abi_smoke.o
 
@@ -1922,6 +1985,30 @@ tests/determinism_ordering_test.s: tests/determinism_ordering_test.cpp.s
 tests/determinism_ordering_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_ordering_test.dir/build.make CMakeFiles/determinism_ordering_test.dir/tests/determinism_ordering_test.cpp.s
 .PHONY : tests/determinism_ordering_test.cpp.s
+
+tests/determinism_strict_test.o: tests/determinism_strict_test.cpp.o
+.PHONY : tests/determinism_strict_test.o
+
+# target to build an object file
+tests/determinism_strict_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/tests/determinism_strict_test.cpp.o
+.PHONY : tests/determinism_strict_test.cpp.o
+
+tests/determinism_strict_test.i: tests/determinism_strict_test.cpp.i
+.PHONY : tests/determinism_strict_test.i
+
+# target to preprocess a source file
+tests/determinism_strict_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/tests/determinism_strict_test.cpp.i
+.PHONY : tests/determinism_strict_test.cpp.i
+
+tests/determinism_strict_test.s: tests/determinism_strict_test.cpp.s
+.PHONY : tests/determinism_strict_test.s
+
+# target to generate assembly for a file
+tests/determinism_strict_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/determinism_strict_test.dir/build.make CMakeFiles/determinism_strict_test.dir/tests/determinism_strict_test.cpp.s
+.PHONY : tests/determinism_strict_test.cpp.s
 
 tests/determinism_tests.o: tests/determinism_tests.cpp.o
 .PHONY : tests/determinism_tests.o
@@ -2499,6 +2586,30 @@ tests/residency_prefetch_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_prefetch_test.dir/build.make CMakeFiles/residency_prefetch_test.dir/tests/residency_prefetch_test.cpp.s
 .PHONY : tests/residency_prefetch_test.cpp.s
 
+tests/telemetry_depth_test.o: tests/telemetry_depth_test.cpp.o
+.PHONY : tests/telemetry_depth_test.o
+
+# target to build an object file
+tests/telemetry_depth_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/tests/telemetry_depth_test.cpp.o
+.PHONY : tests/telemetry_depth_test.cpp.o
+
+tests/telemetry_depth_test.i: tests/telemetry_depth_test.cpp.i
+.PHONY : tests/telemetry_depth_test.i
+
+# target to preprocess a source file
+tests/telemetry_depth_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/tests/telemetry_depth_test.cpp.i
+.PHONY : tests/telemetry_depth_test.cpp.i
+
+tests/telemetry_depth_test.s: tests/telemetry_depth_test.cpp.s
+.PHONY : tests/telemetry_depth_test.s
+
+# target to generate assembly for a file
+tests/telemetry_depth_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/telemetry_depth_test.dir/build.make CMakeFiles/telemetry_depth_test.dir/tests/telemetry_depth_test.cpp.s
+.PHONY : tests/telemetry_depth_test.cpp.s
+
 tests/telemetry_schema_test.o: tests/telemetry_schema_test.cpp.o
 .PHONY : tests/telemetry_schema_test.o
 
@@ -2660,6 +2771,7 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
+	@echo "... abi_conformance_test"
 	@echo "... anisotropic_contact_test"
 	@echo "... anisotropy_scene_test"
 	@echo "... apic_basis_test"
@@ -2673,6 +2785,7 @@ help:
 	@echo "... counters_smoke"
 	@echo "... dambreak_integration_test"
 	@echo "... determinism_ordering_test"
+	@echo "... determinism_strict_test"
 	@echo "... determinism_tests"
 	@echo "... foot_heave_test"
 	@echo "... hbp_clamp_policy_test"
@@ -2697,6 +2810,7 @@ help:
 	@echo "... presets_test"
 	@echo "... residency_hysteresis_test"
 	@echo "... residency_prefetch_test"
+	@echo "... telemetry_depth_test"
 	@echo "... telemetry_schema_test"
 	@echo "... validation_tests"
 	@echo "... wheel_heave_test"
@@ -2764,6 +2878,9 @@ help:
 	@echo "... core/src/zx_writeback.o"
 	@echo "... core/src/zx_writeback.i"
 	@echo "... core/src/zx_writeback.s"
+	@echo "... tests/abi_conformance_test.o"
+	@echo "... tests/abi_conformance_test.i"
+	@echo "... tests/abi_conformance_test.s"
 	@echo "... tests/abi_smoke.o"
 	@echo "... tests/abi_smoke.i"
 	@echo "... tests/abi_smoke.s"
@@ -2806,6 +2923,9 @@ help:
 	@echo "... tests/determinism_ordering_test.o"
 	@echo "... tests/determinism_ordering_test.i"
 	@echo "... tests/determinism_ordering_test.s"
+	@echo "... tests/determinism_strict_test.o"
+	@echo "... tests/determinism_strict_test.i"
+	@echo "... tests/determinism_strict_test.s"
 	@echo "... tests/determinism_tests.o"
 	@echo "... tests/determinism_tests.i"
 	@echo "... tests/determinism_tests.s"
@@ -2878,6 +2998,9 @@ help:
 	@echo "... tests/residency_prefetch_test.o"
 	@echo "... tests/residency_prefetch_test.i"
 	@echo "... tests/residency_prefetch_test.s"
+	@echo "... tests/telemetry_depth_test.o"
+	@echo "... tests/telemetry_depth_test.i"
+	@echo "... tests/telemetry_depth_test.s"
 	@echo "... tests/telemetry_schema_test.o"
 	@echo "... tests/telemetry_schema_test.i"
 	@echo "... tests/telemetry_schema_test.s"

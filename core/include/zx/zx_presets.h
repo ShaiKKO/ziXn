@@ -1,6 +1,8 @@
 /*!
 \file zx_presets.h
 \brief Authoring presets for materials: sands, gravel, soils, clays, snow.
+\author Colin Macritchie (Ripple Group, LLC)
+\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
 */
 
 #ifndef ZX_PRESETS_H
@@ -10,14 +12,19 @@
 #include "zx_abi.h"
 #include "zx_constitutive_ref.h"
 
-/* Returns number of available presets. */
+/** \brief Returns number of available presets. */
 ZX_API int ZX_CALL zx_preset_count(void);
 
-/* Returns preset name by index (stable). */
+/** \brief Returns preset name by index (stable). */
 ZX_API const char* ZX_CALL zx_preset_name(int index);
 
-/* Populate physics parameters for a preset by name. Returns 1 on success, 0 otherwise.
- * Any of the out pointers may be NULL if not needed. NorSand is provided for sands; others may be NULL.
+/** \brief Populate physics parameters for a preset by name.
+ * @param name Preset identifier
+ * @param out_elastic Out elastic params (may be NULL)
+ * @param out_mc Out Mohr–Coulomb params (may be NULL)
+ * @param out_ns_params Out NorSand params (may be NULL)
+ * @param out_ns_state Out NorSand state (may be NULL)
+ * @return 1 on success, 0 otherwise
  */
 ZX_API int ZX_CALL zx_preset_get(
     const char* name,

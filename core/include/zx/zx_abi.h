@@ -38,7 +38,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-/* ABI version 0x00010000 = 1.0.0 */
+/* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
 #define ZX_ABI_VERSION 0x00010000u
 
 typedef uint64_t zx_handle;
@@ -134,7 +134,11 @@ typedef struct zx_procs {
     const char* (ZX_CALL *error_string)(zx_status);
 } zx_procs;
 
-/* Single export to retrieve the proc table */
+/** \brief Retrieve the procedure table for the requested ABI version.
+ * @param abi_version Expected ABI version (e.g., ZX_ABI_VERSION)
+ * @param out_procs Output pointer to proc table (size must be set)
+ * @return ZX_OK on success; ZX_E_UNSUPPORTED if version mismatch; ZX_E_INVALID on bad args
+ */
 ZX_API zx_status ZX_CALL zxGetProcTable(uint32_t abi_version, zx_procs* out_procs);
 
 #ifdef __cplusplus

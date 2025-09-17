@@ -104,6 +104,12 @@ install(DIRECTORY core/include/ DESTINATION include)
 if(ZX_ENABLE_TESTS)
   include(CTest)
   enable_testing()
+  add_executable(abi_conformance_test
+    tests/abi_conformance_test.cpp
+  )
+  target_include_directories(abi_conformance_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(abi_conformance_test PRIVATE zx)
+  add_test(NAME abi_conformance_test COMMAND abi_conformance_test)
   add_executable(zx_abi_smoke
     tests/abi_smoke.cpp
   )
@@ -333,6 +339,17 @@ if(ZX_ENABLE_TESTS)
   target_link_libraries(determinism_tests PRIVATE zx)
   add_test(NAME determinism_tests COMMAND determinism_tests)
 
+  add_executable(determinism_strict_test
+    tests/determinism_strict_test.cpp
+  )
+  target_include_directories(determinism_strict_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(determinism_strict_test PRIVATE zx)
+  add_test(NAME determinism_strict_test COMMAND determinism_strict_test)
+
+  # Wrap the WSL determinism script as a CTest for convenience
+  add_test(NAME determinism_script
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wsl-determinism.sh --scene dambreak --seed 42 --fallback off)
+
   add_executable(checksum_parity_test
     tests/checksum_parity_test.cpp
   )
@@ -395,6 +412,13 @@ if(ZX_ENABLE_TESTS)
   target_include_directories(telemetry_schema_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
   target_link_libraries(telemetry_schema_test PRIVATE zx)
   add_test(NAME telemetry_schema_test COMMAND telemetry_schema_test)
+
+  add_executable(telemetry_depth_test
+    tests/telemetry_depth_test.cpp
+  )
+  target_include_directories(telemetry_depth_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(telemetry_depth_test PRIVATE zx)
+  add_test(NAME telemetry_depth_test COMMAND telemetry_depth_test)
 endif()
 
 

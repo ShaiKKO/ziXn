@@ -1,11 +1,20 @@
 /*!
  * \file zx_writeback.cpp
  * \brief CPU-side writeback helper implementing clip-safe displacement copy.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_writeback.h"
 #include <string.h>
 
+/** \brief Clip-safe displacement write into target at rect (x,y,w,h).
+ * @param src Source patch (size sw*sh)
+ * @param sw Source width
+ * @param sh Source height
+ * @param t Target surface (disp must not be NULL)
+ * @param r Destination rectangle (pixels)
+ */
 void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, zx_write_target* t, zx_rect r)
 {
     if (!src || !t || !t->disp || sw==0 || sh==0 || t->width==0 || t->height==0) return;

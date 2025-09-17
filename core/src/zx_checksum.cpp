@@ -1,6 +1,8 @@
 /*!
  * \file zx_checksum.cpp
  * \brief Stable 64-bit checksum for grid/node snapshots.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_checksum.h"
