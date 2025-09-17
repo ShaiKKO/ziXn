@@ -1069,6 +1069,32 @@ residency_prefetch_test/fast:
 .PHONY : residency_prefetch_test/fast
 
 #=============================================================================
+# Target rules for targets named residency_pinning_test
+
+# Build rule for target.
+residency_pinning_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 residency_pinning_test
+.PHONY : residency_pinning_test
+
+# fast build rule for target.
+residency_pinning_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_pinning_test.dir/build.make CMakeFiles/residency_pinning_test.dir/build
+.PHONY : residency_pinning_test/fast
+
+#=============================================================================
+# Target rules for targets named residency_churn_test
+
+# Build rule for target.
+residency_churn_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 residency_churn_test
+.PHONY : residency_churn_test
+
+# fast build rule for target.
+residency_churn_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_churn_test.dir/build.make CMakeFiles/residency_churn_test.dir/build
+.PHONY : residency_churn_test/fast
+
+#=============================================================================
 # Target rules for targets named hbp_mu_eff_test
 
 # Build rule for target.
@@ -2538,6 +2564,30 @@ tests/presets_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/presets_test.dir/build.make CMakeFiles/presets_test.dir/tests/presets_test.cpp.s
 .PHONY : tests/presets_test.cpp.s
 
+tests/residency_churn_test.o: tests/residency_churn_test.cpp.o
+.PHONY : tests/residency_churn_test.o
+
+# target to build an object file
+tests/residency_churn_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_churn_test.dir/build.make CMakeFiles/residency_churn_test.dir/tests/residency_churn_test.cpp.o
+.PHONY : tests/residency_churn_test.cpp.o
+
+tests/residency_churn_test.i: tests/residency_churn_test.cpp.i
+.PHONY : tests/residency_churn_test.i
+
+# target to preprocess a source file
+tests/residency_churn_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_churn_test.dir/build.make CMakeFiles/residency_churn_test.dir/tests/residency_churn_test.cpp.i
+.PHONY : tests/residency_churn_test.cpp.i
+
+tests/residency_churn_test.s: tests/residency_churn_test.cpp.s
+.PHONY : tests/residency_churn_test.s
+
+# target to generate assembly for a file
+tests/residency_churn_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_churn_test.dir/build.make CMakeFiles/residency_churn_test.dir/tests/residency_churn_test.cpp.s
+.PHONY : tests/residency_churn_test.cpp.s
+
 tests/residency_hysteresis_test.o: tests/residency_hysteresis_test.cpp.o
 .PHONY : tests/residency_hysteresis_test.o
 
@@ -2561,6 +2611,30 @@ tests/residency_hysteresis_test.s: tests/residency_hysteresis_test.cpp.s
 tests/residency_hysteresis_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_hysteresis_test.dir/build.make CMakeFiles/residency_hysteresis_test.dir/tests/residency_hysteresis_test.cpp.s
 .PHONY : tests/residency_hysteresis_test.cpp.s
+
+tests/residency_pinning_test.o: tests/residency_pinning_test.cpp.o
+.PHONY : tests/residency_pinning_test.o
+
+# target to build an object file
+tests/residency_pinning_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_pinning_test.dir/build.make CMakeFiles/residency_pinning_test.dir/tests/residency_pinning_test.cpp.o
+.PHONY : tests/residency_pinning_test.cpp.o
+
+tests/residency_pinning_test.i: tests/residency_pinning_test.cpp.i
+.PHONY : tests/residency_pinning_test.i
+
+# target to preprocess a source file
+tests/residency_pinning_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_pinning_test.dir/build.make CMakeFiles/residency_pinning_test.dir/tests/residency_pinning_test.cpp.i
+.PHONY : tests/residency_pinning_test.cpp.i
+
+tests/residency_pinning_test.s: tests/residency_pinning_test.cpp.s
+.PHONY : tests/residency_pinning_test.s
+
+# target to generate assembly for a file
+tests/residency_pinning_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/residency_pinning_test.dir/build.make CMakeFiles/residency_pinning_test.dir/tests/residency_pinning_test.cpp.s
+.PHONY : tests/residency_pinning_test.cpp.s
 
 tests/residency_prefetch_test.o: tests/residency_prefetch_test.cpp.o
 .PHONY : tests/residency_prefetch_test.o
@@ -2808,7 +2882,9 @@ help:
 	@echo "... norsand_test"
 	@echo "... pcg_smoke_test"
 	@echo "... presets_test"
+	@echo "... residency_churn_test"
 	@echo "... residency_hysteresis_test"
+	@echo "... residency_pinning_test"
 	@echo "... residency_prefetch_test"
 	@echo "... telemetry_depth_test"
 	@echo "... telemetry_schema_test"
@@ -2992,9 +3068,15 @@ help:
 	@echo "... tests/presets_test.o"
 	@echo "... tests/presets_test.i"
 	@echo "... tests/presets_test.s"
+	@echo "... tests/residency_churn_test.o"
+	@echo "... tests/residency_churn_test.i"
+	@echo "... tests/residency_churn_test.s"
 	@echo "... tests/residency_hysteresis_test.o"
 	@echo "... tests/residency_hysteresis_test.i"
 	@echo "... tests/residency_hysteresis_test.s"
+	@echo "... tests/residency_pinning_test.o"
+	@echo "... tests/residency_pinning_test.i"
+	@echo "... tests/residency_pinning_test.s"
 	@echo "... tests/residency_prefetch_test.o"
 	@echo "... tests/residency_prefetch_test.i"
 	@echo "... tests/residency_prefetch_test.s"
