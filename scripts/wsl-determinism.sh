@@ -11,18 +11,12 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${ROOT_DIR}/wsl-build"
-# Default multi-config (Windows/MSVC) uses configuration subfolder; single-config (Makefiles/Ninja) does not.
-CONFIG="${CONFIG:-Release}"
-# Detect candidate binary locations cross-platform
-BIN_CANDIDATES=(
-  "${BUILD_DIR}/zx_cli"
-  "${BUILD_DIR}/${CONFIG}/zx_cli.exe"
-  "${BUILD_DIR}/zx_cli.exe"
-)
-BIN=""
-for c in "${BIN_CANDIDATES[@]}"; do
-  if [ -f "$c" ]; then BIN="$c"; break; fi
-done
+# Prefer Windows .exe on Windows runners; else ELF
+if [[ "${OS:-}" == "Windows_NT" ]]; then
+  BIN="${BUILD_DIR}/Release/zx_cli.exe"
+else
+  BIN="${BUILD_DIR}/zx_cli"
+fi
 OUT_A="${BUILD_DIR}/telem_a.json"
 OUT_B="${BUILD_DIR}/telem_b.json"
 SCENE="dambreak"
@@ -38,20 +32,21 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Ensure binary exists; if not, configure and build, passing --config for multi-config generators
-if [[ -z "${BIN}" ]]; then
+if [[ ! -x "${BIN}" ]]; then
   echo "zx_cli not found, configuring & building fresh..." >&2
   rm -rf "${BUILD_DIR}"
   cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
-  cmake --build "${BUILD_DIR}" --config "${CONFIG}" -j
-  # Re-resolve after build
-  for c in "${BIN_CANDIDATES[@]}"; do
-    if [ -f "$c" ]; then BIN="$c"; break; fi
-  done
+  if [[ "${OS:-}" == "Windows_NT" ]]; then
+    cmake --build "${BUILD_DIR}" --config Release -j
+    BIN="${BUILD_DIR}/Release/zx_cli.exe"
+  else
+    cmake --build "${BUILD_DIR}" -j
+    BIN="${BUILD_DIR}/zx_cli"
+  fi
 fi
 
-if [[ -z "${BIN}" ]]; then
-  echo "ERROR: zx_cli not found after build in ${BUILD_DIR} (checked ${BIN_CANDIDATES[*]})" >&2
+if [[ ! -x "${BIN}" ]]; then
+  echo "ERROR: zx_cli not found at ${BIN}" >&2
   exit 1
 fi
 
