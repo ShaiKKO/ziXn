@@ -81,10 +81,14 @@ jobs:
           fi
 
       - name: Lint (clang-tidy)
+        shell: bash
         run: |
+          set -euo pipefail
           clang-tidy --version
           cmake --build build --config Release --target zx
-          clang-tidy $(git ls-files 'core/src/*.cpp') -- -Icore/include
+          files=$(git ls-files 'core/src/*.cpp')
+          # Provide compile flags so tidy can parse MSVC projects correctly
+          clang-tidy $files -- -Icore/include -std=c++17 -DZX_BUILD
 
       - name: Test
         run: |

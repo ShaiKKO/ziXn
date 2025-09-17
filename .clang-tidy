@@ -9,7 +9,7 @@ Checks: >
   clang-analyzer-*
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'core/.*'
-; Removed unsupported key for Windows clang-tidy
+# Removed unsupported key for Windows clang-tidy
 FormatStyle:     file
 CheckOptions:
   - { key: readability-identifier-naming.VariableCase, value: camelBack }
