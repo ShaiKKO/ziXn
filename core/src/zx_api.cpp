@@ -122,7 +122,7 @@ static zx_status ZX_CALL create_rig_stub(zx_context, const zx_rig_desc* rd, zx_r
  * This is a no-op placeholder: the provided rig token is accepted but ignored,
  * and no resources are freed or modified.
  *
- * @param /*rig*/ The rig token to destroy (ignored).
+ * @param rig The rig token to destroy (ignored).
  */
 static void ZX_CALL destroy_rig_stub(zx_rig) {}
 /**

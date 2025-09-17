@@ -16,6 +16,8 @@ struct zx_residency {
     zx_residency_opts opts;
     std::unordered_map<long long, TileState> states;
     uint32_t active_count=0;
+    std::unordered_map<long long, bool> pinned;
+    uint32_t last_enters=0, last_exits=0;
 };
 
 static inline long long key(int x,int y,int z){ return ( ( (long long)(unsigned int)x) << 42) ^ ( ((long long)(unsigned int)y) << 21) ^ (long long)(unsigned int)z; }
@@ -87,8 +89,8 @@ ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
                                       uint32_t* prefetch_count)
 {
     if (!ctx) return;
-    if (enters) *enters=0;
-    if (exits) *exits=0;
+    ctx->last_enters = 0; ctx->last_exits = 0;
+    if (enters) *enters=0; if (exits) *exits=0;
     if (prefetch_count) *prefetch_count=0;
     const int R = (int)active_radius;
     // Mark hot tiles within radius
@@ -96,7 +98,7 @@ ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
         long long k = key(cx+x, cy+y, cz+z);
         TileState& s = ctx->states[k];
         s.hot_frames += 1; s.cold_frames = 0;
-        if (!s.active && s.hot_frames >= (int)ctx->opts.enter_frames) { s.active=true; if (enters) (*enters)++; ctx->active_count++; }
+        if (!s.active && s.hot_frames >= (int)ctx->opts.enter_frames) { s.active=true; ctx->last_enters++; if (enters) (*enters)++; ctx->active_count++; }
     }
     // Cool everything else
     std::vector<long long> to_erase;
@@ -105,14 +107,44 @@ ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
         long long k = it.first; TileState& s = it.second;
         // We detect untouched by checking if hot_frames advanced this tick; we can't directly know, so we keep a decay model:
         if (s.hot_frames > 0) s.hot_frames -= 1; else s.cold_frames += 1;
-        if (s.active && s.cold_frames >= (int)ctx->opts.exit_frames) { s.active=false; if (exits) (*exits)++; if (ctx->active_count>0) ctx->active_count--; }
+        if (s.active && s.cold_frames >= (int)ctx->opts.exit_frames) { s.active=false; ctx->last_exits++; if (exits) (*exits)++; if (ctx->active_count>0) ctx->active_count--; }
         if (!s.active && s.cold_frames > (int)ctx->opts.exit_frames*2) to_erase.push_back(k);
     }
     for (auto k : to_erase) ctx->states.erase(k);
 
+    // Force pinned tiles to remain active
+    for (const auto& kv : ctx->pinned){
+        long long k = kv.first; TileState& s = ctx->states[k];
+        if (!s.active) { s.active = true; ctx->active_count++; }
+        s.hot_frames = std::max(s.hot_frames, (int)ctx->opts.enter_frames);
+        s.cold_frames = 0;
+    }
+
     if (prefetch_count) {
         const int PR = (int)ctx->opts.prefetch_rings; *prefetch_count = (uint32_t)((2*(R+PR)+1)*(2*(R+PR)+1)*(2*(R+PR)+1) - (2*R+1)*(2*R+1)*(2*R+1));
     }
+}
+
+ZX_API void ZX_CALL zx_residency_pin_box(zx_residency* ctx,
+                                         int x0, int y0, int z0,
+                                         int x1, int y1, int z1){
+    if (!ctx) return;
+    if (x0>x1) std::swap(x0,x1); if (y0>y1) std::swap(y0,y1); if (z0>z1) std::swap(z0,z1);
+    for (int z=z0; z<=z1; ++z) for (int y=y0; y<=y1; ++y) for (int x=x0; x<=x1; ++x){ ctx->pinned[key(x,y,z)] = true; }
+}
+
+ZX_API void ZX_CALL zx_residency_unpin_all(zx_residency* ctx){ if (!ctx) return; ctx->pinned.clear(); }
+
+ZX_API void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings){ if (!ctx) return; ctx->opts.prefetch_rings = rings; }
+
+ZX_API void ZX_CALL zx_residency_get_last_churn(const zx_residency* ctx,
+                                                uint32_t* enters,
+                                                uint32_t* exits,
+                                                uint32_t* churn){
+    if (!ctx) { if (enters) *enters=0; if (exits) *exits=0; if (churn) *churn=0; return; }
+    if (enters) *enters = ctx->last_enters;
+    if (exits) *exits = ctx->last_exits;
+    if (churn) *churn = ctx->last_enters + ctx->last_exits;
 }
 
 /**

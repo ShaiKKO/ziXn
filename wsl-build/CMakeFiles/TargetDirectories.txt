@@ -67,6 +67,8 @@
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/determinism_ordering_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/residency_hysteresis_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/residency_prefetch_test.dir
+/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/residency_pinning_test.dir
+/mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/residency_churn_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/hbp_mu_eff_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/hbp_viscous_update_test.dir
 /mnt/c/Users/cisco/Desktop/dev/research/ziXn/wsl-build/CMakeFiles/hbp_clamp_policy_test.dir

@@ -52,6 +52,25 @@ ZX_API void ZX_CALL zx_residency_tick(zx_residency* ctx,
 /** \brief Get current active tile count (0 if ctx==NULL). */
 ZX_API uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx);
 
+/** \brief Pin an axis-aligned box of tiles so they remain active regardless of hysteresis.
+ * Coordinates are inclusive; caller may pass x0>x1 etc.; the implementation will normalize.
+ */
+ZX_API void ZX_CALL zx_residency_pin_box(zx_residency* ctx,
+                                         int x0, int y0, int z0,
+                                         int x1, int y1, int z1);
+
+/** \brief Clear all pinned regions. */
+ZX_API void ZX_CALL zx_residency_unpin_all(zx_residency* ctx);
+
+/** \brief Update prefetch rings at runtime. */
+ZX_API void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings);
+
+/** \brief Retrieve last-tick churn stats (enters/exits and their sum). */
+ZX_API void ZX_CALL zx_residency_get_last_churn(const zx_residency* ctx,
+                                                uint32_t* enters,
+                                                uint32_t* exits,
+                                                uint32_t* churn);
+
 #ifdef __cplusplus
 }
 #endif

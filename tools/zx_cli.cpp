@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
     int deterministic = 0; unsigned long long seed = 0ULL;
     const char* fallback_mode = "off"; // off|on|auto
     zx_lod_fallback_policy fbp{1000000u, 1e9f, 2u, 2u, 3u};
+    int prefetch_rings_cli = -1; int pin_args[6]; int have_pin = 0;
     int bench_lod = 0; int bench_up2 = 0; int bench_size = 1024; int bench_iters = 100; const char* simd_mode = "auto";
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--mode") == 0 && i+1 < argc) { mode = argv[++i]; }
@@ -110,6 +111,10 @@ int main(int argc, char** argv) {
             bench_iters = std::atoi(argv[++i]);
         } else if (std::strcmp(argv[i], "--simd") == 0 && i+1 < argc) {
             simd_mode = argv[++i];
+        } else if (std::strcmp(argv[i], "--prefetch-rings") == 0 && i+1 < argc) {
+            prefetch_rings_cli = std::atoi(argv[++i]);
+        } else if (std::strcmp(argv[i], "--pin-box") == 0 && i+6 < argc) {
+            for (int k=0;k<6;++k) pin_args[k] = std::atoi(argv[++i]); have_pin = 1;
         }
     }
     if (!mode) { print_usage(); return 1; }
@@ -231,7 +236,8 @@ int main(int argc, char** argv) {
             zx_telemetry_set_counter(telem, "fallback_eval_ms", (float)fb_ms);
             // Residency metrics and optional fallback counters
             {
-                zx_residency_opts ro{1,2,1}; zx_residency* rez = zx_residency_create(&ro);
+                zx_residency_opts ro{1,2,1}; if (prefetch_rings_cli>=0) ro.prefetch_rings = (uint32_t)prefetch_rings_cli; zx_residency* rez = zx_residency_create(&ro);
+                if (have_pin) zx_residency_pin_box(rez, pin_args[0],pin_args[1],pin_args[2], pin_args[3],pin_args[4],pin_args[5]);
                 zx_lod_fallback_state fbs; zx_lod_fallback_init(&fbs);
                 uint32_t active_frames=0, churn_en=0, churn_ex=0, pf_sum=0, active_max=0, active_sum=0;
                 for (uint32_t s=0; s<p.steps; ++s){
@@ -270,7 +276,8 @@ int main(int argc, char** argv) {
             double fb_ms = std::chrono::duration<double, std::milli>(t_fb_end - t_fb_begin).count();
             zx_telemetry_set_counter(telem, "fallback_eval_ms", (float)fb_ms);
             {
-                zx_residency_opts ro{1,2,1}; zx_residency* rez = zx_residency_create(&ro);
+                zx_residency_opts ro{1,2,1}; if (prefetch_rings_cli>=0) ro.prefetch_rings = (uint32_t)prefetch_rings_cli; zx_residency* rez = zx_residency_create(&ro);
+                if (have_pin) zx_residency_pin_box(rez, pin_args[0],pin_args[1],pin_args[2], pin_args[3],pin_args[4],pin_args[5]);
                 zx_lod_fallback_state fbs; zx_lod_fallback_init(&fbs);
                 uint32_t active_frames=0, churn_en=0, churn_ex=0, pf_sum=0, active_max=0, active_sum=0;
                 for (uint32_t s=0; s<p.steps; ++s){ uint32_t en=0, ex=0, pf=0; zx_residency_tick(rez,(int)s,0,0,0,&en,&ex,&pf);
@@ -304,7 +311,8 @@ int main(int argc, char** argv) {
             double fb_ms = std::chrono::duration<double, std::milli>(t_fb_end - t_fb_begin).count();
             zx_telemetry_set_counter(telem, "fallback_eval_ms", (float)fb_ms);
             {
-                zx_residency_opts ro{1,2,1}; zx_residency* rez = zx_residency_create(&ro);
+                zx_residency_opts ro{1,2,1}; if (prefetch_rings_cli>=0) ro.prefetch_rings = (uint32_t)prefetch_rings_cli; zx_residency* rez = zx_residency_create(&ro);
+                if (have_pin) zx_residency_pin_box(rez, pin_args[0],pin_args[1],pin_args[2], pin_args[3],pin_args[4],pin_args[5]);
                 zx_lod_fallback_state fbs; zx_lod_fallback_init(&fbs);
                 uint32_t active_frames=0, churn_en=0, churn_ex=0, pf_sum=0, active_max=0, active_sum=0;
                 for (uint32_t s=0; s<p.steps; ++s){ uint32_t en=0, ex=0, pf=0; zx_residency_tick(rez,(int)s,0,0,0,&en,&ex,&pf);
