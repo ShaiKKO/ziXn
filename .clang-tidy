@@ -15,22 +15,24 @@ Checks: >
   -performance-enum-size,
   -readability-identifier-length
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'core/.*'
+HeaderFilterRegex: 'core/(include|src)/.*'
 # Removed unsupported key for Windows clang-tidy
 FormatStyle:     file
 CheckOptions:
   - { key: readability-identifier-naming.FunctionCase, value: lower_case }
+  - { key: readability-identifier-naming.MethodCase, value: lower_case }
   - { key: readability-identifier-naming.VariableCase, value: lower_case }
-  - { key: readability-identifier-naming.ClassCase, value: lower_case }
-  - { key: readability-identifier-naming.StructCase, value: lower_case }
-  - { key: readability-identifier-naming.EnumCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.ClassCase, value: CamelCase }
+  - { key: readability-identifier-naming.StructCase, value: CamelCase }
+  - { key: readability-identifier-naming.EnumCase, value: CamelCase }
   - { key: readability-identifier-naming.EnumConstantCase, value: UPPER_CASE }
-  - { key: readability-identifier-naming.TypeAliasCase, value: lower_case }
+  - { key: readability-identifier-naming.TypeAliasCase, value: CamelCase }
   - { key: readability-identifier-naming.TypedefCase, value: lower_case }
   - { key: readability-identifier-naming.IgnoreMainLikeFunctions, value: true }
   - { key: readability-identifier-naming.IgnoreFailedSplit, value: true }
   - { key: readability-identifier-naming.AllowedFunctionNames, value: '^zx_.*$' }
-  - { key: readability-identifier-naming.AllowedTypeNames, value: '^zx_.*$' }
+  - { key: readability-identifier-naming.AllowedTypeNames, value: '^(zx_.*|ZX_.*)$' }
+  - { key: readability-identifier-naming.IgnoredRegexp, value: '^(zx_.*|ZX_.*)$' }
   - { key: readability-identifier-length.MinimumParameterNameLength, value: '0' }
   - { key: readability-identifier-length.MinimumVariableNameLength, value: '0' }
   - { key: readability-identifier-length.IgnoredParameterNames, value: '^(x|y|z|w|h|dt|mu|nu|ns|st|mc|ep|dp|p|r|g|i|j|k|cx|cy|cz)$' }
