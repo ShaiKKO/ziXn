@@ -378,6 +378,20 @@ if(ZX_ENABLE_TESTS)
   target_link_libraries(residency_prefetch_test PRIVATE zx)
   add_test(NAME residency_prefetch_test COMMAND residency_prefetch_test)
 
+  add_executable(residency_pinning_test
+    tests/residency_pinning_test.cpp
+  )
+  target_include_directories(residency_pinning_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_pinning_test PRIVATE zx)
+  add_test(NAME residency_pinning_test COMMAND residency_pinning_test)
+
+  add_executable(residency_churn_test
+    tests/residency_churn_test.cpp
+  )
+  target_include_directories(residency_churn_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_churn_test PRIVATE zx)
+  add_test(NAME residency_churn_test COMMAND residency_churn_test)
+
   add_executable(hbp_mu_eff_test
     tests/hbp_mu_eff_test.cpp
   )

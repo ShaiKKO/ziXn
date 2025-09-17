@@ -117,6 +117,8 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/determinism_ordering_test.dir/DependInfo.cmake"
   "CMakeFiles/residency_hysteresis_test.dir/DependInfo.cmake"
   "CMakeFiles/residency_prefetch_test.dir/DependInfo.cmake"
+  "CMakeFiles/residency_pinning_test.dir/DependInfo.cmake"
+  "CMakeFiles/residency_churn_test.dir/DependInfo.cmake"
   "CMakeFiles/hbp_mu_eff_test.dir/DependInfo.cmake"
   "CMakeFiles/hbp_viscous_update_test.dir/DependInfo.cmake"
   "CMakeFiles/hbp_clamp_policy_test.dir/DependInfo.cmake"
