@@ -1,3 +1,5 @@
 ---
+name: Engineering Standards (ziXn)
+description: High-level quality bar, docs/licenses, Doxygen headers, Windows/MSVC C++17, CI rules. Referenced by PRs and code edits.
 alwaysApply: true
 ---

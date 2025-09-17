@@ -1,19 +1,18 @@
 ---
-alwaysApply: false
+name: MCP Usage (ziXn)
+description: Advanced MCP context passing and thought framework for ziXn; auto-applied with objectives/constraints/acceptance/risks scaffolds, linking, and tags.
+alwaysApply: true
 ---
+
 # MCP Usage: Advanced Context Passing for ziXn
 
-- Server: enhanced-sequential-thinking-server
-- Goals:
-  - Provide rich, structured context (objective, constraints, acceptance, risks).
-  - Tag thoughts with domain/axis (e.g., windows, ci, tidy, abi, perf, testing).
-  - Link thoughts via IDs (builds_on, supports, contradicts) for traceability.
-  - Use analysis  evaluation  synthesis  conclusion cadence per task.
+This rule standardizes how we call the FastMCP 2.0 server for ziXn by enforcing a compact context scaffold, explicit thought types/strategies, linking, tags, and validation flags.
 
 ## Thought payload template
-```
+
+```json
 {
-  "self": {"agent": "ziXn-cursor-assistant", "session_id": "<task-id>"},
+  "self": { "agent": "ziXn-cursor-assistant", "session_id": "<task-id>" },
   "input": {
     "thought": "<short, action-oriented content>",
     "thought_type": "analysis|evaluation|synthesis|conclusion|question|assumption|counterargument|metacognition",
@@ -21,7 +20,7 @@ alwaysApply: false
     "builds_on_thoughts": ["<prior_thought_ids>"],
     "supports_thoughts": ["<ids>"],
     "contradicts_thoughts": ["<ids>"],
-    "tags": ["windows","ci","tidy","abi"],
+    "tags": ["windows", "ci", "tidy", "abi"],
     "confidence": 4,
     "response_language": "en",
     "request_analysis": true,
@@ -31,86 +30,36 @@ alwaysApply: false
 ```
 
 ## Context scaffold per call
-- Objective: 12 lines exact outcome.
-- Constraints: env/toolchain/perf/security/budget.
-- Acceptance criteria: measurable pass/fail.
-- Risks & mitigations: top 23.
-- Evidence: link logs/benchmarks.
-- Validation method: tests/metrics/thresholds.
+
+- Objective: 1–2 lines stating the exact outcome.
+- Constraints: env/toolchain/perf/security/budgets.
+- Acceptance criteria: measurable pass/fail (tests/benchmarks/outputs).
+- Risks & mitigations: top 2–3 with handling.
+- Evidence: links to logs/benchmarks/specs.
+- Validation method: tests (names), metrics (units/thresholds), reproducibility (seed/env).
 
 ## Usage patterns
+
 - Planning (analysis): summarize goal, dependencies, gate criteria.
-- Tradeoff (evaluation): options A/B with quick pros/cons; choose one.
-- Execution (synthesis): list concrete edits/commands you will perform next.
-- Wrap-up (conclusion): results vs acceptance, follow-ups.
+- Tradeoff (evaluation): alternatives with quick pros/cons; select one.
+- Execution (synthesis): list concrete edits/commands to perform next.
+- Wrap-up (conclusion): results vs acceptance, follow-ups and next actions.
 
 ## Linking thoughts
-- Use `builds_on_thoughts` to form a chain per TODO id (e.g., "tidy-fix-residency").
-- Tag consistently from controlled vocabulary: [windows, ci, tidy, abi, gpu, perf, tests].
+
+- Use `builds_on_thoughts` to form a chain per TODO id (e.g., `tidy-fix-residency`).
+- Tag from a controlled vocabulary: `windows`, `ci`, `tidy`, `abi`, `gpu`, `perf`, `tests`.
 
 ## Parallelization
-- Batch independent analyses in separate thought calls (e.g., residency vs telemetry), then synthesize a combined plan referencing both thought IDs.
+
+- Batch independent analyses in separate thought calls, then synthesize a combined plan referencing those thought IDs.
 
 ## Examples
-- Tidy fix loop: create `analysis` for zx_residency, `evaluation` choose braces+nullptr, `synthesis` patch lines 109181 and 217247, `conclusion` assert Lint passes.
-- Determinism change: analysis objective, constraints (MSVC C++17), acceptance (byte-identical JSON), risks (timer variance) and mitigation (omit timings when deterministic).
+
+- Tidy fix loop: create `analysis` for `zx_residency`, `evaluation` choose braces + explicit nullptr checks, `synthesis` patch concrete lines, `conclusion` assert lints/tests pass.
+- Determinism: `analysis` objective; constraints (MSVC C++17); acceptance (byte-identical JSON); risks (timer variance) mitigated by omitting timings when deterministic.
 
 ## Repro guidance
-- Capture commands executed and key env vars in each conclusion block.
-- Record run IDs/URLs from GitHub Actions and ctest regex used.# MCP Usage: Advanced Context Passing for ziXn
 
-- Server: enhanced-sequential-thinking-server
-- Goals:
-  - Provide rich, structured context (objective, constraints, acceptance, risks).
-  - Tag thoughts with domain/axis (e.g., windows, ci, tidy, abi, perf, testing).
-  - Link thoughts via IDs (builds_on, supports, contradicts) for traceability.
-  - Use analysis  evaluation  synthesis  conclusion cadence per task.
-
-## Thought payload template
-```
-{
-  "self": {"agent": "ziXn-cursor-assistant", "session_id": "<task-id>"},
-  "input": {
-    "thought": "<short, action-oriented content>",
-    "thought_type": "analysis|evaluation|synthesis|conclusion|question|assumption|counterargument|metacognition",
-    "strategy": "systematic|strategic|analytical|critical|integrative",
-    "builds_on_thoughts": ["<prior_thought_ids>"],
-    "supports_thoughts": ["<ids>"],
-    "contradicts_thoughts": ["<ids>"],
-    "tags": ["windows","ci","tidy","abi"],
-    "confidence": 4,
-    "response_language": "en",
-    "request_analysis": true,
-    "request_validation": true
-  }
-}
-```
-
-## Context scaffold per call
-- Objective: 12 lines exact outcome.
-- Constraints: env/toolchain/perf/security/budget.
-- Acceptance criteria: measurable pass/fail.
-- Risks & mitigations: top 23.
-- Evidence: link logs/benchmarks.
-- Validation method: tests/metrics/thresholds.
-
-## Usage patterns
-- Planning (analysis): summarize goal, dependencies, gate criteria.
-- Tradeoff (evaluation): options A/B with quick pros/cons; choose one.
-- Execution (synthesis): list concrete edits/commands you will perform next.
-- Wrap-up (conclusion): results vs acceptance, follow-ups.
-
-## Linking thoughts
-- Use `builds_on_thoughts` to form a chain per TODO id (e.g., "tidy-fix-residency").
-- Tag consistently from controlled vocabulary: [windows, ci, tidy, abi, gpu, perf, tests].
-
-## Parallelization
-- Batch independent analyses in separate thought calls (e.g., residency vs telemetry), then synthesize a combined plan referencing both thought IDs.
-
-## Examples
-- Tidy fix loop: create `analysis` for zx_residency, `evaluation` choose braces+nullptr, `synthesis` patch lines 109181 and 217247, `conclusion` assert Lint passes.
-- Determinism change: analysis objective, constraints (MSVC C++17), acceptance (byte-identical JSON), risks (timer variance) and mitigation (omit timings when deterministic).
-
-## Repro guidance
-- Capture commands executed and key env vars in each conclusion block.
-- Record run IDs/URLs from GitHub Actions and ctest regex used.
+- Capture commands and key env vars in each conclusion block.
+- Record GitHub Actions run URLs and the exact `ctest` regex used.
