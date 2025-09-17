@@ -7,7 +7,7 @@
 
 #include "zx/zx_writeback.h"
 #include <algorithm>
-#include <string.h>
+#include <cstring>
 
 /**
  * @brief Copy a source displacement patch into a target displacement surface with clipping.
@@ -29,12 +29,15 @@
 void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, zx_write_target* t,
                                     zx_rect r)
 {
-  if (!src || !t || !t->disp || sw == 0 || sh == 0 || t->width == 0 || t->height == 0)
+  if (src == nullptr || t == nullptr || t->disp == nullptr || sw == 0 || sh == 0 || t->width == 0 ||
+      t->height == 0)
+  {
     return;
-  int32_t x0 = r.x;
-  int32_t y0 = r.y;
-  int32_t w  = (int32_t) r.w;
-  int32_t h  = (int32_t) r.h;
+  }
+  auto x0 = r.x;
+  auto y0 = r.y;
+  auto w  = r.w;
+  auto h  = r.h;
   if (w <= 0 || h <= 0)
   {
     return;
@@ -46,7 +49,9 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
   int32_t cx1 = x1 > (int32_t) t->width ? (int32_t) t->width : x1;
   int32_t cy1 = y1 > (int32_t) t->height ? (int32_t) t->height : y1;
   if (cx1 <= cx0 || cy1 <= cy0)
+  {
     return;
+  }
   const uint32_t dst_pitch = t->row_pitch_bytes / sizeof(float);
   for (int32_t y = cy0; y < cy1; ++y)
   {
@@ -55,8 +60,8 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
     {
       continue;
     }
-    float* dst_row       = t->disp + static_cast<size_t>(y) * static_cast<size_t>(dst_pitch);
-    const float* src_row = src + static_cast<size_t>(sy) * static_cast<size_t>(sw);
+    float* dst_row       = t->disp + (static_cast<size_t>(y) * static_cast<size_t>(dst_pitch));
+    const float* src_row = src + (static_cast<size_t>(sy) * static_cast<size_t>(sw));
     int32_t sx0          = cx0 - x0;
     sx0                  = std::max(sx0, 0);
     if (static_cast<unsigned>(sx0) >= sw)
@@ -69,6 +74,6 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
       sx1 = static_cast<int32_t>(sw);
     }
     auto n = static_cast<uint32_t>(sx1 - sx0);
-    memcpy(&dst_row[cx0], &src_row[sx0], n * sizeof(float));
+    std::memcpy(&dst_row[cx0], &src_row[sx0], n * sizeof(float));
   }
 }

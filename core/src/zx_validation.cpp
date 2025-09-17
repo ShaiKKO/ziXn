@@ -6,8 +6,8 @@
  */
 
 #include "zx/zx_validation.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 /**
  * @brief Compute the critical slope angle theta_c (radians) from material friction.
@@ -22,8 +22,8 @@
  */
 float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
 {
-    // θ_c ≈ φ for cohesionless; if cohesion present, this is a lower bound.
-    return mc->friction_deg * 3.14159265358979323846f / 180.0f;
+  // θ_c ≈ φ for cohesionless; if cohesion present, this is a lower bound.
+  return mc->friction_deg * 3.14159265358979323846F / 180.0F;
 }
 
 /**
@@ -45,13 +45,11 @@ float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
  */
 float zx_validation_column_collapse_runout_ratio(float friction_deg, float ar)
 {
-    // Empirical monotone: larger φ -> shorter runout; larger aspect ratio -> longer.
-    // Use a simple proxy L/H ≈ a * ar^b / tan(φ), with clamps for stability.
-    const float a = 1.2f, b = 0.8f;
-    const float phi = friction_deg * 3.14159265358979323846f / 180.0f;
-    const float t = std::max(0.2f, std::tan(std::max(5.0f*3.14159265358979323846f/180.0f, phi)));
-    const float ratio = a * std::pow(std::max(0.2f, ar), b) / t;
-    return ratio;
+  // Empirical monotone: larger φ -> shorter runout; larger aspect ratio -> longer.
+  // Use a simple proxy L/H ≈ a * ar^b / tan(φ), with clamps for stability.
+  const float a = 1.2F, b = 0.8F;
+  const float phi = friction_deg * 3.14159265358979323846F / 180.0F;
+  const float t = std::max(0.2F, std::tan(std::max(5.0F * 3.14159265358979323846F / 180.0F, phi)));
+  const float ratio = a * std::pow(std::max(0.2F, ar), b) / t;
+  return ratio;
 }
-
-
