@@ -89,8 +89,10 @@ extern "C"
    */
   void ZX_CALL zx_telemetry_begin_step(zx_telemetry* ctx, const char* scene, uint32_t step_index)
   {
-    if (!ctx)
+    if (ctx == nullptr)
+    {
       return;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     ctx->current       = zx_sample{};
     ctx->current.scene = (scene != nullptr) ? scene : "";
@@ -111,10 +113,14 @@ extern "C"
   void ZX_CALL zx_telemetry_set_counter(zx_telemetry* ctx, const char* name, float value)
   {
     if ((ctx == nullptr) || (name == nullptr))
+    {
       return;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     if (!ctx->in_step)
+    {
       return;
+    }
     ctx->current.counters.emplace_back(std::string(name), value);
   }
 
@@ -131,12 +137,18 @@ extern "C"
   void ZX_CALL zx_telemetry_end_step(zx_telemetry* ctx)
   {
     if (ctx == nullptr)
+    {
       return;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     if (!ctx->in_step)
+    {
       return;
+    }
     if (ctx->samples.size() >= ctx->capacity)
+    {
       ctx->samples.erase(ctx->samples.begin());
+    }
     ctx->samples.push_back(std::move(ctx->current));
     ctx->in_step = false;
   }
@@ -157,7 +169,9 @@ extern "C"
                                       const char* code, const char* message)
   {
     if ((ctx == nullptr) || (code == nullptr) || (message == nullptr))
+    {
       return;
+    }
     std::lock_guard<std::mutex> lock(ctx->mtx);
     zx_telemetry::err e;
     e.scene = (scene != nullptr) ? scene : "";

@@ -11,10 +11,10 @@
 
 namespace
 {
-  constexpr float ZX_PI        = 3.14159265358979323846F;  // NOLINT(readability-magic-numbers)
-  constexpr float ZX_DEG2RAD   = ZX_PI / 180.0F;           // NOLINT(readability-magic-numbers)
-  constexpr float ZX_TAN_FLOOR = 0.2F;                     // NOLINT(readability-magic-numbers)
-  constexpr float ZX_MIN_DEG   = 5.0F;                     // NOLINT(readability-magic-numbers)
+  constexpr float zx_pi        = 3.14159265358979323846F;  // NOLINT(readability-magic-numbers)
+  constexpr float zx_deg2rad   = zx_pi / 180.0F;           // NOLINT(readability-magic-numbers)
+  constexpr float zx_tan_floor = 0.2F;                     // NOLINT(readability-magic-numbers)
+  constexpr float zx_min_deg   = 5.0F;                     // NOLINT(readability-magic-numbers)
 }  // namespace
 
 /**
@@ -31,7 +31,7 @@ namespace
 float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
 {
   // θ_c ≈ φ for cohesionless; if cohesion present, this is a lower bound.
-  return mc->friction_deg * ZX_DEG2RAD;
+  return mc->friction_deg * zx_deg2rad;
 }
 
 /**
@@ -58,8 +58,8 @@ float zx_validation_column_collapse_runout_ratio(
   // Use a simple proxy L/H ≈ a * ar^b / tan(φ), with clamps for stability.
   const float a     = 1.2F;
   const float b     = 0.8F;
-  const float phi   = friction_deg * ZX_DEG2RAD;
-  const float t     = std::max(ZX_TAN_FLOOR, std::tan(std::max(ZX_MIN_DEG * ZX_DEG2RAD, phi)));
-  const float ratio = a * std::pow(std::max(ZX_TAN_FLOOR, ar), b) / t;
+  const float phi   = friction_deg * zx_deg2rad;
+  const float t     = std::max(zx_tan_floor, std::tan(std::max(zx_min_deg * zx_deg2rad, phi)));
+  const float ratio = a * std::pow(std::max(zx_tan_floor, ar), b) / t;
   return ratio;
 }
