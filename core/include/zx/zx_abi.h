@@ -40,10 +40,10 @@ extern "C"
 #include <stdint.h>
 
   /* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
-  static constexpr uint32_t ZX_ABI_VERSION = 0x00010000u;  // NOLINT(cppcoreguidelines-macro-usage)
+  static constexpr uint32_t zx_abi_version = 0x00010000U;  // NOLINT(cppcoreguidelines-macro-usage)
 
   /* Common fixed sizes */
-  static constexpr size_t ZX_MAT3_SIZE = 9u;
+  static constexpr size_t zx_mat3_size = 9U;
 
   typedef uint64_t zx_handle;
   typedef zx_handle zx_context;
@@ -69,7 +69,7 @@ extern "C"
   } zx_vec3;
   typedef struct zx_mat3
   {
-    float m[ZX_MAT3_SIZE];
+    float m[zx_mat3_size];
   } zx_mat3;
 
   typedef struct zx_context_desc
@@ -183,7 +183,9 @@ extern "C"
    * @param out_procs Output pointer to proc table (size must be set)
    * @return ZX_OK on success; ZX_E_UNSUPPORTED if version mismatch; ZX_E_INVALID on bad args
    */
-  ZX_API zx_status ZX_CALL zxGetProcTable(uint32_t abi_version, zx_procs* out_procs);
+  ZX_API zx_status ZX_CALL zx_get_proc_table(uint32_t abi_version, zx_procs* out_procs);
+/* Back-compat alias */
+#define zxGetProcTable zx_get_proc_table
 
 #ifdef __cplusplus
 } /* extern "C" */

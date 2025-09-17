@@ -302,16 +302,16 @@ static const char* ZX_CALL error_string_impl(zx_status s)
  *         ZX_E_INVALID if out_procs is null.
  *         ZX_E_UNSUPPORTED if abi_version does not match ZX_ABI_VERSION.
  */
-zx_status ZX_CALL zxGetProcTable(uint32_t abi_version, zx_procs* out_procs)
+zx_status ZX_CALL zx_get_proc_table(uint32_t abi_version, zx_procs* out_procs)
 {
   if (!out_procs)
     return ZX_E_INVALID;
   /* Zero on entry so callers never observe stale pointers on failure */
   memset(out_procs, 0, sizeof(*out_procs));
-  if (abi_version != ZX_ABI_VERSION)
+  if (abi_version != zx_abi_version)
     return ZX_E_UNSUPPORTED;
   out_procs->size             = sizeof(zx_procs);
-  out_procs->version          = ZX_ABI_VERSION;
+  out_procs->version          = zx_abi_version;
   out_procs->create_context   = &create_context_stub;
   out_procs->destroy_context  = &destroy_context_stub;
   out_procs->bind_device      = &bind_device_stub;
