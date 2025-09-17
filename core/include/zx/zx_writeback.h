@@ -2,6 +2,11 @@
 \file zx_writeback.h
 \brief Shared terrain writeback surfaces and CPU encode helper.
 \author Colin Macritchie (Ripple Group, LLC)
+\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+
+Notes:
+- Displacement surface is R32F; masks are optional and may be NULL.
+- Row pitch is in bytes; width/height in elements.
 */
 
 #ifndef ZX_WRITEBACK_H
@@ -29,7 +34,13 @@ typedef struct zx_rect {
     int32_t h;
 } zx_rect;
 
-/* Clip-safe displacement write: copies src_patch[w*h] into target at (x,y). */
+/** \brief Clip-safe displacement write into target at rect (x,y,w,h).
+ * @param src_patch Source patch (size src_w*src_h)
+ * @param src_w Source width
+ * @param src_h Source height
+ * @param target Target surface (disp must not be NULL)
+ * @param rect Destination rectangle (pixels)
+ */
 ZX_API void ZX_CALL zx_writeback_copy_displacement(
     const float* src_patch, uint32_t src_w, uint32_t src_h,
     zx_write_target* target, zx_rect rect);

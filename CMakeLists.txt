@@ -31,6 +31,18 @@ if(ZX_BUILD_SHARED)
     core/src/zx_constitutive_ref.cpp
     core/src/zx_validation.cpp
     core/src/zx_heave_validation.cpp
+    core/src/zx_presets.cpp
+    core/src/zx_authoring.cpp
+    core/src/zx_lod.cpp
+    core/src/zx_hbp.cpp
+    core/src/zx_pcg.cpp
+    core/src/zx_mixture.cpp
+    core/src/zx_mg.cpp
+    core/src/zx_integration.cpp
+    core/src/zx_determinism.cpp
+    core/src/zx_telemetry.cpp
+    core/src/zx_checksum.cpp
+    core/src/zx_residency.cpp
   )
 else()
   add_library(zx STATIC
@@ -42,6 +54,18 @@ else()
     core/src/zx_constitutive_ref.cpp
     core/src/zx_validation.cpp
     core/src/zx_heave_validation.cpp
+    core/src/zx_presets.cpp
+    core/src/zx_authoring.cpp
+    core/src/zx_lod.cpp
+    core/src/zx_hbp.cpp
+    core/src/zx_pcg.cpp
+    core/src/zx_mixture.cpp
+    core/src/zx_mg.cpp
+    core/src/zx_integration.cpp
+    core/src/zx_determinism.cpp
+    core/src/zx_telemetry.cpp
+    core/src/zx_checksum.cpp
+    core/src/zx_residency.cpp
   )
 endif()
 
@@ -80,6 +104,12 @@ install(DIRECTORY core/include/ DESTINATION include)
 if(ZX_ENABLE_TESTS)
   include(CTest)
   enable_testing()
+  add_executable(abi_conformance_test
+    tests/abi_conformance_test.cpp
+  )
+  target_include_directories(abi_conformance_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(abi_conformance_test PRIVATE zx)
+  add_test(NAME abi_conformance_test COMMAND abi_conformance_test)
   add_executable(zx_abi_smoke
     tests/abi_smoke.cpp
   )
@@ -175,6 +205,234 @@ if(ZX_ENABLE_TESTS)
   target_include_directories(foot_heave_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
   target_link_libraries(foot_heave_test PRIVATE zx)
   add_test(NAME foot_heave_test COMMAND foot_heave_test)
+
+  add_executable(anisotropy_scene_test
+    tests/anisotropy_scene_test.cpp
+  )
+  target_include_directories(anisotropy_scene_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(anisotropy_scene_test PRIVATE zx)
+  add_test(NAME anisotropy_scene_test COMMAND anisotropy_scene_test)
+
+  add_executable(presets_test
+    tests/presets_test.cpp
+  )
+  target_include_directories(presets_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(presets_test PRIVATE zx)
+  add_test(NAME presets_test COMMAND presets_test)
+
+  add_executable(authoring_map_test
+    tests/authoring_map_test.cpp
+  )
+  target_include_directories(authoring_map_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(authoring_map_test PRIVATE zx)
+  add_test(NAME authoring_map_test COMMAND authoring_map_test)
+
+  add_executable(lod_filters_test
+    tests/lod_filters_test.cpp
+  )
+  target_include_directories(lod_filters_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_filters_test PRIVATE zx)
+  add_test(NAME lod_filters_test COMMAND lod_filters_test)
+
+  add_executable(lod_alignment_test
+    tests/lod_alignment_test.cpp
+  )
+  target_include_directories(lod_alignment_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_alignment_test PRIVATE zx)
+  add_test(NAME lod_alignment_test COMMAND lod_alignment_test)
+
+  add_executable(lod_crack_free_test
+    tests/lod_crack_free_test.cpp
+  )
+  target_include_directories(lod_crack_free_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_crack_free_test PRIVATE zx)
+  add_test(NAME lod_crack_free_test COMMAND lod_crack_free_test)
+
+  add_executable(lod_mip_random_test
+    tests/lod_mip_random_test.cpp
+  )
+  target_include_directories(lod_mip_random_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_mip_random_test PRIVATE zx)
+  add_test(NAME lod_mip_random_test COMMAND lod_mip_random_test)
+
+  add_executable(lod_mip_chain_test
+    tests/lod_mip_chain_test.cpp
+  )
+  target_include_directories(lod_mip_chain_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_mip_chain_test PRIVATE zx)
+  add_test(NAME lod_mip_chain_test COMMAND lod_mip_chain_test)
+
+  add_executable(mixture_assembly_test
+    tests/mixture_assembly_test.cpp
+  )
+  target_include_directories(mixture_assembly_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(mixture_assembly_test PRIVATE zx)
+  add_test(NAME mixture_assembly_test COMMAND mixture_assembly_test)
+
+  add_executable(bog_memory_knob_test
+    tests/bog_memory_knob_test.cpp
+  )
+  target_include_directories(bog_memory_knob_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(bog_memory_knob_test PRIVATE zx)
+  add_test(NAME bog_memory_knob_test COMMAND bog_memory_knob_test)
+
+  add_executable(pcg_smoke_test
+    tests/pcg_smoke_test.cpp
+  )
+  target_include_directories(pcg_smoke_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(pcg_smoke_test PRIVATE zx)
+  add_test(NAME pcg_smoke_test COMMAND pcg_smoke_test)
+
+  add_executable(mg_pcg_test
+    tests/mg_pcg_test.cpp
+  )
+  target_include_directories(mg_pcg_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(mg_pcg_test PRIVATE zx)
+  add_test(NAME mg_pcg_test COMMAND mg_pcg_test)
+
+  add_executable(mg_prec_test
+    tests/mg_prec_test.cpp
+  )
+  target_include_directories(mg_prec_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(mg_prec_test PRIVATE zx)
+  add_test(NAME mg_prec_test COMMAND mg_prec_test)
+
+  add_executable(dambreak_integration_test
+    tests/dambreak_integration_test.cpp
+  )
+  target_include_directories(dambreak_integration_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(dambreak_integration_test PRIVATE zx)
+  add_test(NAME dambreak_integration_test COMMAND dambreak_integration_test)
+
+  add_executable(bogging_puddle_integration_test
+    tests/bogging_puddle_integration_test.cpp
+  )
+  target_include_directories(bogging_puddle_integration_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(bogging_puddle_integration_test PRIVATE zx)
+  add_test(NAME bogging_puddle_integration_test COMMAND bogging_puddle_integration_test)
+
+  add_executable(lod_fallback_threshold_test
+    tests/lod_fallback_threshold_test.cpp
+  )
+  target_include_directories(lod_fallback_threshold_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_fallback_threshold_test PRIVATE zx)
+  add_test(NAME lod_fallback_threshold_test COMMAND lod_fallback_threshold_test)
+
+  add_executable(lod_fallback_blend_test
+    tests/lod_fallback_blend_test.cpp
+  )
+  target_include_directories(lod_fallback_blend_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_fallback_blend_test PRIVATE zx)
+  add_test(NAME lod_fallback_blend_test COMMAND lod_fallback_blend_test)
+
+  add_executable(lod_fallback_sweep_test
+    tests/lod_fallback_sweep_test.cpp
+  )
+  target_include_directories(lod_fallback_sweep_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(lod_fallback_sweep_test PRIVATE zx)
+  add_test(NAME lod_fallback_sweep_test COMMAND lod_fallback_sweep_test)
+
+  add_executable(determinism_tests
+    tests/determinism_tests.cpp
+  )
+  target_include_directories(determinism_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(determinism_tests PRIVATE zx)
+  add_test(NAME determinism_tests COMMAND determinism_tests)
+
+  add_executable(determinism_strict_test
+    tests/determinism_strict_test.cpp
+  )
+  target_include_directories(determinism_strict_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(determinism_strict_test PRIVATE zx)
+  add_test(NAME determinism_strict_test COMMAND determinism_strict_test)
+
+  # Wrap the WSL determinism script as a CTest for convenience
+  add_test(NAME determinism_script
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wsl-determinism.sh --scene dambreak --seed 42 --fallback off)
+
+  add_executable(checksum_parity_test
+    tests/checksum_parity_test.cpp
+  )
+  target_include_directories(checksum_parity_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(checksum_parity_test PRIVATE zx)
+  add_test(NAME checksum_parity_test COMMAND checksum_parity_test)
+
+  add_executable(determinism_ordering_test
+    tests/determinism_ordering_test.cpp
+  )
+  target_include_directories(determinism_ordering_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(determinism_ordering_test PRIVATE zx)
+  add_test(NAME determinism_ordering_test COMMAND determinism_ordering_test)
+
+  add_executable(residency_hysteresis_test
+    tests/residency_hysteresis_test.cpp
+  )
+  target_include_directories(residency_hysteresis_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_hysteresis_test PRIVATE zx)
+  add_test(NAME residency_hysteresis_test COMMAND residency_hysteresis_test)
+
+  add_executable(residency_prefetch_test
+    tests/residency_prefetch_test.cpp
+  )
+  target_include_directories(residency_prefetch_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_prefetch_test PRIVATE zx)
+  add_test(NAME residency_prefetch_test COMMAND residency_prefetch_test)
+
+  add_executable(residency_pinning_test
+    tests/residency_pinning_test.cpp
+  )
+  target_include_directories(residency_pinning_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_pinning_test PRIVATE zx)
+  add_test(NAME residency_pinning_test COMMAND residency_pinning_test)
+
+  add_executable(residency_churn_test
+    tests/residency_churn_test.cpp
+  )
+  target_include_directories(residency_churn_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(residency_churn_test PRIVATE zx)
+  add_test(NAME residency_churn_test COMMAND residency_churn_test)
+
+  add_executable(hbp_mu_eff_test
+    tests/hbp_mu_eff_test.cpp
+  )
+  target_include_directories(hbp_mu_eff_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(hbp_mu_eff_test PRIVATE zx)
+  add_test(NAME hbp_mu_eff_test COMMAND hbp_mu_eff_test)
+
+  add_executable(hbp_viscous_update_test
+    tests/hbp_viscous_update_test.cpp
+  )
+  target_include_directories(hbp_viscous_update_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(hbp_viscous_update_test PRIVATE zx)
+  add_test(NAME hbp_viscous_update_test COMMAND hbp_viscous_update_test)
+
+  add_executable(hbp_clamp_policy_test
+    tests/hbp_clamp_policy_test.cpp
+  )
+  target_include_directories(hbp_clamp_policy_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(hbp_clamp_policy_test PRIVATE zx)
+  add_test(NAME hbp_clamp_policy_test COMMAND hbp_clamp_policy_test)
+
+  add_executable(hbp_stability_bound_test
+    tests/hbp_stability_bound_test.cpp
+  )
+  target_include_directories(hbp_stability_bound_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(hbp_stability_bound_test PRIVATE zx)
+  add_test(NAME hbp_stability_bound_test COMMAND hbp_stability_bound_test)
+
+  add_executable(telemetry_schema_test
+    tests/telemetry_schema_test.cpp
+  )
+  target_include_directories(telemetry_schema_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(telemetry_schema_test PRIVATE zx)
+  add_test(NAME telemetry_schema_test COMMAND telemetry_schema_test)
+
+  add_executable(telemetry_depth_test
+    tests/telemetry_depth_test.cpp
+  )
+  target_include_directories(telemetry_depth_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+  target_link_libraries(telemetry_depth_test PRIVATE zx)
+  add_test(NAME telemetry_depth_test COMMAND telemetry_depth_test)
 endif()
 
 

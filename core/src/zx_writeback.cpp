@@ -1,11 +1,30 @@
 /*!
  * \file zx_writeback.cpp
  * \brief CPU-side writeback helper implementing clip-safe displacement copy.
+ * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_writeback.h"
 #include <string.h>
 
+/**
+ * @brief Copy a source displacement patch into a target displacement surface with clipping.
+ *
+ * Copies a sw-by-sh float patch pointed to by src into the target surface t at pixel
+ * rectangle r, clipping both source and destination to t's bounds so all writes stay
+ * in-range. Rows are copied with contiguous memcpy operations; rows of the source that
+ * fall outside r or outside the source extent are skipped.
+ *
+ * @param src Pointer to the source patch (sw * sh floats). Must not be NULL.
+ * @param sw Width of the source patch in floats.
+ * @param sh Height of the source patch in rows.
+ * @param t Target write surface; its disp pointer and dimensions are used and must be valid.
+ * @param r Destination rectangle in target pixel coordinates (x,y,w,h).
+ *
+ * @note No return value. The function returns immediately without writes if inputs are
+ * invalid (NULL pointers, zero dimensions, or if the clipped rectangle has non-positive size).
+ */
 void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, zx_write_target* t, zx_rect r)
 {
     if (!src || !t || !t->disp || sw==0 || sh==0 || t->width==0 || t->height==0) return;

@@ -4,6 +4,11 @@
 \author Colin Macritchie (Ripple Group, LLC)
 \version 1.0.0
 \date 2025-09-16
+\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+
+Units:
+- Tile dimension B (nodes per side) is given by ZX_TILE_B.
+- Node momentum mom_* uses unit density proxy; velocity = mom/mass.
 */
 
 #ifndef ZX_TILES_H

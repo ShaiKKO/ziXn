@@ -1,0 +1,46 @@
+{
+  "presets": [
+    {
+      "name": "Fine Sand",
+      "elastic": {"E": 1.5e+07, "nu": 0.3},
+      "mc": {"phi_deg": 32.000, "cohesion_kpa": 0.500},
+      "norsand": {"M": 1.200, "lambda_cs": 0.180, "kappa": 0.050, "p_ref": 1e+04, "e_ref": 0.850, "n_exp": 1.000, "dilatancy_scale": 0.600, "void_ratio_e": 0.900}
+    },
+    {
+      "name": "Coarse Sand",
+      "elastic": {"E": 2e+07, "nu": 0.28},
+      "mc": {"phi_deg": 35.000, "cohesion_kpa": 0.800},
+      "norsand": {"M": 1.300, "lambda_cs": 0.160, "kappa": 0.050, "p_ref": 1e+04, "e_ref": 0.800, "n_exp": 1.000, "dilatancy_scale": 0.600, "void_ratio_e": 0.880}
+    },
+    {
+      "name": "Gravel",
+      "elastic": {"E": 5e+07, "nu": 0.25},
+      "mc": {"phi_deg": 42.000, "cohesion_kpa": 0.500},
+      "norsand": {"M": 1.500, "lambda_cs": 0.120, "kappa": 0.040, "p_ref": 1e+04, "e_ref": 0.750, "n_exp": 1.000, "dilatancy_scale": 0.500, "void_ratio_e": 0.750}
+    },
+    {
+      "name": "Loam",
+      "elastic": {"E": 1e+07, "nu": 0.3},
+      "mc": {"phi_deg": 28.000, "cohesion_kpa": 2.000},
+      "norsand": {"M": 1.100, "lambda_cs": 0.220, "kappa": 0.060, "p_ref": 1e+04, "e_ref": 0.950, "n_exp": 1.000, "dilatancy_scale": 0.700, "void_ratio_e": 1.000}
+    },
+    {
+      "name": "Clay",
+      "elastic": {"E": 2e+07, "nu": 0.32},
+      "mc": {"phi_deg": 20.000, "cohesion_kpa": 50.000},
+      "norsand": {"M": 0.900, "lambda_cs": 0.250, "kappa": 0.080, "p_ref": 1e+04, "e_ref": 1.100, "n_exp": 1.000, "dilatancy_scale": 0.400, "void_ratio_e": 1.100}
+    },
+    {
+      "name": "Powder Snow",
+      "elastic": {"E": 800000, "nu": 0.25},
+      "mc": {"phi_deg": 20.000, "cohesion_kpa": 1.000},
+      "norsand": {"M": 0.600, "lambda_cs": 0.300, "kappa": 0.090, "p_ref": 1e+04, "e_ref": 1.200, "n_exp": 1.000, "dilatancy_scale": 0.300, "void_ratio_e": 1.200}
+    },
+    {
+      "name": "Packed Snow",
+      "elastic": {"E": 5e+06, "nu": 0.3},
+      "mc": {"phi_deg": 25.000, "cohesion_kpa": 3.000},
+      "norsand": {"M": 0.800, "lambda_cs": 0.250, "kappa": 0.070, "p_ref": 1e+04, "e_ref": 1.000, "n_exp": 1.000, "dilatancy_scale": 0.500, "void_ratio_e": 1.000}
+    }
+  ]
+}

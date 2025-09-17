@@ -48,6 +48,8 @@ jobs:
           clang-tidy $(git ls-files 'core/src/*.cpp') -- -Icore/include
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure -C Release
+        run: |
+          ctest --test-dir build --output-on-failure -C Release
+          ctest --test-dir build --output-on-failure -C Release -R "determinism_tests|checksum_parity_test"
 
 

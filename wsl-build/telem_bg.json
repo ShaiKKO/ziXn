@@ -1,0 +1,5 @@
+{
+  "samples": [
+    { "scene": "bogging", "step": 0, "counters": {"drag_N": 0, "sink_depth_m": 0.100000009, "fallback_eval_ms": 15.3799391, "residency_active_max": 2, "residency_active_mean": 1.95000005, "residency_churn_enter": 20, "residency_churn_exit": 18, "residency_prefetch_sum": 520, "fallback_activations": 1, "fallback_active_frames": 19, "fallback_blend_frames": 3} }
+  ]
+}

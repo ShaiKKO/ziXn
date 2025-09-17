@@ -1,0 +1,20 @@
+PROJECT_NAME           = ziXn
+PROJECT_NUMBER         = 1.0
+OUTPUT_DIRECTORY       = docs
+GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_XML           = NO
+QUIET                  = NO
+WARN_IF_UNDOCUMENTED   = NO
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+JAVADOC_AUTOBRIEF      = YES
+OPTIMIZE_OUTPUT_FOR_C  = YES
+FILE_PATTERNS          = *.h *.hpp *.c *.cpp
+RECURSIVE              = YES
+INPUT                  = core/include core/src
+EXCLUDE_PATTERNS       = */wsl-build/* */build/* */.git/*
+HTML_OUTPUT            = html
+ALIASES               += license="\par License:"

@@ -1,0 +1,7 @@
+{
+  "samples": [
+    { "scene": "dambreak", "step": 0, "counters": {"front_x": 9, "kinetic_j": 765.475342, "fallback_eval_ms": 0, "residency_active_max": 2, "residency_active_mean": 1.95000005, "residency_churn_enter": 20, "residency_churn_exit": 18, "residency_prefetch_sum": 520, "particle_count": 0, "active_tiles": 2} }
+  ],
+  "errors": [
+  ]
+}

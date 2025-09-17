@@ -2,12 +2,16 @@
  * \file zx_apic_ref.cpp
  * \brief CPU reference APIC/MLS transfers used for validation.
  * \author Colin Macritchie (Ripple Group, LLC)
+ * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
  */
 
 #include "zx/zx_apic_ref.h"
 #include <cmath>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 #include "zx/zx_abi.h"
+#include "zx/zx_determinism.h"
 
 static inline int idx3(int x, int y, int z, int nx, int ny) { return (z*ny + y)*nx + x; }
 
@@ -42,6 +46,12 @@ void zx_apic_p2g_ref(
     std::memset(m_grid, 0, sizeof(float)*nx*ny*nz);
     std::memset(p_grid, 0, sizeof(float)*3*nx*ny*nz);
     const float invh = 1.0f / h;
+    const int deterministic = zx_get_determinism();
+    struct Contrib { int gi; int pid; float m; float mx; float my; float mz; };
+    std::vector<Contrib> contribs;
+    if (deterministic) {
+        contribs.reserve(N * 27);
+    }
     for (size_t i = 0; i < N; ++i) {
         const float px = pos[3*i+0];
         const float py = pos[3*i+1];
@@ -72,7 +82,9 @@ void zx_apic_p2g_ref(
             if ((unsigned)ix >= (unsigned)nx || (unsigned)iy >= (unsigned)ny || (unsigned)iz >= (unsigned)nz) continue;
             const float w = wx[dx] * wy[dy] * wz[dz];
             const int gi = idx3(ix,iy,iz,nx,ny);
-            m_grid[gi] += w * mp;
+            if (!deterministic) {
+                m_grid[gi] += w * mp;
+            }
 
             float vx_aff = vx;
             float vy_aff = vy;
@@ -86,10 +98,29 @@ void zx_apic_p2g_ref(
                 vy_aff += (Cp[3]*gx_rel + Cp[4]*gy_rel + Cp[5]*gz_rel) * h;
                 vz_aff += (Cp[6]*gx_rel + Cp[7]*gy_rel + Cp[8]*gz_rel) * h;
             }
-            p_grid[3*gi+0] += w * mp * vx_aff;
-            p_grid[3*gi+1] += w * mp * vy_aff;
-            p_grid[3*gi+2] += w * mp * vz_aff;
+            if (!deterministic) {
+                p_grid[3*gi+0] += w * mp * vx_aff;
+                p_grid[3*gi+1] += w * mp * vy_aff;
+                p_grid[3*gi+2] += w * mp * vz_aff;
+            } else {
+                const float mm = w * mp;
+                contribs.push_back(Contrib{gi, (int)i, mm, mm * vx_aff, mm * vy_aff, mm * vz_aff});
+            }
         }
+    }
+    if (deterministic) {
+        std::stable_sort(contribs.begin(), contribs.end(), [](const Contrib& a, const Contrib& b){
+            if (a.gi != b.gi) return a.gi < b.gi;
+            return a.pid < b.pid;
+        });
+        int cur = -1;
+        float msum = 0.0f, mxsum = 0.0f, mysum = 0.0f, mzsum = 0.0f;
+        auto flush = [&](){ if (cur >= 0) { m_grid[cur] += msum; p_grid[3*cur+0] += mxsum; p_grid[3*cur+1] += mysum; p_grid[3*cur+2] += mzsum; } };
+        for (const auto& c : contribs) {
+            if (c.gi != cur) { flush(); cur = c.gi; msum = mxsum = mysum = mzsum = 0.0f; }
+            msum += c.m; mxsum += c.mx; mysum += c.my; mzsum += c.mz;
+        }
+        flush();
     }
 }
 

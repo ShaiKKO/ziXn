@@ -1,0 +1,31 @@
+name: pr-verify
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-export:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure -C Release
+
+      - name: Export presets JSON
+        run: .\build\Release\zx_cli.exe --mode presets --out presets.json
+
+      - name: Upload presets.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: presets-json
+          path: presets.json
+
