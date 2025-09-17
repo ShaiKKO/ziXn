@@ -22,44 +22,49 @@ extern "C"
 
   /* Allocation helpers are exposed as C symbols to ease testing and early wiring. */
 
-  zx_particle_soa ZX_CALL zxCreateParticleSoA(size_t count, void* (*alloc_fn)(size_t, void*),
-                                              void* user)
+  zx_particle_soa ZX_CALL zx_create_particle_so_a(size_t count, void* (*alloc_fn)(size_t, void*),
+                                                  void* user)
   {
     zx_particle_soa soa{};
-    if (!alloc_fn || count == 0)
+    if (alloc_fn == nullptr || count == 0)
+    {
       return soa;
+    }
     const size_t n = count;
-    soa.pos_x      = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.pos_x      = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.pos_x, sizeof(float) * n);
-    soa.pos_y = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.pos_y = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.pos_y, sizeof(float) * n);
-    soa.pos_z = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.pos_z = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.pos_z, sizeof(float) * n);
-    soa.vel_x = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.vel_x = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.vel_x, sizeof(float) * n);
-    soa.vel_y = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.vel_y = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.vel_y, sizeof(float) * n);
-    soa.vel_z = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.vel_z = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.vel_z, sizeof(float) * n);
-    soa.mass = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.mass = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.mass, sizeof(float) * n);
-    soa.volume = (float*) alloc_fn(sizeof(float) * n, user);
+    soa.volume = static_cast<float*>(alloc_fn(sizeof(float) * n, user));
     zx_memzero(soa.volume, sizeof(float) * n);
-    soa.F = (float*) alloc_fn(sizeof(float) * n * 9, user);
+    soa.F = static_cast<float*>(alloc_fn(sizeof(float) * n * 9, user));
     zx_memzero(soa.F, sizeof(float) * n * 9);
-    soa.C = (float*) alloc_fn(sizeof(float) * n * 9, user);
+    soa.C = static_cast<float*>(alloc_fn(sizeof(float) * n * 9, user));
     zx_memzero(soa.C, sizeof(float) * n * 9);
-    soa.mat_id = (uint16_t*) alloc_fn(sizeof(uint16_t) * n, user);
+    soa.mat_id = static_cast<uint16_t*>(alloc_fn(sizeof(uint16_t) * n, user));
     zx_memzero(soa.mat_id, sizeof(uint16_t) * n);
-    soa.flags = (uint16_t*) alloc_fn(sizeof(uint16_t) * n, user);
+    soa.flags = static_cast<uint16_t*>(alloc_fn(sizeof(uint16_t) * n, user));
     zx_memzero(soa.flags, sizeof(uint16_t) * n);
     return soa;
   }
 
-  void ZX_CALL zxDestroyParticleSoA(zx_particle_soa* soa, void (*free_fn)(void*, void*), void* user)
+  void ZX_CALL zx_destroy_particle_so_a(zx_particle_soa* soa, void (*free_fn)(void*, void*),
+                                        void* user)
   {
-    if (!soa || !free_fn)
+    if (soa == nullptr || free_fn == nullptr)
+    {
       return;
+    }
     free_fn(soa->pos_x, user);
     free_fn(soa->pos_y, user);
     free_fn(soa->pos_z, user);
@@ -75,19 +80,24 @@ extern "C"
     *soa = zx_particle_soa{};
   }
 
-  zx_tile* ZX_CALL zxCreateTilePool(uint32_t capacity, void* (*alloc_fn)(size_t, void*), void* user)
+  zx_tile* ZX_CALL zx_create_tile_pool(uint32_t capacity, void* (*alloc_fn)(size_t, void*),
+                                       void* user)
   {
-    if (!alloc_fn || capacity == 0)
+    if (alloc_fn == nullptr || capacity == 0)
+    {
       return nullptr;
-    zx_tile* pool = (zx_tile*) alloc_fn(sizeof(zx_tile) * capacity, user);
+    }
+    auto pool = static_cast<zx_tile*>(alloc_fn(sizeof(zx_tile) * capacity, user));
     zx_memzero(pool, sizeof(zx_tile) * capacity);
     return pool;
   }
 
-  void ZX_CALL zxDestroyTilePool(zx_tile* pool, void (*free_fn)(void*, void*), void* user)
+  void ZX_CALL zx_destroy_tile_pool(zx_tile* pool, void (*free_fn)(void*, void*), void* user)
   {
-    if (!pool || !free_fn)
+    if (pool == nullptr || free_fn == nullptr)
+    {
       return;
+    }
     free_fn(pool, user);
   }
 }

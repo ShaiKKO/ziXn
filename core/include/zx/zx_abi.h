@@ -40,12 +40,10 @@ extern "C"
 #include <stdint.h>
 
   /* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
-  static constexpr uint32_t ZX_ABI_VERSION = 0x00010000U;
-  static constexpr uint32_t zx_abi_version =
-      ZX_ABI_VERSION;  // NOLINT(cppcoreguidelines-macro-usage)
-/* Back-compat macro for older codebases/tests expecting a macro */
+  static constexpr uint32_t zx_abi_version = 0x00010000U;
+/* Back-compat macro for older codebases/tests expecting a macro name */
 #ifndef ZX_ABI_VERSION
-#define ZX_ABI_VERSION ZX_ABI_VERSION
+#define ZX_ABI_VERSION zx_abi_version
 #endif
 
   /* Common fixed sizes */
