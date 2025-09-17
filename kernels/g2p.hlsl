@@ -28,8 +28,7 @@ cbuffer Params : register(b0)
   float h;
 }
 
-[numthreads(256, 1, 1)] void cs_g2p(uint3 tid
-                                    : SV_DispatchThreadID)
+[numthreads(256, 1, 1)] void cs_g2p(uint3 tid : SV_DispatchThreadID)
 {
   uint i = tid.x;
   if (i >= num_particles)

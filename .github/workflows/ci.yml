@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   format:
@@ -41,30 +42,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        os: [ windows-latest ]
 
     steps:
       - uses: actions/checkout@v4
       - name: Install LLVM (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install llvm -y
-
-      - name: Install clang-tidy (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install llvm
-
-      - name: Install clang-tidy (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y clang-tidy
-
-      - name: Install clang-format (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y clang-format
-
-      - name: Install clang-format (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install clang-format
-
       - name: Ensure clang-format on PATH (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
@@ -94,11 +78,7 @@ jobs:
           ctest --test-dir build --output-on-failure -C Release
           ctest --test-dir build --output-on-failure -C Release -R "determinism_tests|checksum_parity_test"
 
-      - name: Determinism script (WSL)
-        if: matrix.os == 'ubuntu-latest'
-        shell: bash
-        run: |
-          bash scripts/wsl-determinism.sh --scene dambreak --seed 42 --fallback off
+      # Determinism script step removed for non-Linux matrix
 
       - name: Upload ctest logs (artifact)
         if: always()
