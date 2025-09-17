@@ -17,8 +17,7 @@ cbuffer Params : register(b0)
   float kappa_n;  // friction and compliance
 }
 
-[numthreads(256, 1, 1)] void cs_contact(uint3 tid
-                                        : SV_DispatchThreadID)
+[numthreads(256, 1, 1)] void cs_contact(uint3 tid : SV_DispatchThreadID)
 {
   uint idx   = tid.x;
   uint total = nx * ny * nz;
