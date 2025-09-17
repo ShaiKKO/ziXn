@@ -1,5 +1,3 @@
-Note: Invalid Unicode symbols replaced with ASCII citation/marker text.
-
 # ziXn
 
 A high-performance C-ABI terrain continuum library for **granular**, **snow**, and **slurry** materials, built for real-time engines (Unreal, Unity, custom).
