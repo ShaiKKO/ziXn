@@ -54,13 +54,13 @@ void zx_bspline_w3(float x, float w[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  constexpr float K_HALF = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  constexpr float K_QTR3 = 0.75F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  const float x0         = K_HALF - x;
-  const float x1         = K_HALF + x;
-  w[0]                   = K_HALF * x0 * x0;
-  w[1]                   = K_QTR3 - x * x;
-  w[2]                   = K_HALF * x1 * x1;
+  constexpr float k_half_f           = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_three_quarters_f = 0.75F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float x0                     = k_half_f - x;
+  const float x1                     = k_half_f + x;
+  w[0]                               = k_half_f * x0 * x0;
+  w[1]                               = k_three_quarters_f - x * x;
+  w[2]                               = k_half_f * x1 * x1;
   // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
@@ -68,25 +68,30 @@ void zx_bspline_dw3(float x, float g[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  constexpr float K_HALF = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  constexpr float K_TWO  = 2.0F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  const float x0         = K_HALF - x;
-  const float x1         = K_HALF + x;
-  g[0]                   = -x0;
-  g[1]                   = -K_TWO * x;
-  g[2]                   = x1;
+  constexpr float k_half_f = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_two_f  = 2.0F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float x0           = k_half_f - x;
+  const float x1           = k_half_f + x;
+  g[0]                     = -x0;
+  g[1]                     = -k_two_f * x;
+  g[2]                     = x1;
   // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* C,
                      const float* mass, const float origin[3], float h, int nx, int ny, int nz,
                      float* ZX_RESTRICT m_grid, float* ZX_RESTRICT p_grid)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   std::memset(m_grid, 0, sizeof(float) * nx * ny * nz);
   std::memset(p_grid, 0, sizeof(float) * 3 * nx * ny * nz);
-  const float invh        = 1.0F / h;
-  constexpr float k_half  = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  const int deterministic = zx_get_determinism();
+  const float invh                = 1.0F / h;
+  constexpr float k_half          = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr size_t k_vec3         = 3U;
+  constexpr size_t k_cdim         = 9U;
+  constexpr size_t k_neighbors_3d = 27U;
+  const int deterministic         = zx_get_determinism();
   struct Contrib
   {
     int gi;
@@ -97,19 +102,19 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
     float mz;
   };
   std::vector<Contrib> contribs;
-  if (deterministic)
+  if (deterministic != 0)
   {
-    contribs.reserve(N * 27);
+    contribs.reserve(N * static_cast<size_t>(k_neighbors_3d));
   }
   // Wrap raw arrays in views to avoid scattered pointer arithmetic and keep
   // indexing readable and tidy-friendly.
   // Use non-const view for unified API; underlying pointers remain treated as read-only.
-  ArrayView<float> pos_view(const_cast<float*>(pos), static_cast<size_t>(3U) * N);
-  ArrayView<float> vel_view(const_cast<float*>(vel), static_cast<size_t>(3U) * N);
-  ArrayView<float> mass_view(const_cast<float*>(mass), N);
+  ArrayView<const float> pos_view(pos, static_cast<size_t>(k_vec3) * N);
+  ArrayView<const float> vel_view(vel, static_cast<size_t>(k_vec3) * N);
+  ArrayView<const float> mass_view(mass, N);
   ArrayView<float> m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) *
                                            static_cast<size_t>(nz));
-  ArrayView<float> p_grid_view(p_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) *
+  ArrayView<float> p_grid_view(p_grid, static_cast<size_t>(k_vec3) * static_cast<size_t>(nx) *
                                            static_cast<size_t>(ny) * static_cast<size_t>(nz));
 
   // Copy origin to a fixed-size array to avoid pointer indexing on a pointer parameter.
@@ -118,7 +123,7 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
 
   for (size_t i = 0; i < N; ++i)
   {
-    const size_t pbase = static_cast<size_t>(3U) * i;
+    const size_t pbase = static_cast<size_t>(k_vec3) * i;
     const float px     = pos_view[pbase + 0U];
     const float py     = pos_view[pbase + 1U];
     const float pz     = pos_view[pbase + 2U];
@@ -126,14 +131,14 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
     const float vy0    = vel_view[pbase + 1U];
     const float vz0    = vel_view[pbase + 2U];
 
-    std::array<float, 9> C_local{};
-    bool has_C = false;
+    std::array<float, k_cdim> c_local{};
+    bool has_c = false;
     if (C != nullptr)
     {
-      ArrayView<const float> C_view(C, static_cast<size_t>(9U) * N);
-      const size_t cbase = static_cast<size_t>(9U) * i;
-      std::memcpy(C_local.data(), &C_view[cbase], sizeof(float) * 9U);
-      has_C = true;
+      ArrayView<const float> c_view(C, static_cast<size_t>(k_cdim) * N);
+      const size_t cbase = static_cast<size_t>(k_cdim) * i;
+      std::memcpy(c_local.data(), &c_view[cbase], sizeof(float) * k_cdim);
+      has_c = true;
     }
     const float mp = mass_view[i];
 
@@ -145,14 +150,19 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
     const int base_y = static_cast<int>(std::floor(gy - k_half));
     const int base_z = static_cast<int>(std::floor(gz - k_half));
 
-    float wx[3], wy[3], wz[3];
-    zx_bspline_w3(gx - (base_x + 1), wx);
-    zx_bspline_w3(gy - (base_y + 1), wy);
-    zx_bspline_w3(gz - (base_z + 1), wz);
+    std::array<float, 3> wx{};
+    std::array<float, 3> wy{};
+    std::array<float, 3> wz{};
+    zx_bspline_w3(gx - (static_cast<float>(base_x) + 1.0F), wx.data());
+    zx_bspline_w3(gy - (static_cast<float>(base_y) + 1.0F), wy.data());
+    zx_bspline_w3(gz - (static_cast<float>(base_z) + 1.0F), wz.data());
 
-    for (int dz = 0; dz < 3; ++dz)
-      for (int dy = 0; dy < 3; ++dy)
-        for (int dx = 0; dx < 3; ++dx)
+    constexpr int k_support = 3;
+    for (int dz = 0; dz < k_support; ++dz)
+    {
+      for (int dy = 0; dy < k_support; ++dy)
+      {
+        for (int dx = 0; dx < k_support; ++dx)
         {
           const int ix = base_x + dx;
           const int iy = base_y + dy;
@@ -163,9 +173,10 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
           {
             continue;
           }
-          const float w = wx[dx] * wy[dy] * wz[dz];
-          const int gi  = idx3(ix, iy, iz, nx, ny);
-          if (!deterministic)
+          const float w = wx.at(static_cast<size_t>(dx)) * wy.at(static_cast<size_t>(dy)) *
+                          wz.at(static_cast<size_t>(dz));
+          const int gi = idx3(ix, iy, iz, nx, ny);
+          if (deterministic == 0)
           {
             m_grid_view[gi] += w * mp;
           }
@@ -173,19 +184,19 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
           float vx_aff = vx0;
           float vy_aff = vy0;
           float vz_aff = vz0;
-          if (has_C)
+          if (has_c)
           {
             const float gx_rel = (static_cast<float>(ix) - gx);
             const float gy_rel = (static_cast<float>(iy) - gy);
             const float gz_rel = (static_cast<float>(iz) - gz);
             // APIC affine: v + C*(x_i - x_p) scaled by h
-            vx_aff += (C_local[0] * gx_rel + C_local[1] * gy_rel + C_local[2] * gz_rel) * h;
-            vy_aff += (C_local[3] * gx_rel + C_local[4] * gy_rel + C_local[5] * gz_rel) * h;
-            vz_aff += (C_local[6] * gx_rel + C_local[7] * gy_rel + C_local[8] * gz_rel) * h;
+            vx_aff += (c_local[0] * gx_rel + c_local[1] * gy_rel + c_local[2] * gz_rel) * h;
+            vy_aff += (c_local[3] * gx_rel + c_local[4] * gy_rel + c_local[5] * gz_rel) * h;
+            vz_aff += (c_local[6] * gx_rel + c_local[7] * gy_rel + c_local[8] * gz_rel) * h;
           }
-          if (!deterministic)
+          if (deterministic == 0)
           {
-            const size_t base3 = static_cast<size_t>(gi) * 3U;
+            const size_t base3 = static_cast<size_t>(gi) * k_vec3;
             p_grid_view[base3 + 0U] += w * mp * vx_aff;
             p_grid_view[base3 + 1U] += w * mp * vy_aff;
             p_grid_view[base3 + 2U] += w * mp * vz_aff;
@@ -193,11 +204,14 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
           else
           {
             const float mm = w * mp;
-            contribs.push_back(Contrib{gi, (int) i, mm, mm * vx_aff, mm * vy_aff, mm * vz_aff});
+            contribs.push_back(
+                Contrib{gi, static_cast<int>(i), mm, mm * vx_aff, mm * vy_aff, mm * vz_aff});
           }
         }
+      }
+    }
   }
-  if (deterministic)
+  if (deterministic != 0)
   {
     std::stable_sort(contribs.begin(), contribs.end(),
                      [](const Contrib& a, const Contrib& b)
@@ -206,14 +220,17 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
                          return a.gi < b.gi;
                        return a.pid < b.pid;
                      });
-    int cur    = -1;
-    float msum = 0.0f, mxsum = 0.0f, mysum = 0.0f, mzsum = 0.0f;
-    auto flush = [&]()
+    int cur     = -1;
+    float msum  = 0.0F;
+    float mxsum = 0.0F;
+    float mysum = 0.0F;
+    float mzsum = 0.0F;
+    auto flush  = [&]()
     {
       if (cur >= 0)
       {
         m_grid_view[cur] += msum;
-        const size_t base3 = static_cast<size_t>(cur) * 3U;
+        const size_t base3 = static_cast<size_t>(cur) * k_vec3;
         p_grid_view[base3 + 0U] += mxsum;
         p_grid_view[base3 + 1U] += mysum;
         p_grid_view[base3 + 2U] += mzsum;
@@ -224,8 +241,11 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
       if (c.gi != cur)
       {
         flush();
-        cur  = c.gi;
-        msum = mxsum = mysum = mzsum = 0.0f;
+        cur   = c.gi;
+        msum  = 0.0F;
+        mxsum = 0.0F;
+        mysum = 0.0F;
+        mzsum = 0.0F;
       }
       msum += c.m;
       mxsum += c.mx;
@@ -236,26 +256,30 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
   }
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
                      const float origin[3], float h, int nx, int ny, int nz,
                      const float* ZX_RESTRICT m_grid, const float* ZX_RESTRICT v_grid)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
-  const float invh       = 1.0F / h;
-  constexpr float k_half = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float invh        = 1.0F / h;
+  constexpr float k_half  = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr size_t k_vec3 = 3U;
+  constexpr size_t k_cdim = 9U;
   // Wrap arrays in views and copy origin to avoid pointer indexing on parameters.
-  ArrayView<const float> pos_view(pos, static_cast<size_t>(3U) * N);
-  ArrayView<float> out_vel_view(out_vel, static_cast<size_t>(3U) * N);
-  ArrayView<float> out_C_view(out_C, out_C ? static_cast<size_t>(9U) * N : 0U);
+  ArrayView<const float> pos_view(pos, static_cast<size_t>(k_vec3) * N);
+  ArrayView<float> out_vel_view(out_vel, static_cast<size_t>(k_vec3) * N);
+  ArrayView<float> out_C_view(out_C, out_C ? static_cast<size_t>(k_cdim) * N : 0U);
   ArrayView<const float> m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) *
                                                  static_cast<size_t>(nz));
-  ArrayView<const float> v_grid_view(v_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) *
+  ArrayView<const float> v_grid_view(v_grid, static_cast<size_t>(k_vec3) * static_cast<size_t>(nx) *
                                                  static_cast<size_t>(ny) * static_cast<size_t>(nz));
   std::array<float, 3> origin_arr{};
   std::memcpy(origin_arr.data(), origin, sizeof(float) * 3U);
 
   for (size_t i = 0; i < N; ++i)
   {
-    const size_t pbase = static_cast<size_t>(3U) * i;
+    const size_t pbase = static_cast<size_t>(k_vec3) * i;
     const float px     = pos_view[pbase + 0U];
     const float py     = pos_view[pbase + 1U];
     const float pz     = pos_view[pbase + 2U];
@@ -268,17 +292,24 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
     const int base_y = static_cast<int>(std::floor(gy - k_half));
     const int base_z = static_cast<int>(std::floor(gz - k_half));
 
-    float wx[3], wy[3], wz[3];
-    zx_bspline_w3(gx - (base_x + 1), wx);
-    zx_bspline_w3(gy - (base_y + 1), wy);
-    zx_bspline_w3(gz - (base_z + 1), wz);
+    std::array<float, 3> wx{};
+    std::array<float, 3> wy{};
+    std::array<float, 3> wz{};
+    zx_bspline_w3(gx - (static_cast<float>(base_x) + 1.0F), wx.data());
+    zx_bspline_w3(gy - (static_cast<float>(base_y) + 1.0F), wy.data());
+    zx_bspline_w3(gz - (static_cast<float>(base_z) + 1.0F), wz.data());
 
-    float vx = 0, vy = 0, vz = 0;
-    float Cx[3] = {0, 0, 0}, Cy[3] = {0, 0, 0}, Cz[3] = {0, 0, 0};
+    float vx = 0.0F, vy = 0.0F, vz = 0.0F;
+    std::array<float, 3> cx{};
+    std::array<float, 3> cy{};
+    std::array<float, 3> cz{};
 
-    for (int dz = 0; dz < 3; ++dz)
-      for (int dy = 0; dy < 3; ++dy)
-        for (int dx = 0; dx < 3; ++dx)
+    constexpr int k_support = 3;
+    for (int dz = 0; dz < k_support; ++dz)
+    {
+      for (int dy = 0; dy < k_support; ++dy)
+      {
+        for (int dx = 0; dx < k_support; ++dx)
         {
           const int ix = base_x + dx;
           const int iy = base_y + dy;
@@ -295,8 +326,9 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
           {
             continue;
           }
-          const float w      = wx[dx] * wy[dy] * wz[dz];
-          const size_t base3 = static_cast<size_t>(gi) * 3U;
+          const float w = wx.at(static_cast<size_t>(dx)) * wy.at(static_cast<size_t>(dy)) *
+                          wz.at(static_cast<size_t>(dz));
+          const size_t base3 = static_cast<size_t>(gi) * k_vec3;
           const float vx_i   = v_grid_view[base3 + 0U];
           const float vy_i   = v_grid_view[base3 + 1U];
           const float vz_i   = v_grid_view[base3 + 2U];
@@ -309,17 +341,19 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
             const float gx_rel = (static_cast<float>(ix) - gx);
             const float gy_rel = (static_cast<float>(iy) - gy);
             const float gz_rel = (static_cast<float>(iz) - gz);
-            Cx[0] += w * vx_i * gx_rel;
-            Cx[1] += w * vx_i * gy_rel;
-            Cx[2] += w * vx_i * gz_rel;
-            Cy[0] += w * vy_i * gx_rel;
-            Cy[1] += w * vy_i * gy_rel;
-            Cy[2] += w * vy_i * gz_rel;
-            Cz[0] += w * vz_i * gx_rel;
-            Cz[1] += w * vz_i * gy_rel;
-            Cz[2] += w * vz_i * gz_rel;
+            cx[0] += w * vx_i * gx_rel;
+            cx[1] += w * vx_i * gy_rel;
+            cx[2] += w * vx_i * gz_rel;
+            cy[0] += w * vy_i * gx_rel;
+            cy[1] += w * vy_i * gy_rel;
+            cy[2] += w * vy_i * gz_rel;
+            cz[0] += w * vz_i * gx_rel;
+            cz[1] += w * vz_i * gy_rel;
+            cz[2] += w * vz_i * gz_rel;
           }
         }
+      }
+    }
     const size_t out_base       = static_cast<size_t>(i) * 3U;
     out_vel_view[out_base + 0U] = vx;
     out_vel_view[out_base + 1U] = vy;
@@ -327,16 +361,16 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
     if (out_C)
     {
       const float s          = 4.0F * invh * invh;  // common APIC scaling
-      const size_t cbase     = static_cast<size_t>(i) * 9U;
-      out_C_view[cbase + 0U] = s * Cx[0];
-      out_C_view[cbase + 1U] = s * Cx[1];
-      out_C_view[cbase + 2U] = s * Cx[2];
-      out_C_view[cbase + 3U] = s * Cy[0];
-      out_C_view[cbase + 4U] = s * Cy[1];
-      out_C_view[cbase + 5U] = s * Cy[2];
-      out_C_view[cbase + 6U] = s * Cz[0];
-      out_C_view[cbase + 7U] = s * Cz[1];
-      out_C_view[cbase + 8U] = s * Cz[2];
+      const size_t cbase     = static_cast<size_t>(i) * k_cdim;
+      out_C_view[cbase + 0U] = s * cx[0];
+      out_C_view[cbase + 1U] = s * cx[1];
+      out_C_view[cbase + 2U] = s * cx[2];
+      out_C_view[cbase + 3U] = s * cy[0];
+      out_C_view[cbase + 4U] = s * cy[1];
+      out_C_view[cbase + 5U] = s * cy[2];
+      out_C_view[cbase + 6U] = s * cz[0];
+      out_C_view[cbase + 7U] = s * cz[1];
+      out_C_view[cbase + 8U] = s * cz[2];
     }
   }
 }
