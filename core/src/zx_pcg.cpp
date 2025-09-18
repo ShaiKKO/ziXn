@@ -128,45 +128,44 @@ extern "C"
       float pAp = dot(n, p.data(), Ap.data());
       if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
       {
-        if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
+        if (out_final_resid != nullptr)
         {
-          if (out_final_resid != nullptr)
-            *out_final_resid = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
-          break;  // not SPD or numerical failure
+          *out_final_resid = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
         }
-        float alpha = rz_old / pAp;
+        break;  // not SPD or numerical failure
+      }
+      float alpha = rz_old / pAp;
 
-        float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
-        float thresh = std::max(tol_abs, tol_rel * b_norm);
-        if (r_norm <= thresh)
+      float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
+      float thresh = std::max(tol_abs, tol_rel * b_norm);
+      if (r_norm <= thresh)
+      {
+        if (out_final_resid != nullptr)
         {
-          if (out_final_resid != nullptr)
-          {
-            *out_final_resid = r_norm;
-          }
-          ++k;
-          break;
+          *out_final_resid = r_norm;
         }
-
-        if (apply_prec != nullptr)
-        {
-          apply_prec(r.data(), z.data(), user);
-        }
-        else
-        {
-          copy(n, r.data(), z.data());
-        }
-        float rz_new              = dot(n, r.data(), z.data());
-        constexpr float k_epsilon = 1e-30F;
-        float beta                = rz_new / std::max(k_epsilon, rz_old);
-        for (size_t i = 0; i < n; ++i)
-        {
-          p[i] = z[i] + beta * p[i];
-        }
-        rz_old = rz_new;
+        ++k;
+        break;
       }
 
-      return k;
+      if (apply_prec != nullptr)
+      {
+        apply_prec(r.data(), z.data(), user);
+      }
+      else
+      {
+        copy(n, r.data(), z.data());
+      }
+      float rz_new              = dot(n, r.data(), z.data());
+      constexpr float k_epsilon = 1e-30F;
+      float beta                = rz_new / std::max(k_epsilon, rz_old);
+      for (size_t i = 0; i < n; ++i)
+      {
+        p[i] = z[i] + beta * p[i];
+      }
+      rz_old = rz_new;
     }
+    return k;
+  }
 
-  }  // extern "C"
+}  // extern "C"
