@@ -57,8 +57,8 @@ jobs:
         shell: pwsh
         run: echo "C:\\Program Files\\LLVM\\bin" >> $env:GITHUB_PATH
 
-      - name: Configure
-        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
+      - name: Configure (Ninja + compile_commands)
+        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       - name: Build
         run: cmake --build build --config Release --parallel
 
@@ -80,15 +80,16 @@ jobs:
             echo "clang-format not found"; exit 1
           fi
 
-      - name: Lint (clang-tidy)
+      - name: Lint (clang-tidy with compile_commands)
         shell: bash
         run: |
           set -euo pipefail
           clang-tidy --version
-          cmake --build build --config Release --target zx
+          # Ensure compile_commands.json is present
+          test -f build/compile_commands.json || { echo 'compile_commands.json missing'; ls -la build; exit 1; }
           files=$(git ls-files 'core/src/*.cpp')
-          # Provide compile flags so tidy can parse MSVC projects correctly
-          clang-tidy $files -- -Icore/include -std=c++17 -DZX_BUILD
+          # Use -p to pick up exact compiler flags from Ninja generator
+          clang-tidy -p build $files
 
       - name: Test
         run: |

@@ -30,11 +30,11 @@ public:
     return ptr_[idx];
   }
 
-  T* data() const
+  [[nodiscard]] T* data() const
   {
     return ptr_;
   }
-  size_t size() const
+  [[nodiscard]] size_t size() const
   {
     return count_;
   }
@@ -46,19 +46,21 @@ private:
 
 static inline int idx3(int x, int y, int z, int nx, int ny)
 {
-  // ((z * ny) + y) * nx + x
-  return ((z * ny) + y) * nx + x;
+  // (((z * ny) + y) * nx) + x
+  return (((z * ny) + y) * nx) + x;
 }
 
 void zx_bspline_w3(float x, float w[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  const float x0 = 0.5F - x;
-  const float x1 = 0.5F + x;
-  w[0]           = 0.5F * x0 * x0;
-  w[1]           = 0.75F - x * x;
-  w[2]           = 0.5F * x1 * x1;
+  constexpr float K_HALF = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float K_QTR3 = 0.75F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float x0         = K_HALF - x;
+  const float x1         = K_HALF + x;
+  w[0]                   = K_HALF * x0 * x0;
+  w[1]                   = K_QTR3 - x * x;
+  w[2]                   = K_HALF * x1 * x1;
   // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
@@ -66,11 +68,13 @@ void zx_bspline_dw3(float x, float g[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  const float x0 = 0.5F - x;
-  const float x1 = 0.5F + x;
-  g[0]           = -x0;
-  g[1]           = -2.0F * x;
-  g[2]           = x1;
+  constexpr float K_HALF = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float K_TWO  = 2.0F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float x0         = K_HALF - x;
+  const float x1         = K_HALF + x;
+  g[0]                   = -x0;
+  g[1]                   = -K_TWO * x;
+  g[2]                   = x1;
   // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 

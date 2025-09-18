@@ -8,11 +8,18 @@ alwaysApply: true
 
 This rule standardizes how we call the FastMCP 2.0 server for ziXn by enforcing a compact context scaffold, explicit thought types/strategies, linking, tags, and validation flags.
 
+## Transport and server
+
+- Server: FastMCP 2.0 (Windows-first)
+- Calls must include `self.agent='ziXn-cursor-assistant'` and a stable `session_id` per TODO chain
+- Thoughts must be atomic (one objective per call); chain via `builds_on_thoughts`
+- Use `response_language='en'`, `request_analysis=true`, `request_validation=true`
+
 ## Thought payload template
 
 ```json
 {
-  "self": { "agent": "ziXn-cursor-assistant", "session_id": "<task-id>" },
+  "self": { "agent": "ziXn-cursor-assistant", "session_id": "<todo-id>" },
   "input": {
     "thought": "<short, action-oriented content>",
     "thought_type": "analysis|evaluation|synthesis|conclusion|question|assumption|counterargument|metacognition",
@@ -20,7 +27,7 @@ This rule standardizes how we call the FastMCP 2.0 server for ziXn by enforcing 
     "builds_on_thoughts": ["<prior_thought_ids>"],
     "supports_thoughts": ["<ids>"],
     "contradicts_thoughts": ["<ids>"],
-    "tags": ["windows", "ci", "tidy", "abi"],
+    "tags": ["windows", "ci", "tidy", "abi", "tests"],
     "confidence": 4,
     "response_language": "en",
     "request_analysis": true,
@@ -29,37 +36,37 @@ This rule standardizes how we call the FastMCP 2.0 server for ziXn by enforcing 
 }
 ```
 
-## Context scaffold per call
+## Context scaffold per call (checklist)
 
-- Objective: 1–2 lines stating the exact outcome.
-- Constraints: env/toolchain/perf/security/budgets.
-- Acceptance criteria: measurable pass/fail (tests/benchmarks/outputs).
-- Risks & mitigations: top 2–3 with handling.
-- Evidence: links to logs/benchmarks/specs.
-- Validation method: tests (names), metrics (units/thresholds), reproducibility (seed/env).
+- Objective: exact outcome in 1–2 lines
+- Constraints: Windows/MSVC/C++17, Ninja, time budget, determinism
+- Acceptance: pass/fail gates (tidy clean, format OK, tests pass, artifacts present)
+- Risks & mitigations: top 2–3 (toolchain drift; queue delays; parse errors)
+- Evidence: links to GH run URLs, local logs
+- Validation: commands, metrics, reproducibility (env + seeds)
 
 ## Usage patterns
 
-- Planning (analysis): summarize goal, dependencies, gate criteria.
-- Tradeoff (evaluation): alternatives with quick pros/cons; select one.
-- Execution (synthesis): list concrete edits/commands to perform next.
-- Wrap-up (conclusion): results vs acceptance, follow-ups and next actions.
+- Planning (analysis): summarize goal, dependencies, gate criteria
+- Tradeoff (evaluation): alternatives with quick pros/cons; select one
+- Execution (synthesis): concrete edits/commands to perform next
+- Wrap-up (conclusion): results vs acceptance, follow-ups and next actions
 
 ## Linking thoughts
 
-- Use `builds_on_thoughts` to form a chain per TODO id (e.g., `tidy-fix-residency`).
-- Tag from a controlled vocabulary: `windows`, `ci`, `tidy`, `abi`, `gpu`, `perf`, `tests`.
+- Chain per TODO id via `builds_on_thoughts` (e.g., `ci-fix-apic-arrayview`)
+- Use controlled tags: `windows`, `ci`, `tidy`, `abi`, `gpu`, `perf`, `tests`
 
 ## Parallelization
 
-- Batch independent analyses in separate thought calls, then synthesize a combined plan referencing those thought IDs.
+- Batch independent analyses in separate thoughts, then synthesize a combined plan referencing those thought IDs
 
-## Examples
+## Examples (Windows CI)
 
-- Tidy fix loop: create `analysis` for `zx_residency`, `evaluation` choose braces + explicit nullptr checks, `synthesis` patch concrete lines, `conclusion` assert lints/tests pass.
-- Determinism: `analysis` objective; constraints (MSVC C++17); acceptance (byte-identical JSON); risks (timer variance) mitigated by omitting timings when deterministic.
+- Tidy fix loop: `analysis` -> choose braces + explicit nullptr checks -> `synthesis` edit lines -> `conclusion` assert tidy/tests green
+- Determinism: `analysis` objective; constraints (MSVC C++17); acceptance (byte-identical JSON); risks (timer variance) mitigated by omitting timings when deterministic
 
 ## Repro guidance
 
-- Capture commands and key env vars in each conclusion block.
-- Record GitHub Actions run URLs and the exact `ctest` regex used.
+- Capture exact commands and env vars in each conclusion
+- Record GH Actions run URLs and `ctest` invocations used
