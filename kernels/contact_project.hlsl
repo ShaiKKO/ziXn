@@ -22,10 +22,14 @@ cbuffer Params : register(b0)
   uint idx   = tid.x;
   uint total = nx * ny * nz;
   if (idx >= total)
+  {
     return;
+  }
   float m = g_mass[idx];
   if (m <= 0.0)
+  {
     return;
+  }
   float3 v  = float3(g_vel[3 * idx + 0], g_vel[3 * idx + 1], g_vel[3 * idx + 2]);
   float3 n  = float3(g_norm[3 * idx + 0], g_norm[3 * idx + 1], g_norm[3 * idx + 2]);
   float phi = g_phi[idx];
