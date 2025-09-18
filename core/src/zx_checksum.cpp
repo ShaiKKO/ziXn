@@ -48,9 +48,11 @@ extern "C"
       const zx_tile_node& n = tile->nodes[i];
       // consume three floats of momentum and one float of mass as 4x32; fold to 64
       uint64_t a = 0ULL;
-      // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-      const auto* u32 = reinterpret_cast<const uint32_t*>(&n);
-      // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
+      // Copy raw bytes into a 4x32 view to avoid array-to-pointer decay and subscript on
+      // non-const-expr
+      std::array<uint32_t, 4> u32{};
+      static_assert(sizeof(u32) == sizeof(n), "size mismatch");
+      std::memcpy(u32.data(), &n, sizeof(n));
       a ^= static_cast<uint64_t>(u32[0]) << k_shift0;  // mass
       a ^= static_cast<uint64_t>(u32[1]) << k_shift1;  // mom_x (low bits folded)
       a ^= static_cast<uint64_t>(u32[2]) << k_shift2;  // mom_y
