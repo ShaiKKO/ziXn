@@ -76,8 +76,9 @@ static zx_status ZX_CALL bind_device_stub(zx_context ctx, const zx_device_desc* 
  *
  * @return zx_status ZX_OK
  */
-static zx_status ZX_CALL unbind_device_stub(zx_device)
+static zx_status ZX_CALL unbind_device_stub(zx_device dev)
 {
+  (void) dev;
   return ZX_OK;
 }
 /**
@@ -94,10 +95,13 @@ static zx_status ZX_CALL unbind_device_stub(zx_device)
  * @param out Pointer to receive the created scene token; must be non-null.
  * @return ZX_OK on success, ZX_E_INVALID on invalid input.
  */
-static zx_status ZX_CALL create_scene_stub(zx_context, const zx_scene_desc* sd, zx_scene* out)
+static zx_status ZX_CALL create_scene_stub(zx_context ctx, const zx_scene_desc* sd, zx_scene* out)
 {
+  (void) ctx;
   if ((sd == nullptr) || (out == nullptr) || (sd->size < sizeof(zx_scene_desc)))
+  {
     return ZX_E_INVALID;
+  }
   *out = (zx_scene) 1;
   return ZX_OK;
 }
@@ -246,8 +250,8 @@ static zx_status ZX_CALL writeback_stub(zx_scene sc, const zx_writeback_desc* wb
     {
       for (uint32_t x = 0; x < wb->width; ++x)
       {
-        disp[(static_cast<size_t>(y) * static_cast<size_t>(pitch)) + static_cast<size_t>(x)] =
-            0.0F;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        disp[(static_cast<size_t>(y) * static_cast<size_t>(pitch)) + static_cast<size_t>(x)] = 0.0F;
       }
     }
   }
@@ -283,10 +287,13 @@ static zx_status ZX_CALL end_frame_stub(zx_scene sc, const zx_frame_end* fe)
  * @param count Out parameter; set to the number of entries written (always 1 on success).
  * @return ZX_OK on success; ZX_E_INVALID if inputs are null or c->size is too small.
  */
-static zx_status ZX_CALL get_counters_stub(zx_context, zx_counters* c, uint32_t* count)
+static zx_status ZX_CALL get_counters_stub(zx_context ctx, zx_counters* c, uint32_t* count)
 {
+  (void) ctx;
   if ((c == nullptr) || (count == nullptr) || (c->size < sizeof(zx_counters)))
+  {
     return ZX_E_INVALID;
+  }
   *count               = 1;
   c->version           = zx_abi_version;
   c->particle_count    = 0;
