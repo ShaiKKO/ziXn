@@ -16,21 +16,21 @@
 
 struct ZxSample
 {
-  std::string scene{};
+  std::string scene;
   uint32_t step{0};
-  std::vector<std::pair<std::string, float>> counters{};
+  std::vector<std::pair<std::string, float>> counters;
 };
 
 struct zx_telemetry
 {
   std::mutex mtx{};
-  std::vector<ZxSample> samples{};
+  std::vector<ZxSample> samples;
   uint32_t capacity{0};
   ZxSample current{};
   bool in_step{false};
   struct ErrorRecord
   {
-    std::string scene{};
+    std::string scene;
     uint32_t step{0};
     std::string code;
     std::string msg;
@@ -91,7 +91,7 @@ extern "C"
    */
   void ZX_CALL zx_telemetry_destroy(zx_telemetry* ctx)
   {
-    delete ctx;
+    delete ctx;  // NOLINT(cppcoreguidelines-owning-memory)
   }
 
   /**
