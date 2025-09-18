@@ -17,13 +17,10 @@
 // Minimal array view to centralize pointer indexing and localize NOLINT usage.
 // This avoids scattering pointer arithmetic across call sites while preserving
 // the C ABI in public headers.
-template <typename T>
-class ArrayView
+template <typename T> class ArrayView
 {
 public:
-  ArrayView(T* ptr, size_t count) : ptr_(ptr), count_(count) {}
-  // NOLINTNEXTLINE(modernize-pass-by-value)
-  ArrayView(const T* ptr, size_t count) : ptr_(const_cast<T*>(ptr)), count_(count) {}
+  explicit ArrayView(T* ptr, size_t count) : ptr_(ptr), count_(count) {}
 
   T& operator[](size_t idx) const
   {
@@ -33,8 +30,14 @@ public:
     return ptr_[idx];
   }
 
-  T* data() const { return ptr_; }
-  size_t size() const { return count_; }
+  T* data() const
+  {
+    return ptr_;
+  }
+  size_t size() const
+  {
+    return count_;
+  }
 
 private:
   T* ptr_;
@@ -78,7 +81,7 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
   std::memset(m_grid, 0, sizeof(float) * nx * ny * nz);
   std::memset(p_grid, 0, sizeof(float) * 3 * nx * ny * nz);
   const float invh        = 1.0F / h;
-  constexpr float k_half  = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_half  = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
   const int deterministic = zx_get_determinism();
   struct Contrib
   {
@@ -96,11 +99,14 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
   }
   // Wrap raw arrays in views to avoid scattered pointer arithmetic and keep
   // indexing readable and tidy-friendly.
-  ArrayView<const float> pos_view(pos, static_cast<size_t>(3U) * N);
-  ArrayView<const float> vel_view(vel, static_cast<size_t>(3U) * N);
-  ArrayView<const float> mass_view(mass, N);
-  ArrayView<float>       m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) * static_cast<size_t>(nz));
-  ArrayView<float>       p_grid_view(p_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) * static_cast<size_t>(ny) * static_cast<size_t>(nz));
+  // Use non-const view for unified API; underlying pointers remain treated as read-only.
+  ArrayView<float> pos_view(const_cast<float*>(pos), static_cast<size_t>(3U) * N);
+  ArrayView<float> vel_view(const_cast<float*>(vel), static_cast<size_t>(3U) * N);
+  ArrayView<float> mass_view(const_cast<float*>(mass), N);
+  ArrayView<float> m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) *
+                                           static_cast<size_t>(nz));
+  ArrayView<float> p_grid_view(p_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) *
+                                           static_cast<size_t>(ny) * static_cast<size_t>(nz));
 
   // Copy origin to a fixed-size array to avoid pointer indexing on a pointer parameter.
   std::array<float, 3> origin_arr{};
@@ -231,13 +237,15 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
                      const float* ZX_RESTRICT m_grid, const float* ZX_RESTRICT v_grid)
 {
   const float invh       = 1.0F / h;
-  constexpr float k_half = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_half = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
   // Wrap arrays in views and copy origin to avoid pointer indexing on parameters.
   ArrayView<const float> pos_view(pos, static_cast<size_t>(3U) * N);
-  ArrayView<float>       out_vel_view(out_vel, static_cast<size_t>(3U) * N);
-  ArrayView<float>       out_C_view(out_C, out_C ? static_cast<size_t>(9U) * N : 0U);
-  ArrayView<const float> m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) * static_cast<size_t>(nz));
-  ArrayView<const float> v_grid_view(v_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) * static_cast<size_t>(ny) * static_cast<size_t>(nz));
+  ArrayView<float> out_vel_view(out_vel, static_cast<size_t>(3U) * N);
+  ArrayView<float> out_C_view(out_C, out_C ? static_cast<size_t>(9U) * N : 0U);
+  ArrayView<const float> m_grid_view(m_grid, static_cast<size_t>(nx) * static_cast<size_t>(ny) *
+                                                 static_cast<size_t>(nz));
+  ArrayView<const float> v_grid_view(v_grid, static_cast<size_t>(3U) * static_cast<size_t>(nx) *
+                                                 static_cast<size_t>(ny) * static_cast<size_t>(nz));
   std::array<float, 3> origin_arr{};
   std::memcpy(origin_arr.data(), origin, sizeof(float) * 3U);
 
@@ -252,9 +260,9 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
     const float gy = (py - origin_arr[1]) * invh;
     const float gz = (pz - origin_arr[2]) * invh;
 
-     const int base_x = static_cast<int>(std::floor(gx - k_half));
-     const int base_y = static_cast<int>(std::floor(gy - k_half));
-     const int base_z = static_cast<int>(std::floor(gz - k_half));
+    const int base_x = static_cast<int>(std::floor(gx - k_half));
+    const int base_y = static_cast<int>(std::floor(gy - k_half));
+    const int base_z = static_cast<int>(std::floor(gz - k_half));
 
     float wx[3], wy[3], wz[3];
     zx_bspline_w3(gx - (base_x + 1), wx);
@@ -283,7 +291,7 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
           {
             continue;
           }
-          const float w     = wx[dx] * wy[dy] * wz[dz];
+          const float w      = wx[dx] * wy[dy] * wz[dz];
           const size_t base3 = static_cast<size_t>(gi) * 3U;
           const float vx_i   = v_grid_view[base3 + 0U];
           const float vy_i   = v_grid_view[base3 + 1U];
@@ -294,9 +302,9 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
 
           if (out_C)
           {
-             const float gx_rel = (static_cast<float>(ix) - gx);
-             const float gy_rel = (static_cast<float>(iy) - gy);
-             const float gz_rel = (static_cast<float>(iz) - gz);
+            const float gx_rel = (static_cast<float>(ix) - gx);
+            const float gy_rel = (static_cast<float>(iy) - gy);
+            const float gz_rel = (static_cast<float>(iz) - gz);
             Cx[0] += w * vx_i * gx_rel;
             Cx[1] += w * vx_i * gy_rel;
             Cx[2] += w * vx_i * gz_rel;
@@ -308,14 +316,14 @@ void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
             Cz[2] += w * vz_i * gz_rel;
           }
         }
-    const size_t out_base = static_cast<size_t>(i) * 3U;
+    const size_t out_base       = static_cast<size_t>(i) * 3U;
     out_vel_view[out_base + 0U] = vx;
     out_vel_view[out_base + 1U] = vy;
     out_vel_view[out_base + 2U] = vz;
     if (out_C)
     {
-      const float s      = 4.0F * invh * invh;  // common APIC scaling
-      const size_t cbase = static_cast<size_t>(i) * 9U;
+      const float s          = 4.0F * invh * invh;  // common APIC scaling
+      const size_t cbase     = static_cast<size_t>(i) * 9U;
       out_C_view[cbase + 0U] = s * Cx[0];
       out_C_view[cbase + 1U] = s * Cx[1];
       out_C_view[cbase + 2U] = s * Cx[2];
