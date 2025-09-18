@@ -17,20 +17,26 @@ extern "C"
   {
     double s = 0.0;  // extended precision accumulator
     for (size_t i = 0; i < n; ++i)
+    {
       s += static_cast<double>(a[i]) * static_cast<double>(b[i]);
+    }
     return static_cast<float>(s);
   }
 
   static inline void axpy(size_t n, float alpha, const float* x, float* y)
   {
     for (size_t i = 0; i < n; ++i)
+    {
       y[i] += alpha * x[i];
+    }
   }
 
   static inline void scal(size_t n, float alpha, float* x)
   {
     for (size_t i = 0; i < n; ++i)
+    {
       x[i] *= alpha;
+    }
   }
 
   /**
@@ -78,31 +84,41 @@ extern "C"
                                 zx_apply_prec_fn apply_prec, void* user, const zx_pcg_opts* opts,
                                 float* out_final_resid)
   {
-    if (!b || !x || !apply_A || !opts || n == 0)
+    if ((b == nullptr) || (x == nullptr) || (apply_A == nullptr) || (opts == nullptr) || (n == 0))
+    {
       return 0;
+    }
     const uint32_t max_iters = std::max<uint32_t>(1U, opts->max_iters);
-    const float tol_abs      = (opts->tol_abs > 0.0f) ? opts->tol_abs : 0.0f;
-    const float tol_rel      = (opts->tol_rel > 0.0f) ? opts->tol_rel : 0.0f;
+    const float tol_abs      = (opts->tol_abs > 0.0F) ? opts->tol_abs : 0.0F;
+    const float tol_rel      = (opts->tol_rel > 0.0F) ? opts->tol_rel : 0.0F;
 
-    std::vector<float> r(n, 0.0f), z(n, 0.0f), p(n, 0.0f), Ap(n, 0.0f);
+    std::vector<float> r(n, 0.0F), z(n, 0.0F), p(n, 0.0F), Ap(n, 0.0F);
 
     // r = b - A x
     apply_A(x, Ap.data(), user);
     for (size_t i = 0; i < n; ++i)
-      r[i] = b[i] - Ap[i];
-
-    float b_norm = std::sqrt(std::max(0.0f, dot(n, b, b)));
-    if (b_norm == 0.0f)
     {
-      if (out_final_resid)
-        *out_final_resid = 0.0f;
+      r[i] = b[i] - Ap[i];
+    }
+
+    float b_norm = std::sqrt(std::max(0.0F, dot(n, b, b)));
+    if (b_norm == 0.0F)
+    {
+      if (out_final_resid != nullptr)
+      {
+        *out_final_resid = 0.0F;
+      }
       return 0;
     }
 
-    if (apply_prec)
+    if (apply_prec != nullptr)
+    {
       apply_prec(r.data(), z.data(), user);
+    }
     else
+    {
       copy(n, r.data(), z.data());
+    }
     copy(n, z.data(), p.data());
     float rz_old = dot(n, r.data(), z.data());
 
@@ -111,7 +127,7 @@ extern "C"
     {
       apply_A(p.data(), Ap.data(), user);
       float pAp = dot(n, p.data(), Ap.data());
-      if (pAp <= 0.0f || std::isnan(pAp) || std::isinf(pAp))
+      if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
       {
         break;  // not SPD or numerical failure
       }
@@ -119,24 +135,33 @@ extern "C"
       axpy(n, +alpha, p.data(), x);          // x = x + alpha p
       axpy(n, -alpha, Ap.data(), r.data());  // r = r - alpha A p
 
-      float r_norm = std::sqrt(std::max(0.0f, dot(n, r.data(), r.data())));
+      float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
       float thresh = std::max(tol_abs, tol_rel * b_norm);
       if (r_norm <= thresh)
       {
-        if (out_final_resid)
+        if (out_final_resid != nullptr)
+        {
           *out_final_resid = r_norm;
+        }
         ++k;
         break;
       }
 
-      if (apply_prec)
+      if (apply_prec != nullptr)
+      {
         apply_prec(r.data(), z.data(), user);
+      }
       else
+      {
         copy(n, r.data(), z.data());
-      float rz_new = dot(n, r.data(), z.data());
-      float beta   = rz_new / std::max(1e-30f, rz_old);
+      }
+      float rz_new              = dot(n, r.data(), z.data());
+      constexpr float k_epsilon = 1e-30F;
+      float beta                = rz_new / std::max(k_epsilon, rz_old);
       for (size_t i = 0; i < n; ++i)
+      {
         p[i] = z[i] + beta * p[i];
+      }
       rz_old = rz_new;
     }
 

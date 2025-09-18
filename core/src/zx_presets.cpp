@@ -18,46 +18,47 @@ struct PresetRow
   zx_norsand_state ns_state;
 };
 
-static const std::array<PresetRow, 7> kPresets = {{{"Fine Sand",
-                                                    {1.5e7F, 0.30F},
-                                                    {32.0F, 0.50F},
-                                                    {1.2F, 0.18F, 0.05F, 1.0e4F, 0.85F, 1.0F, 0.6F},
-                                                    {0.90F}},
-                                                   {"Coarse Sand",
-                                                    {2.0e7F, 0.28F},
-                                                    {35.0F, 0.80F},
-                                                    {1.3F, 0.16F, 0.05F, 1.0e4F, 0.80F, 1.0F, 0.6F},
-                                                    {0.88F}},
-                                                   {"Gravel",
-                                                    {5.0e7F, 0.25F},
-                                                    {42.0F, 0.50F},
-                                                    {1.5F, 0.12F, 0.04F, 1.0e4F, 0.75F, 1.0F, 0.5F},
-                                                    {0.75F}},
-                                                   {"Loam",
-                                                    {1.0e7F, 0.30F},
-                                                    {28.0F, 2.0F},
-                                                    {1.1F, 0.22F, 0.06F, 1.0e4F, 0.95F, 1.0F, 0.7F},
-                                                    {1.0F}},
-                                                   {"Clay",
-                                                    {2.0e7F, 0.32F},
-                                                    {20.0F, 50.0F},
-                                                    {0.9F, 0.25F, 0.08F, 1.0e4F, 1.10F, 1.0F, 0.4F},
-                                                    {1.10F}},
-                                                   {"Powder Snow",
-                                                    {0.8e6F, 0.25F},
-                                                    {20.0F, 1.0F},
-                                                    {0.6F, 0.30F, 0.09F, 1.0e4F, 1.20F, 1.0F, 0.3F},
-                                                    {1.20F}},
-                                                   {"Packed Snow",
-                                                    {5.0e6F, 0.30F},
-                                                    {25.0F, 3.0F},
-                                                    {0.8F, 0.25F, 0.07F, 1.0e4F, 1.00F, 1.0F, 0.5F},
-                                                    {1.00F}}}};
+static const std::array<PresetRow, 7> k_presets = {
+    {{"Fine Sand",
+      {1.5e7F, 0.30F},
+      {32.0F, 0.50F},
+      {1.2F, 0.18F, 0.05F, 1.0e4F, 0.85F, 1.0F, 0.6F},
+      {0.90F}},
+     {"Coarse Sand",
+      {2.0e7F, 0.28F},
+      {35.0F, 0.80F},
+      {1.3F, 0.16F, 0.05F, 1.0e4F, 0.80F, 1.0F, 0.6F},
+      {0.88F}},
+     {"Gravel",
+      {5.0e7F, 0.25F},
+      {42.0F, 0.50F},
+      {1.5F, 0.12F, 0.04F, 1.0e4F, 0.75F, 1.0F, 0.5F},
+      {0.75F}},
+     {"Loam",
+      {1.0e7F, 0.30F},
+      {28.0F, 2.0F},
+      {1.1F, 0.22F, 0.06F, 1.0e4F, 0.95F, 1.0F, 0.7F},
+      {1.0F}},
+     {"Clay",
+      {2.0e7F, 0.32F},
+      {20.0F, 50.0F},
+      {0.9F, 0.25F, 0.08F, 1.0e4F, 1.10F, 1.0F, 0.4F},
+      {1.10F}},
+     {"Powder Snow",
+      {0.8e6F, 0.25F},
+      {20.0F, 1.0F},
+      {0.6F, 0.30F, 0.09F, 1.0e4F, 1.20F, 1.0F, 0.3F},
+      {1.20F}},
+     {"Packed Snow",
+      {5.0e6F, 0.30F},
+      {25.0F, 3.0F},
+      {0.8F, 0.25F, 0.07F, 1.0e4F, 1.00F, 1.0F, 0.5F},
+      {1.00F}}}};
 
 /** \brief Number of available presets. */
 int zx_preset_count()
 {
-  return static_cast<int>(kPresets.size());
+  return static_cast<int>(k_presets.size());
 }
 
 /**
@@ -77,7 +78,7 @@ const char* zx_preset_name(int index)
   {
     return "";
   }
-  return kPresets.at(static_cast<size_t>(index)).name;
+  return k_presets.at(static_cast<size_t>(index)).name;
 }
 
 /**
@@ -98,16 +99,24 @@ int zx_preset_get(const char* name, zx_elastic_params* out_elastic, zx_mc_params
 {
   for (int i = 0; i < zx_preset_count(); ++i)
   {
-    if (std::strcmp(name, kPresets.at(static_cast<size_t>(i)).name) == 0)
+    if (std::strcmp(name, k_presets.at(static_cast<size_t>(i)).name) == 0)
     {
-      if (out_elastic)
-        *out_elastic = kPresets.at(static_cast<size_t>(i)).elastic;
-      if (out_mc)
-        *out_mc = kPresets.at(static_cast<size_t>(i)).mc;
-      if (out_ns_params)
-        *out_ns_params = kPresets.at(static_cast<size_t>(i)).ns;
-      if (out_ns_state)
-        *out_ns_state = kPresets.at(static_cast<size_t>(i)).ns_state;
+      if (out_elastic != nullptr)
+      {
+        *out_elastic = k_presets.at(static_cast<size_t>(i)).elastic;
+      }
+      if (out_mc != nullptr)
+      {
+        *out_mc = k_presets.at(static_cast<size_t>(i)).mc;
+      }
+      if (out_ns_params != nullptr)
+      {
+        *out_ns_params = k_presets.at(static_cast<size_t>(i)).ns;
+      }
+      if (out_ns_state != nullptr)
+      {
+        *out_ns_state = k_presets.at(static_cast<size_t>(i)).ns_state;
+      }
       return 1;
     }
   }

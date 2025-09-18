@@ -28,10 +28,10 @@ struct zx_residency
 
 static inline long long key(int x, int y, int z)
 {
-  constexpr int SHIFT_X = 42;  // NOLINT(readability-magic-numbers)
-  constexpr int SHIFT_Y = 21;  // NOLINT(readability-magic-numbers)
-  return ((static_cast<long long>(static_cast<unsigned int>(x)) << SHIFT_X) ^
-          (static_cast<long long>(static_cast<unsigned int>(y)) << SHIFT_Y) ^
+  constexpr int shift_x = 42;  // NOLINT(readability-magic-numbers)
+  constexpr int shift_y = 21;  // NOLINT(readability-magic-numbers)
+  return ((static_cast<long long>(static_cast<unsigned int>(x)) << shift_x) ^
+          (static_cast<long long>(static_cast<unsigned int>(y)) << shift_y) ^
           static_cast<long long>(static_cast<unsigned int>(z)));
 }
 
