@@ -20,7 +20,7 @@ struct tile_state  // NOLINT(readability-identifier-naming)
 
 struct zx_residency
 {
-  zx_residency_opts opts;
+  zx_residency_opts opts{};
   std::unordered_map<long long, tile_state> states;
   uint32_t active_count = 0;
   std::unordered_map<long long, bool> pinned;

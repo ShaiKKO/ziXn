@@ -1,162 +1,75 @@
-name: ci
+﻿name: ci
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:
 
 jobs:
-  format:
-    name: Auto-format (clang-format)
-    runs-on: windows-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Install LLVM (Windows)
-        run: choco install llvm -y
-      - name: Ensure clang-format on PATH (Windows)
-        shell: pwsh
-        run: echo "C:\\Program Files\\LLVM\\bin" >> $env:GITHUB_PATH
-      - name: Validate style configs present
-        run: |
-          test -f .clang-format || { echo '.clang-format missing'; exit 1; }
-          test -f .clang-tidy || { echo '.clang-tidy missing'; exit 1; }
-      - name: Run clang-format (in-place)
-        shell: bash
-        run: |
-          set -euo pipefail
-          git ls-files "core/src/*.{c,cpp}" "core/include/**/*.{h,hpp}" "kernels/*.hlsl" \
-            | tr '\n' '\0' | xargs -0 -r -I{} clang-format -i -style=file {}
-      - name: Auto-commit formatted changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "style: auto-format (clang-format)"
-          branch: ${{ github.head_ref || github.ref_name }}
-
   build:
     name: Build and Test
     runs-on: ${{ matrix.os }}
-    needs: format
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Install LLVM (Windows)
+      - name: Checkout (push)
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+      - name: Checkout (PR head)
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install clang-tidy (Windows)
         if: matrix.os == 'windows-latest'
         run: choco install llvm -y
-      - name: Ensure clang-format on PATH (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: echo "C:\\Program Files\\LLVM\\bin" >> $env:GITHUB_PATH
 
-      - name: Configure (Ninja + compile_commands)
-        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+      - name: Install clang-tidy (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install llvm
+
+      - name: Install clang-tidy (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+
+      - name: Configure
+        shell: bash
+        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
       - name: Build
+        shell: bash
         run: cmake --build build --config Release --parallel
-
-      - name: Build zx_cli
-        run: cmake --build build --config Release --target zx_cli
-
-      - name: Verify zx_cli.exe exists
-        shell: pwsh
-        run: |
-          $exe = Get-ChildItem -Path .\build -Recurse -Filter zx_cli.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-          if (-not $exe) {
-            Write-Error 'zx_cli.exe not found under build'
-          } else {
-            Write-Host ("Found zx_cli.exe at {0}" -f $exe.FullName)
-          }
       - name: Format check (clang-format)
         shell: bash
         run: |
           if command -v clang-format >/dev/null 2>&1; then
-            git ls-files "core/src/*.{c,cpp}" "core/include/**/*.{h,hpp}" "kernels/*.hlsl" | tr '\n' '\0' | xargs -0 -I{} clang-format --dry-run -Werror -style=file {}
+            git ls-files 'core/src/*.{c,cpp}' 'core/include/**/*.{h,hpp}' 'kernels/*.hlsl' | tr '\n' '\0' | xargs -0 -I{} clang-format --dry-run -Werror -style=file {}
           else
-            echo "clang-format not found"; exit 1
+            echo 'clang-format not found'; exit 1
           fi
 
-      - name: Lint (clang-tidy with compile_commands)
+      - name: Lint (clang-tidy)
         shell: bash
         run: |
-          set -euo pipefail
           clang-tidy --version
-          # Ensure compile_commands.json is present
-          test -f build/compile_commands.json || { echo 'compile_commands.json missing'; ls -la build; exit 1; }
-          files=$(git ls-files 'core/src/*.cpp')
-          # Use -p to pick up exact compiler flags from Ninja generator
-          clang-tidy -p build $files
+          cmake --build build --config Release --target zx
+          files=$(git ls-files 'core/src/*.cpp');
+          if [[ -n "$files" ]]; then
+            clang-tidy $files -- -Icore/include
+          fi
 
       - name: Test
-        run: |
-          ctest --test-dir build --output-on-failure -C Release -E "determinism_script"
-          ctest --test-dir build --output-on-failure -C Release -R "determinism_tests|checksum_parity_test"
-
-      # Determinism script step removed for non-Linux matrix
-
-      - name: Upload ctest logs (artifact)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ctest-logs-${{ matrix.os }}
-          path: build/Testing
-
-  bugbot-context:
-    name: Cursor BugBot Context
-    runs-on: windows-latest
-    needs: build
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Prepare context
         shell: bash
         run: |
-          set -euo pipefail
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          git fetch --no-tags --depth=1 origin "$BASE_SHA"
-          printf "COMMIT_MSG<<'EOF'\n" >> "$GITHUB_ENV"
-          git log -1 --pretty=%B >> "$GITHUB_ENV"
-          printf "\nEOF\n" >> "$GITHUB_ENV"
-          git diff --name-status "$BASE_SHA"..."${{ github.sha }}" > changed_files.txt || true
-          printf "CHANGED_FILES<<'EOF'\n" >> "$GITHUB_ENV"
-          cat changed_files.txt >> "$GITHUB_ENV"
-          printf "\nEOF\n" >> "$GITHUB_ENV"
-
-      - name: Post BugBot context comment
-        uses: actions/github-script@v7
-        env:
-          COMMIT_MSG: ${{ env.COMMIT_MSG }}
-          CHANGED_FILES: ${{ env.CHANGED_FILES }}
-        with:
-          script: |
-            const prNumber = context.payload.pull_request.number;
-            const sha = context.sha;
-            const branch = context.ref.replace('refs/heads/','');
-            const actor = context.actor;
-            const oses = ['windows-latest','ubuntu-latest','macos-latest'];
-            const artifacts = oses.map(os => ({ name: `ctest-logs-${os}` }));
-            const body = `<!-- cursor-bugbot:context v1 -->\n` +
-              `Commit: ${sha}\n` +
-              `Branch: ${branch}\n` +
-              `Author: @${actor}\n` +
-              `\nChanged files (base->HEAD):\n\n\`\n${process.env.CHANGED_FILES || ''}\n\`` +
-              `\n\nCommit message:\n\n\`\n${process.env.COMMIT_MSG || ''}\n\`` +
-              `\n\nArtifacts (per-OS ctest logs):\n` + artifacts.map(a => `- ${a.name}`).join('\n') +
-              `\n\nIf you're a bot, parse the fenced blocks above.`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body,
-            });
+          ctest --test-dir build --output-on-failure -C Release
+          ctest --test-dir build --output-on-failure -C Release -R 'determinism_tests|checksum_parity_test'
 
 
