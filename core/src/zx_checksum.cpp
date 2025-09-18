@@ -16,6 +16,7 @@ namespace
   constexpr int k_shift1                = 16;
   constexpr int k_shift2                = 32;
   constexpr int k_shift3                = 48;
+  constexpr int k_fold_shift            = 33;
 }  // namespace
 
 static inline uint64_t mix64(uint64_t x)
@@ -42,7 +43,6 @@ extern "C"
     h ^= mix64(static_cast<uint64_t>(static_cast<uint32_t>(tile->coord_y)));
     h ^= mix64(static_cast<uint64_t>(static_cast<uint32_t>(tile->coord_z)));
     constexpr int k_tile_node_count = ZX_TILE_B * ZX_TILE_B * ZX_TILE_B;
-    constexpr int k_fold_shift      = 33;  // 33-bit rotation spread constant
     for (int i = 0; i < k_tile_node_count; ++i)
     {
       const zx_tile_node& n = tile->nodes[i];

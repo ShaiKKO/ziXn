@@ -16,6 +16,13 @@ namespace
   constexpr float k_sqrt3 = 1.7320508075688772F;
   constexpr float k_eps30 = 1e-30F;
   constexpr float k_eps6  = 1e-6F;
+  constexpr float k_half  = 0.5F;
+  constexpr float k_two   = 2.0F;
+  constexpr float k_three = 3.0F;
+  constexpr float k_six   = 6.0F;
+  constexpr int k_nine    = 9;
+  constexpr int k_eight   = 8;
+  constexpr int k_ten     = 10;
 }  // namespace
 
 static inline float deg2rad(float d)
@@ -30,8 +37,8 @@ void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
   const float sinp  = std::sin(phi);
   const float sqrt3 = k_sqrt3;
   // Common MC->DP mapping (triaxial compression fit)
-  out_dp->alpha = (2.0F * sinp) / (sqrt3 * (3.0F - sinp));
-  out_dp->k     = (6.0F * c_pa * std::cos(phi)) / (sqrt3 * (3.0F - sinp));
+  out_dp->alpha = (k_two * sinp) / (sqrt3 * (k_three - sinp));
+  out_dp->k     = (k_six * c_pa * std::cos(phi)) / (sqrt3 * (k_three - sinp));
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
@@ -49,7 +56,7 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const float I1v = s[0] + s[4] + s[8];
-  float p         = I1v / 3.0F;
+  float p         = I1v / k_three;
   // deviatoric = s - pI
   float dev[zx_mat3_size];
   std::memcpy(dev, s, sizeof(dev));
@@ -63,7 +70,7 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
     dd += dev[idx] * dev[idx];
   }
   *I1 = I1v;
-  *J2 = 0.5F * dd;
+  *J2 = k_half * dd;
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
@@ -117,11 +124,11 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   float scale = 0.0F;
   if (s_norm > 0.0F)
   {
-    float target_s_norm = std::sqrt(2.0F * J2_new);
+    float target_s_norm = std::sqrt(k_two * J2_new);
     scale               = target_s_norm / s_norm;
   }
 
-  float p_new = I1_new / 3.0F;
+  float p_new = I1_new / k_three;
   float sigma_proj[zx_mat3_size];
   for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
@@ -140,7 +147,7 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   N[4] += dp->alpha;
   N[8] += dp->alpha;
   // deviatoric contribution from trial
-  float denom = 2.0F * std::max(sqrtJ2, eps);
+  float denom = k_two * std::max(sqrtJ2, eps);
   for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
     N[idx] += dev[idx] / denom;
