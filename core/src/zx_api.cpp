@@ -27,7 +27,9 @@
 static zx_status ZX_CALL create_context_stub(const zx_context_desc* d, zx_context* out)
 {
   if ((d == nullptr) || (out == nullptr) || (d->size < sizeof(zx_context_desc)))
+  {
     return ZX_E_INVALID;
+  }
   *out = (zx_context) 1; /* non-zero token stub */
   return ZX_OK;
 }
@@ -38,7 +40,10 @@ static zx_status ZX_CALL create_context_stub(const zx_context_desc* d, zx_contex
  * This stub accepts a zx_context token and performs no action. It exists to
  * satisfy the API surface for implementations that do not require teardown.
  */
-static void ZX_CALL destroy_context_stub(zx_context) {}
+static void ZX_CALL destroy_context_stub(zx_context ctx)
+{
+  (void) ctx;
+}
 /**
  * @brief Stub implementation for binding a device to a context.
  *
@@ -50,10 +55,13 @@ static void ZX_CALL destroy_context_stub(zx_context) {}
  * @return ZX_OK on success with `*out` set to a non-zero token (1).
  * @return ZX_E_INVALID if `dd` or `out` is null or `dd->size` is too small.
  */
-static zx_status ZX_CALL bind_device_stub(zx_context, const zx_device_desc* dd, zx_device* out)
+static zx_status ZX_CALL bind_device_stub(zx_context ctx, const zx_device_desc* dd, zx_device* out)
 {
+  (void) ctx;
   if ((dd == nullptr) || (out == nullptr) || (dd->size < sizeof(zx_device_desc)))
+  {
     return ZX_E_INVALID;
+  }
   *out = (zx_device) 1;
   return ZX_OK;
 }
@@ -96,7 +104,10 @@ static zx_status ZX_CALL create_scene_stub(zx_context, const zx_scene_desc* sd, 
  * Accepts a zx_scene token for API compatibility but performs no action. Present to populate the
  * proc table where a scene-destruction callback is required.
  */
-static void ZX_CALL destroy_scene_stub(zx_scene) {}
+static void ZX_CALL destroy_scene_stub(zx_scene sc)
+{
+  (void) sc;
+}
 /**
  * @brief Creates a minimal material handle stub.
  *
@@ -108,11 +119,14 @@ static void ZX_CALL destroy_scene_stub(zx_scene) {}
  * @param out Pointer to receive the created material token; set to a non-zero value on success.
  * @return ZX_OK on success, or ZX_E_INVALID if inputs are null or `md->size` is too small.
  */
-static zx_status ZX_CALL create_material_stub(zx_context, const zx_material_desc* md,
+static zx_status ZX_CALL create_material_stub(zx_context ctx, const zx_material_desc* md,
                                               zx_material* out)
 {
-  if (!md || !out || md->size < sizeof(zx_material_desc))
+  (void) ctx;
+  if ((md == nullptr) || (out == nullptr) || (md->size < sizeof(zx_material_desc)))
+  {
     return ZX_E_INVALID;
+  }
   *out = (zx_material) 1;
   return ZX_OK;
 }
@@ -123,7 +137,10 @@ static zx_status ZX_CALL create_material_stub(zx_context, const zx_material_desc
  *
  * @param material Opaque material token (ignored).
  */
-static void ZX_CALL destroy_material_stub(zx_material) {}
+static void ZX_CALL destroy_material_stub(zx_material material)
+{
+  (void) material;
+}
 /**
  * @brief Create a minimal rig handle from a descriptor.
  *
@@ -136,10 +153,13 @@ static void ZX_CALL destroy_material_stub(zx_material) {}
  * @return ZX_OK on success (and `*out` is set to a non-zero token).
  * @return ZX_E_INVALID if `rd` or `out` is null or `rd->size` is too small.
  */
-static zx_status ZX_CALL create_rig_stub(zx_context, const zx_rig_desc* rd, zx_rig* out)
+static zx_status ZX_CALL create_rig_stub(zx_context ctx, const zx_rig_desc* rd, zx_rig* out)
 {
+  (void) ctx;
   if ((rd == nullptr) || (out == nullptr) || (rd->size < sizeof(zx_rig_desc)))
+  {
     return ZX_E_INVALID;
+  }
   *out = (zx_rig) 1;
   return ZX_OK;
 }
@@ -151,7 +171,10 @@ static zx_status ZX_CALL create_rig_stub(zx_context, const zx_rig_desc* rd, zx_r
  *
  * @param rig The rig token to destroy (ignored).
  */
-static void ZX_CALL destroy_rig_stub(zx_rig) {}
+static void ZX_CALL destroy_rig_stub(zx_rig rig)
+{
+  (void) rig;
+}
 /**
  * @brief Validate a frame-begin descriptor for the given scene.
  *
@@ -161,10 +184,13 @@ static void ZX_CALL destroy_rig_stub(zx_rig) {}
  * @param fb Pointer to a frame-begin descriptor to validate.
  * @return ZX_OK if `fb` is valid; ZX_E_INVALID if `fb` is null or too small.
  */
-static zx_status ZX_CALL begin_frame_stub(zx_scene, const zx_frame_begin* fb)
+static zx_status ZX_CALL begin_frame_stub(zx_scene sc, const zx_frame_begin* fb)
 {
+  (void) sc;
   if ((fb == nullptr) || (fb->size < sizeof(zx_frame_begin)))
+  {
     return ZX_E_INVALID;
+  }
   return ZX_OK;
 }
 /**
@@ -179,10 +205,13 @@ static zx_status ZX_CALL begin_frame_stub(zx_scene, const zx_frame_begin* fb)
  * @return zx_status ZX_OK if `sp` is valid; ZX_E_INVALID if `sp` is null
  *         or its size is too small.
  */
-static zx_status ZX_CALL simulate_stub(zx_scene, const zx_sim_params* sp)
+static zx_status ZX_CALL simulate_stub(zx_scene sc, const zx_sim_params* sp)
 {
+  (void) sc;
   if ((sp == nullptr) || (sp->size < sizeof(zx_sim_params)))
+  {
     return ZX_E_INVALID;
+  }
   return ZX_OK;
 }
 /**
@@ -197,10 +226,13 @@ static zx_status ZX_CALL simulate_stub(zx_scene, const zx_sim_params* sp)
  *           and have wb->size >= sizeof(zx_writeback_desc).
  * @return ZX_OK on success. Returns ZX_E_INVALID if `wb` is null or `wb->size` is too small.
  */
-static zx_status ZX_CALL writeback_stub(zx_scene, const zx_writeback_desc* wb)
+static zx_status ZX_CALL writeback_stub(zx_scene sc, const zx_writeback_desc* wb)
 {
+  (void) sc;
   if ((wb == nullptr) || (wb->size < sizeof(zx_writeback_desc)))
+  {
     return ZX_E_INVALID;
+  }
   /* If a CPU displacement buffer is provided, perform a trivial clear for now */
   if ((wb->displacement != nullptr) && (wb->width != 0U) && (wb->height != 0U) &&
       (wb->row_pitch_bytes != 0U))
@@ -210,7 +242,10 @@ static zx_status ZX_CALL writeback_stub(zx_scene, const zx_writeback_desc* wb)
     for (uint32_t y = 0; y < wb->height; ++y)
     {
       for (uint32_t x = 0; x < wb->width; ++x)
-        disp[y * pitch + x] = 0.0f;
+      {
+        disp[(static_cast<size_t>(y) * static_cast<size_t>(pitch)) + static_cast<size_t>(x)] =
+            0.0F;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      }
     }
   }
   return ZX_OK;
@@ -225,10 +260,13 @@ static zx_status ZX_CALL writeback_stub(zx_scene, const zx_writeback_desc* wb)
  * @return zx_status ZX_OK if the descriptor is valid; ZX_E_INVALID if `fe` is null
  * or its `size` is smaller than sizeof(zx_frame_end).
  */
-static zx_status ZX_CALL end_frame_stub(zx_scene, const zx_frame_end* fe)
+static zx_status ZX_CALL end_frame_stub(zx_scene sc, const zx_frame_end* fe)
 {
+  (void) sc;
   if ((fe == nullptr) || (fe->size < sizeof(zx_frame_end)))
+  {
     return ZX_E_INVALID;
+  }
   return ZX_OK;
 }
 /**
@@ -247,14 +285,14 @@ static zx_status ZX_CALL get_counters_stub(zx_context, zx_counters* c, uint32_t*
   if ((c == nullptr) || (count == nullptr) || (c->size < sizeof(zx_counters)))
     return ZX_E_INVALID;
   *count               = 1;
-  c->version           = 0x00010000U;
+  c->version           = zx_abi_version;
   c->particle_count    = 0;
   c->active_tiles      = 0;
   c->contact_saturated = 0;
-  c->last_step_ms      = 0.0f;
-  c->p2g_ms = c->grid_ms = c->g2p_ms = c->writeback_ms = 0.0f;
-  c->mass_drift_abs                                    = 0.0f;
-  c->max_penetration                                   = 0.0f;
+  c->last_step_ms      = 0.0F;
+  c->p2g_ms = c->grid_ms = c->g2p_ms = c->writeback_ms = 0.0F;
+  c->mass_drift_abs                                    = 0.0F;
+  c->max_penetration                                   = 0.0F;
   c->substeps                                          = 1;
   return ZX_OK;
 }
@@ -306,11 +344,15 @@ static const char* ZX_CALL error_string_impl(zx_status s)
 zx_status ZX_CALL zx_get_proc_table(uint32_t abi_version, zx_procs* out_procs)
 {
   if (out_procs == nullptr)
+  {
     return ZX_E_INVALID;
+  }
   /* Zero on entry so callers never observe stale pointers on failure */
   std::memset(out_procs, 0, sizeof(*out_procs));
   if (abi_version != zx_abi_version)
+  {
     return ZX_E_UNSUPPORTED;
+  }
   out_procs->size             = sizeof(zx_procs);
   out_procs->version          = zx_abi_version;
   out_procs->create_context   = &create_context_stub;
