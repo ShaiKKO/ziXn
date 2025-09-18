@@ -52,25 +52,28 @@ void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
+void zx_stress_invariants(const float s[zx_mat3_size], float* i1_out, float* j2_out)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 {
-  const float i1v = s[0] + s[4] + s[8];
-  float p         = i1v / k_three;
+  // Copy to std::array to avoid pointer arithmetic on C arrays
+  std::array<float, zx_mat3_size> s_arr{};
+  std::memcpy(s_arr.data(), s, sizeof(float) * zx_mat3_size);
+  const float i1v = s_arr[0] + s_arr[4] + s_arr[8];
+  const float p   = i1v / k_three;
   // deviatoric = s - pI
-  float dev[zx_mat3_size];
-  std::memcpy(dev, s, sizeof(dev));
+  std::array<float, zx_mat3_size> dev{};
+  std::memcpy(dev.data(), s, sizeof(float) * zx_mat3_size);
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
   // J2 = 1/2 * dev:dev
   float dd = 0.0F;
-  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
+  for (const float v : dev)
   {
-    dd += dev[idx] * dev[idx];
+    dd += v * v;
   }
-  *I1 = i1v;
-  *J2 = k_half * dd;
+  *i1_out = i1v;
+  *j2_out = k_half * dd;
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
@@ -79,20 +82,21 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
                       float* delta_gamma_out)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 {
-  float I1, J2;
-  zx_stress_invariants(sigma_trial, &I1, &J2);
-  float sqrtJ2 = std::sqrt(std::max(0.0F, J2));
-  float f      = dp->alpha * I1 + sqrtJ2 - dp->k;
+  float i1 = 0.0F;
+  float j2 = 0.0F;
+  zx_stress_invariants(sigma_trial, &i1, &j2);
+  float sqrt_j2 = std::sqrt(std::max(0.0F, j2));
+  float f       = (dp->alpha * i1) + sqrt_j2 - dp->k;
 
   // Cap check (compression): if I1 < i1_min, project to cap line in I1
-  float I1c = I1;
-  if ((cap != nullptr) && (cap->enabled != 0) && (I1 < cap->i1_min))
+  float i1c = i1;
+  if ((cap != nullptr) && (cap->enabled != 0) && (i1 < cap->i1_min))
   {
-    I1c = cap->i1_min;
+    i1c = cap->i1_min;
   }
-  if (f <= 0.0F && I1 == I1c)
+  if ((f <= 0.0F) && (i1 == i1c))
   {
-    std::memcpy(sigma_out, sigma_trial, sizeof(float) * 9);
+    std::memcpy(sigma_out, sigma_trial, sizeof(float) * k_nine);
     if (delta_gamma_out != nullptr)
     {
       *delta_gamma_out = 0.0F;
@@ -101,12 +105,9 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   }
 
   // Deviatoric decomposition
-  float dev[9];
-  float p = I1 / k_three;
-  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
-  {
-    dev[idx] = sigma_trial[idx];
-  }
+  std::array<float, zx_mat3_size> dev{};
+  const float p = i1 / k_three;
+  std::memcpy(dev.data(), sigma_trial, sizeof(float) * zx_mat3_size);
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
@@ -115,23 +116,23 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   {
     s2 += dev[idx] * dev[idx];
   }
-  float s_norm = std::sqrt(std::max(k_eps30, s2));
+  const float s_norm = std::sqrt(std::max(k_eps30, s2));
 
   // Target invariants on the yield surface after cap clamp
-  float I1_new     = I1c;
-  float sqrtJ2_new = std::max(0.0F, dp->k - dp->alpha * I1_new);
-  float J2_new     = sqrtJ2_new * sqrtJ2_new;
+  float i1_new      = i1c;
+  float sqrt_j2_new = std::max(0.0F, dp->k - (dp->alpha * i1_new));
+  float j2_new      = sqrt_j2_new * sqrt_j2_new;
 
   // Scale deviatoric part to match J2_new
   float scale = 0.0F;
   if (s_norm > 0.0F)
   {
-    float target_s_norm = std::sqrt(k_two * J2_new);
-    scale               = target_s_norm / s_norm;
+    const float target_s_norm = std::sqrt(k_two * j2_new);
+    scale                     = target_s_norm / s_norm;
   }
 
-  float p_new = I1_new / k_three;
-  float sigma_proj[zx_mat3_size];
+  const float p_new = i1_new / k_three;
+  std::array<float, zx_mat3_size> sigma_proj{};
   for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
     sigma_proj[idx] = scale * dev[idx];
@@ -142,14 +143,14 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 
   // Line search to ensure non-negative plastic work with associated flow
   // Flow direction N = ∂f/∂σ ≈ alpha*I + dev/(2*sqrt(J2)+eps)
-  const float eps       = k_eps6;
-  float N[zx_mat3_size] = {0.0F};
+  const float eps = k_eps6;
+  std::array<float, zx_mat3_size> N{};
   // alpha*I contribution
   N[0] += dp->alpha;
   N[4] += dp->alpha;
   N[8] += dp->alpha;
   // deviatoric contribution from trial
-  float denom = k_two * std::max(sqrtJ2, eps);
+  const float denom = k_two * std::max(sqrt_j2, eps);
   for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
     N[idx] += dev[idx] / denom;
@@ -176,7 +177,7 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   };
 
   float step = 1.0F;
-  float sigma_candidate[zx_mat3_size];
+  std::array<float, zx_mat3_size> sigma_candidate{};
   constexpr int k_max_iters = 10;
   for (int iter = 0; iter < k_max_iters; ++iter)
   {
@@ -184,17 +185,17 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
     {
       sigma_candidate[idx] = sigma_trial[idx] + step * (sigma_proj[idx] - sigma_trial[idx]);
     }
-    float d_eps_p[zx_mat3_size];
+    std::array<float, zx_mat3_size> d_eps_p{};
     for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
       d_eps_p[idx] = (dgamma * step) * N[idx];
     }
-    float d_sigma[zx_mat3_size];
-    sub9(sigma_candidate, sigma_trial, d_sigma);
-    float W = dot9(d_sigma, d_eps_p);  // plastic work increment
+    std::array<float, zx_mat3_size> d_sigma{};
+    sub9(sigma_candidate.data(), sigma_trial, d_sigma.data());
+    const float W = dot9(d_sigma.data(), d_eps_p.data());  // plastic work increment
     if (W >= -k_eps6)
     {
-      std::memcpy(sigma_out, sigma_candidate, sizeof(float) * 9);
+      std::memcpy(sigma_out, sigma_candidate.data(), sizeof(float) * k_nine);
       if (delta_gamma_out != nullptr)
       {
         *delta_gamma_out = dgamma * step;
@@ -204,9 +205,11 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
     step *= 0.5F;  // backtrack
   }
   // Fallback if line search fails (should not): accept projection
-  std::memcpy(sigma_out, sigma_proj, sizeof(float) * 9);
+  std::memcpy(sigma_out, sigma_proj.data(), sizeof(float) * k_nine);
   if (delta_gamma_out != nullptr)
+  {
     *delta_gamma_out = dgamma * step;
+  }
 }
 
 static void eig3_sym(const float s[9], float eval[3])

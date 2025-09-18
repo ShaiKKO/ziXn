@@ -20,15 +20,16 @@ namespace
   constexpr int k_shift2                = 32;
   constexpr int k_shift3                = 48;
   constexpr int k_fold_shift            = 33;
+  constexpr int k_mix_shift             = 33;
 }  // namespace
 
 static inline uint64_t mix64(uint64_t x)
 {
-  x ^= x >> 33;
+  x ^= x >> k_mix_shift;
   x *= k_mix1;
-  x ^= x >> 33;
+  x ^= x >> k_mix_shift;
   x *= k_mix2;
-  x ^= x >> 33;
+  x ^= x >> k_mix_shift;
   return x;
 }
 
@@ -48,6 +49,8 @@ extern "C"
     constexpr int k_tile_node_count = ZX_TILE_B * ZX_TILE_B * ZX_TILE_B;
     for (int i = 0; i < k_tile_node_count; ++i)
     {
+      // Access by runtime index is required to walk nodes; struct layout is ABI-fixed.
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
       const zx_tile_node& n = tile->nodes[i];
       // consume three floats of momentum and one float of mass as 4x32; fold to 64
       uint64_t a = 0ULL;
