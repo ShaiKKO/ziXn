@@ -321,4 +321,6 @@ uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
 {
   return (ctx != nullptr) ? ctx->active_count : 0;
 }
+#ifdef __cplusplus
 }
+#endif
