@@ -173,7 +173,7 @@ extern "C"
       return;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    zx_telemetry::err e;
+    zx_telemetry::ErrorRecord e;
     e.scene = (scene != nullptr) ? scene : "";
     e.step  = step_index;
     e.code  = code;

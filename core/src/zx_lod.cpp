@@ -214,9 +214,9 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
   std::vector<int> pre_ix0;
   std::vector<int> pre_ix1;
   std::vector<float> pre_tx;
-  pre_ix0.resize((size_t) NV * 8u);
-  pre_ix1.resize((size_t) NV * 8u);
-  pre_tx.resize((size_t) NV * 8u);
+  pre_ix0.resize(static_cast<size_t>(NV) * 8U);
+  pre_ix1.resize(static_cast<size_t>(NV) * 8U);
+  pre_tx.resize(static_cast<size_t>(NV) * 8U);
   __m256 half        = _mm256_set1_ps(0.5f);
   __m256 neg_quarter = _mm256_set1_ps(-0.25f);
   __m256i zero       = _mm256_set1_epi32(0);
@@ -233,7 +233,7 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
     __m256 vtx    = _mm256_sub_ps(vfx, vfloor);
     __m256i vx1   = _mm256_min_epi32(_mm256_add_epi32(vx0, _mm256_set1_epi32(1)), xmax);
     // store into scalar arrays to avoid template attribute warnings on __m256* vector elements
-    size_t base = (size_t) i * 8u;
+    size_t base = static_cast<size_t>(i) * 8U;
     alignas(32) int x0buf[8];
     alignas(32) int x1buf[8];
     alignas(32) float txbuf[8];
@@ -274,12 +274,12 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
     uint32_t i = 0;
     for (; x + 16 <= vecW; x += 16, i += 2)
     {
-      const int* px0a   = &pre_ix0[(size_t) i * 8u];
-      const int* px1a   = &pre_ix1[(size_t) i * 8u];
-      const float* ptxa = &pre_tx[(size_t) i * 8u];
-      const int* px0b   = &pre_ix0[(size_t) (i + 1) * 8u];
-      const int* px1b   = &pre_ix1[(size_t) (i + 1) * 8u];
-      const float* ptxb = &pre_tx[(size_t) (i + 1) * 8u];
+      const int* px0a   = &pre_ix0[static_cast<size_t>(i) * 8U];
+      const int* px1a   = &pre_ix1[static_cast<size_t>(i) * 8U];
+      const float* ptxa = &pre_tx[static_cast<size_t>(i) * 8U];
+      const int* px0b   = &pre_ix0[static_cast<size_t>(i + 1) * 8U];
+      const int* px1b   = &pre_ix1[static_cast<size_t>(i + 1) * 8U];
+      const float* ptxb = &pre_tx[static_cast<size_t>(i + 1) * 8U];
       __m256i vx0a      = _mm256_loadu_si256((const __m256i*) px0a);
       __m256i vx1a      = _mm256_loadu_si256((const __m256i*) px1a);
       __m256 vtxa       = _mm256_loadu_ps(ptxa);
@@ -314,12 +314,12 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
       // two iterations of the 16-col body
       for (int rep = 0; rep < 2; ++rep)
       {
-        const int* px0a   = &pre_ix0[(size_t) i * 8u];
-        const int* px1a   = &pre_ix1[(size_t) i * 8u];
-        const float* ptxa = &pre_tx[(size_t) i * 8u];
-        const int* px0b   = &pre_ix0[(size_t) (i + 1) * 8u];
-        const int* px1b   = &pre_ix1[(size_t) (i + 1) * 8u];
-        const float* ptxb = &pre_tx[(size_t) (i + 1) * 8u];
+        const int* px0a   = &pre_ix0[static_cast<size_t>(i) * 8U];
+        const int* px1a   = &pre_ix1[static_cast<size_t>(i) * 8U];
+        const float* ptxa = &pre_tx[static_cast<size_t>(i) * 8U];
+        const int* px0b   = &pre_ix0[static_cast<size_t>(i + 1) * 8U];
+        const int* px1b   = &pre_ix1[static_cast<size_t>(i + 1) * 8U];
+        const float* ptxb = &pre_tx[static_cast<size_t>(i + 1) * 8U];
         __m256i vx0a      = _mm256_loadu_si256((const __m256i*) px0a);
         __m256i vx1a      = _mm256_loadu_si256((const __m256i*) px1a);
         __m256 vtxa       = _mm256_loadu_ps(ptxa);
@@ -353,9 +353,9 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
 #endif
     for (; x < vecW; x += 8, ++i)
     {
-      const int* px0   = &pre_ix0[(size_t) i * 8u];
-      const int* px1   = &pre_ix1[(size_t) i * 8u];
-      const float* ptx = &pre_tx[(size_t) i * 8u];
+      const int* px0   = &pre_ix0[static_cast<size_t>(i) * 8U];
+      const int* px1   = &pre_ix1[static_cast<size_t>(i) * 8U];
+      const float* ptx = &pre_tx[static_cast<size_t>(i) * 8U];
       __m256i vx0      = _mm256_loadu_si256((const __m256i*) px0);
       __m256i vx1      = _mm256_loadu_si256((const __m256i*) px1);
       __m256 vtx       = _mm256_loadu_ps(ptx);
@@ -701,7 +701,7 @@ int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p, uint32_t res
 
 /* Global fallback defaults */
 static int g_lod_enabled                   = 0;
-static zx_lod_fallback_policy g_lod_policy = {1000000u, 1e9f, 2u, 2u, 3u};
+static zx_lod_fallback_policy g_lod_policy = {1000000U, 1.0e9F, 2U, 2U, 3U};
 
 void ZX_CALL zx_lod_set_enabled(int on)
 {

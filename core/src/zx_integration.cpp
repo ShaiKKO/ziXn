@@ -179,7 +179,7 @@ extern "C"
           n.mom_y = 0.0f;
           n.mom_z = 0.0f;
         }
-    const float r_nodes = (float) std::max(1u, p->wheel_radius_nodes);
+    const float r_nodes = static_cast<float>(std::max(1U, p->wheel_radius_nodes));
     const float cx = B / 2.0f, cy = B / 2.0f;
     const float ground_z = (float) (B / 2);
 

@@ -80,7 +80,7 @@ extern "C"
   {
     if (!b || !x || !apply_A || !opts || n == 0)
       return 0;
-    const uint32_t max_iters = std::max<uint32_t>(1u, opts->max_iters);
+    const uint32_t max_iters = std::max<uint32_t>(1U, opts->max_iters);
     const float tol_abs      = (opts->tol_abs > 0.0f) ? opts->tol_abs : 0.0f;
     const float tol_rel      = (opts->tol_rel > 0.0f) ? opts->tol_rel : 0.0f;
 

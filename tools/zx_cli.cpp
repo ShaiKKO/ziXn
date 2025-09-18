@@ -84,7 +84,7 @@ int main(int argc, char** argv)
   int deterministic         = 0;
   unsigned long long seed   = 0ULL;
   const char* fallback_mode = "off";  // off|on|auto
-  zx_lod_fallback_policy fbp{1000000u, 1e9f, 2u, 2u, 3u};
+  zx_lod_fallback_policy fbp{1000000U, 1.0e9F, 2U, 2U, 3U};
   int prefetch_rings_cli = -1;
   int pin_args[6];
   int have_pin          = 0;
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
       have_pin = 1;
     }
   }
-  if (!mode)
+  if (mode == nullptr)
   {
     print_usage();
     return 1;
@@ -235,13 +235,13 @@ int main(int argc, char** argv)
     if (out_path)
     {
       f = std::fopen(out_path, "wb");
-      if (!f)
+      if (f == nullptr)
       {
         std::perror("fopen");
         return 2;
       }
     }
-    std::fprintf(f, "{\n  \"presets\": [\n");
+    std::fprintf(f, "{\n  \"presets\": [\n");  // NOLINT(cppcoreguidelines-pro-type-vararg)
     for (int i = 0; i < zx_preset_count(); ++i)
     {
       const char* nm = zx_preset_name(i);
@@ -250,7 +250,7 @@ int main(int argc, char** argv)
       zx_norsand_params ns{};
       zx_norsand_state st{};
       zx_preset_get(nm, &ep, &mc, &ns, &st);
-      std::fprintf(
+      std::fprintf(  // NOLINT(cppcoreguidelines-pro-type-vararg)
           f,
           "    {\n      \"name\": \"%s\",\n      \"elastic\": {\"E\": %.6g, \"nu\": %.6g},\n      "
           "\"mc\": {\"phi_deg\": %.3f, \"cohesion_kpa\": %.3f},\n      \"norsand\": {\"M\": %.3f, "
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
           ns.kappa, ns.p_ref, ns.e_ref, ns.n_exp, ns.dilatancy_scale, st.void_ratio_e,
           (i + 1 < zx_preset_count() ? "," : ""));
     }
-    std::fprintf(f, "  ]\n}\n");
+    std::fprintf(f, "  ]\n}\n");  // NOLINT(cppcoreguidelines-pro-type-vararg)
     if (out_path)
       std::fclose(f);
     return 0;
@@ -281,7 +281,7 @@ int main(int argc, char** argv)
     const int W = bench_size, H = bench_size;
     if (W < 16 || H < 16)
     {
-      std::fprintf(stderr, "size too small\n");
+      std::fprintf(stderr, "size too small\n");  // NOLINT(cppcoreguidelines-pro-type-vararg)
       return 2;
     }
     std::vector<float> A((size_t) W * H), B((size_t) W * H);
@@ -378,7 +378,7 @@ int main(int argc, char** argv)
   }
   else if (std::strcmp(mode, "scene") == 0)
   {
-    if (!scene_name)
+    if (scene_name == nullptr)
     {
       print_usage();
       return 1;

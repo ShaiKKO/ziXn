@@ -8,7 +8,7 @@
  */
 
 #include "zx/zx_abi.h"
-#include <string.h>
+#include <cstring>
 
 /* ABI version defined in public header */
 
@@ -26,7 +26,7 @@
 
 static zx_status ZX_CALL create_context_stub(const zx_context_desc* d, zx_context* out)
 {
-  if (!d || !out || d->size < sizeof(zx_context_desc))
+  if ((d == nullptr) || (out == nullptr) || (d->size < sizeof(zx_context_desc)))
     return ZX_E_INVALID;
   *out = (zx_context) 1; /* non-zero token stub */
   return ZX_OK;
@@ -52,7 +52,7 @@ static void ZX_CALL destroy_context_stub(zx_context) {}
  */
 static zx_status ZX_CALL bind_device_stub(zx_context, const zx_device_desc* dd, zx_device* out)
 {
-  if (!dd || !out || dd->size < sizeof(zx_device_desc))
+  if ((dd == nullptr) || (out == nullptr) || (dd->size < sizeof(zx_device_desc)))
     return ZX_E_INVALID;
   *out = (zx_device) 1;
   return ZX_OK;
@@ -85,7 +85,7 @@ static zx_status ZX_CALL unbind_device_stub(zx_device)
  */
 static zx_status ZX_CALL create_scene_stub(zx_context, const zx_scene_desc* sd, zx_scene* out)
 {
-  if (!sd || !out || sd->size < sizeof(zx_scene_desc))
+  if ((sd == nullptr) || (out == nullptr) || (sd->size < sizeof(zx_scene_desc)))
     return ZX_E_INVALID;
   *out = (zx_scene) 1;
   return ZX_OK;
@@ -138,7 +138,7 @@ static void ZX_CALL destroy_material_stub(zx_material) {}
  */
 static zx_status ZX_CALL create_rig_stub(zx_context, const zx_rig_desc* rd, zx_rig* out)
 {
-  if (!rd || !out || rd->size < sizeof(zx_rig_desc))
+  if ((rd == nullptr) || (out == nullptr) || (rd->size < sizeof(zx_rig_desc)))
     return ZX_E_INVALID;
   *out = (zx_rig) 1;
   return ZX_OK;
@@ -163,7 +163,7 @@ static void ZX_CALL destroy_rig_stub(zx_rig) {}
  */
 static zx_status ZX_CALL begin_frame_stub(zx_scene, const zx_frame_begin* fb)
 {
-  if (!fb || fb->size < sizeof(zx_frame_begin))
+  if ((fb == nullptr) || (fb->size < sizeof(zx_frame_begin)))
     return ZX_E_INVALID;
   return ZX_OK;
 }
@@ -181,7 +181,7 @@ static zx_status ZX_CALL begin_frame_stub(zx_scene, const zx_frame_begin* fb)
  */
 static zx_status ZX_CALL simulate_stub(zx_scene, const zx_sim_params* sp)
 {
-  if (!sp || sp->size < sizeof(zx_sim_params))
+  if ((sp == nullptr) || (sp->size < sizeof(zx_sim_params)))
     return ZX_E_INVALID;
   return ZX_OK;
 }
@@ -199,12 +199,13 @@ static zx_status ZX_CALL simulate_stub(zx_scene, const zx_sim_params* sp)
  */
 static zx_status ZX_CALL writeback_stub(zx_scene, const zx_writeback_desc* wb)
 {
-  if (!wb || wb->size < sizeof(zx_writeback_desc))
+  if ((wb == nullptr) || (wb->size < sizeof(zx_writeback_desc)))
     return ZX_E_INVALID;
   /* If a CPU displacement buffer is provided, perform a trivial clear for now */
-  if (wb->displacement && wb->width && wb->height && wb->row_pitch_bytes)
+  if ((wb->displacement != nullptr) && (wb->width != 0U) && (wb->height != 0U) &&
+      (wb->row_pitch_bytes != 0U))
   {
-    float* disp          = (float*) wb->displacement;
+    auto* disp           = static_cast<float*>(wb->displacement);
     const uint32_t pitch = wb->row_pitch_bytes / sizeof(float);
     for (uint32_t y = 0; y < wb->height; ++y)
     {
@@ -226,7 +227,7 @@ static zx_status ZX_CALL writeback_stub(zx_scene, const zx_writeback_desc* wb)
  */
 static zx_status ZX_CALL end_frame_stub(zx_scene, const zx_frame_end* fe)
 {
-  if (!fe || fe->size < sizeof(zx_frame_end))
+  if ((fe == nullptr) || (fe->size < sizeof(zx_frame_end)))
     return ZX_E_INVALID;
   return ZX_OK;
 }
@@ -243,10 +244,10 @@ static zx_status ZX_CALL end_frame_stub(zx_scene, const zx_frame_end* fe)
  */
 static zx_status ZX_CALL get_counters_stub(zx_context, zx_counters* c, uint32_t* count)
 {
-  if (!c || !count || c->size < sizeof(zx_counters))
+  if ((c == nullptr) || (count == nullptr) || (c->size < sizeof(zx_counters)))
     return ZX_E_INVALID;
   *count               = 1;
-  c->version           = 0x00010000u;
+  c->version           = 0x00010000U;
   c->particle_count    = 0;
   c->active_tiles      = 0;
   c->contact_saturated = 0;
@@ -304,10 +305,10 @@ static const char* ZX_CALL error_string_impl(zx_status s)
  */
 zx_status ZX_CALL zx_get_proc_table(uint32_t abi_version, zx_procs* out_procs)
 {
-  if (!out_procs)
+  if (out_procs == nullptr)
     return ZX_E_INVALID;
   /* Zero on entry so callers never observe stale pointers on failure */
-  memset(out_procs, 0, sizeof(*out_procs));
+  std::memset(out_procs, 0, sizeof(*out_procs));
   if (abi_version != zx_abi_version)
     return ZX_E_UNSUPPORTED;
   out_procs->size             = sizeof(zx_procs);
