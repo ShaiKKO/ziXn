@@ -8,6 +8,7 @@
 #include "zx/zx_telemetry.h"
 #include <cstdio>
 #include <iomanip>
+#include <memory>
 #include <mutex>
 #include <sstream>
 #include <string>
@@ -36,6 +37,22 @@ struct zx_telemetry
   };
   std::vector<ErrorRecord> errors;
 };
+
+namespace
+{
+  struct FileCloser
+  {
+    void operator()(FILE* f) const noexcept
+    {
+      if (f != nullptr)
+      {
+        std::fclose(f);
+      }
+    }
+  };
+
+  using FileHandle = std::unique_ptr<FILE, FileCloser>;
+}  // namespace
 
 extern "C"
 {
@@ -223,17 +240,16 @@ extern "C"
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    FILE* f = std::fopen(path, "wb");
-    if (f == nullptr)
+    FileHandle f(std::fopen(path, "wb"));
+    if (!f)
     {
       return -2;
     }
     if (ctx->samples.empty())
     {
-      std::fclose(f);
       return 0;
     }
-    export_header(f, ctx->samples.front());
+    export_header(f.get(), ctx->samples.front());
     for (const auto& s : ctx->samples)
     {
       constexpr size_t k_csv_row_reserve = 64U;
@@ -252,9 +268,8 @@ extern "C"
         row.append(oss.str());
       }
       row.push_back('\n');
-      std::fputs(row.c_str(), f);
+      std::fputs(row.c_str(), f.get());
     }
-    std::fclose(f);
     return 0;
   }
 
@@ -279,15 +294,15 @@ extern "C"
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    FILE* f = std::fopen(path, "wb");
-    if (f == nullptr)
+    FileHandle f(std::fopen(path, "wb"));
+    if (!f)
     {
       return -2;
     }
     std::fputs(R"({
   "samples": [
 )",
-               f);
+               f.get());
     for (size_t i = 0; i < ctx->samples.size(); ++i)
     {
       const auto& s                   = ctx->samples[i];
@@ -300,7 +315,7 @@ extern "C"
       line.append(R"(", "step": )");
       line.append(std::to_string(s.step));
       line.append(R"(, "counters": {)");
-      std::fputs(line.c_str(), f);
+      std::fputs(line.c_str(), f.get());
       for (size_t k = 0; k < s.counters.size(); ++k)
       {
         const auto& kv                 = s.counters[k];
@@ -318,15 +333,15 @@ extern "C"
         {
           kvs.append(", ");
         }
-        std::fputs(kvs.c_str(), f);
+        std::fputs(kvs.c_str(), f.get());
       }
-      std::fputs("} }", f);
-      std::fputs((i + 1 < ctx->samples.size() ? ",\n" : "\n"), f);
+      std::fputs("} }", f.get());
+      std::fputs((i + 1 < ctx->samples.size() ? ",\n" : "\n"), f.get());
     }
     std::fputs(R"(  ],
   "errors": [
 )",
-               f);
+               f.get());
     for (size_t i = 0; i < ctx->errors.size(); ++i)
     {
       const auto& e                       = ctx->errors[i];
@@ -347,13 +362,12 @@ extern "C"
         eline.append(",");
       }
       eline.push_back('\n');
-      std::fputs(eline.c_str(), f);
+      std::fputs(eline.c_str(), f.get());
     }
     std::fputs(R"(  ]
 }
 )",
-               f);
-    std::fclose(f);
+               f.get());
     return 0;
   }
 
