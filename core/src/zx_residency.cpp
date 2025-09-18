@@ -223,104 +223,103 @@ extern "C"
                                      : static_cast<uint32_t>(diff);
     }
   }
-}
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
-                                  int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
-{
-  if (ctx == nullptr)
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
+                                    int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
   {
-    return;
-  }
-  if (x0 > x1)
-  {
-    std::swap(x0, x1);
-  }
-  if (y0 > y1)
-  {
-    std::swap(y0, y1);
-  }
-  if (z0 > z1)
-  {
-    std::swap(z0, z1);
-  }
-  for (int z = z0; z <= z1; ++z)
-  {
-    for (int y = y0; y <= y1; ++y)
+    if (ctx == nullptr)
     {
-      for (int x = x0; x <= x1; ++x)
+      return;
+    }
+    if (x0 > x1)
+    {
+      std::swap(x0, x1);
+    }
+    if (y0 > y1)
+    {
+      std::swap(y0, y1);
+    }
+    if (z0 > z1)
+    {
+      std::swap(z0, z1);
+    }
+    for (int z = z0; z <= z1; ++z)
+    {
+      for (int y = y0; y <= y1; ++y)
       {
-        ctx->pinned[key(x, y, z)] = true;
+        for (int x = x0; x <= x1; ++x)
+        {
+          ctx->pinned[key(x, y, z)] = true;
+        }
       }
     }
   }
-}
 
-void ZX_CALL zx_residency_unpin_all(zx_residency* ctx)
-{
-  if (ctx == nullptr)
+  void ZX_CALL zx_residency_unpin_all(zx_residency* ctx)
   {
-    return;
+    if (ctx == nullptr)
+    {
+      return;
+    }
+    ctx->pinned.clear();
   }
-  ctx->pinned.clear();
-}
 
-void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings)
-{
-  if (ctx == nullptr)
+  void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings)
   {
-    return;
+    if (ctx == nullptr)
+    {
+      return;
+    }
+    ctx->opts.prefetch_rings = rings;
   }
-  ctx->opts.prefetch_rings = rings;
-}
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void ZX_CALL
-zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
-                            uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
-{
-  if (ctx == nullptr)
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  void ZX_CALL
+  zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
+                              uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
   {
+    if (ctx == nullptr)
+    {
+      if (enters != nullptr)
+      {
+        *enters = 0;
+      }
+      if (exits != nullptr)
+      {
+        *exits = 0;
+      }
+      if (churn != nullptr)
+      {
+        *churn = 0;
+      }
+      return;
+    }
     if (enters != nullptr)
     {
-      *enters = 0;
+      *enters = ctx->last_enters;
     }
     if (exits != nullptr)
     {
-      *exits = 0;
+      *exits = ctx->last_exits;
     }
     if (churn != nullptr)
     {
-      *churn = 0;
+      *churn = ctx->last_enters + ctx->last_exits;
     }
-    return;
   }
-  if (enters != nullptr)
-  {
-    *enters = ctx->last_enters;
-  }
-  if (exits != nullptr)
-  {
-    *exits = ctx->last_exits;
-  }
-  if (churn != nullptr)
-  {
-    *churn = ctx->last_enters + ctx->last_exits;
-  }
-}
 
-/**
- * @brief Returns the number of tiles currently marked active (from the last tick).
- *
- * If `ctx` is null, returns 0.
- *
- * @return uint32_t Current active tile count.
- */
-uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
-{
-  return (ctx != nullptr) ? ctx->active_count : 0;
-}
+  /**
+   * @brief Returns the number of tiles currently marked active (from the last tick).
+   *
+   * If `ctx` is null, returns 0.
+   *
+   * @return uint32_t Current active tile count.
+   */
+  uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
+  {
+    return (ctx != nullptr) ? ctx->active_count : 0;
+  }
 #ifdef __cplusplus
 }  // extern "C"
 #endif
