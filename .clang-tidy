@@ -15,7 +15,7 @@ Checks: >
   -performance-enum-size,
   -readability-identifier-length
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'core/(include|src)/.*'
+HeaderFilterRegex: '^(core/(include|src)|kernels)/.*'
 # Removed unsupported key for Windows clang-tidy
 FormatStyle:     file
 CheckOptions:
@@ -32,7 +32,9 @@ CheckOptions:
   - { key: readability-identifier-naming.IgnoreFailedSplit, value: true }
   - { key: readability-identifier-naming.AllowedFunctionNames, value: '^zx_.*$' }
   - { key: readability-identifier-naming.AllowedTypeNames, value: '^(zx_.*|ZX_.*)$' }
-  - { key: readability-identifier-naming.IgnoredRegexp, value: '^(zx_.*|ZX_.*)$' }
+  - { key: readability-identifier-naming.IgnoreMacros, value: true }
+  - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.MacroAllowedRegexp, value: '^(ZX_CALL|ZX_API|ZX_STATUS|ZX_.*)$' }
   - { key: readability-identifier-length.MinimumParameterNameLength, value: '0' }
   - { key: readability-identifier-length.MinimumVariableNameLength, value: '0' }
   - { key: readability-identifier-length.IgnoredParameterNames, value: '^(x|y|z|w|h|dt|mu|nu|ns|st|mc|ep|dp|p|r|g|i|j|k|cx|cy|cz)$' }

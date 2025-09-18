@@ -10,6 +10,9 @@
 #include "zx/zx_abi.h"
 #include <cstring>
 
+// Suppress identifier-naming for ABI macros and false-positive global var check for ZX_CALL
+// across the whole stub section below. Public ABI enforces these spellings.
+// NOLINTBEGIN(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
 /* ABI version defined in public header */
 
 /**
@@ -296,6 +299,8 @@ static zx_status ZX_CALL get_counters_stub(zx_context, zx_counters* c, uint32_t*
   c->substeps                                          = 1;
   return ZX_OK;
 }
+
+// NOLINTEND(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
 /**
  * @brief Convert a zx_status value to a human-readable string literal.
  *

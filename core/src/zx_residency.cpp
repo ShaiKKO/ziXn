@@ -55,7 +55,11 @@ extern "C"
                */
       zx_residency_create(const zx_residency_opts* opts)
   {
-    auto r  = new zx_residency();  // NOLINT(cppcoreguidelines-owning-memory)
+    if (opts == nullptr)
+    {
+      return nullptr;
+    }
+    auto* r = new zx_residency();  // NOLINT(cppcoreguidelines-owning-memory)
     r->opts = *opts;
     return r;
   }

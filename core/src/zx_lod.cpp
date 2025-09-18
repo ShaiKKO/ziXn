@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <mutex>
 #include <vector>
+#include <array>
 #if defined(__x86_64__) || defined(_M_X64)
 #include <immintrin.h>
 #endif
@@ -37,7 +38,7 @@
 #endif
 
 /* SIMD override: -1 auto, 0 scalar, 2 AVX2 */
-static int g_simd_override = -1;
+static int g_simd_override = -1; // -1 auto, 0 scalar, 2 AVX2
 
 #if defined(__x86_64__) || defined(_M_X64)
 static inline int cpu_supports_avx2(); /* forward */
@@ -51,27 +52,19 @@ typedef void (*pp_up2_fn)(const float*, uint32_t, uint32_t, uint32_t, float*, ui
 static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                          uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (src == nullptr || dst == nullptr)
-  {
-    return;
-  }
-  if (sw < 2 || sh < 2 || dw == 0 || dh == 0 || sp < sw || dp < dw)
-  {
-    return;
-  }
-  if (dw * 2 != sw || dh * 2 != sh)
-  {
-    return;
-  }
+  if ((src == nullptr) || (dst == nullptr)) { return; }
+  if ((sw < 2U) || (sh < 2U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw)) { return; }
+  if (((dw * 2U) != sw) || ((dh * 2U) != sh)) { return; }
+  constexpr float k_quarter = 0.25F;
   for (uint32_t y = 0; y < dh; ++y)
   {
     for (uint32_t x = 0; x < dw; ++x)
     {
-      const float a   = src[(2 * y + 0) * sp + (2 * x + 0)];
-      const float b   = src[(2 * y + 0) * sp + (2 * x + 1)];
-      const float c   = src[(2 * y + 1) * sp + (2 * x + 0)];
-      const float d   = src[(2 * y + 1) * sp + (2 * x + 1)];
-      dst[y * dp + x] = 0.25f * (a + b + c + d);
+      const float a   = src[(2U * y + 0U) * sp + (2U * x + 0U)];
+      const float b   = src[(2U * y + 0U) * sp + (2U * x + 1U)];
+      const float c   = src[(2U * y + 1U) * sp + (2U * x + 0U)];
+      const float d   = src[(2U * y + 1U) * sp + (2U * x + 1U)];
+      dst[y * dp + x] = k_quarter * (a + b + c + d);
     }
   }
 }
@@ -80,22 +73,24 @@ static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp
 static ZX_TARGET_AVX2 void down2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                       float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (!src || !dst || sw < 2 || sh < 2 || dw * 2 != sw || dh * 2 != sh)
+  if ((!src) || (!dst) || (sw < 2U) || (sh < 2U) || ((dw * 2U) != sw) || ((dh * 2U) != sh))
+  {
     return;
-  const uint32_t vecW  = (dw / 8) * 8;
-  const __m256 quarter = _mm256_set1_ps(0.25f);
+  }
+  const uint32_t vecW  = (dw / 8U) * 8U;
+  const __m256 quarter = _mm256_set1_ps(0.25F);
   for (uint32_t y = 0; y < dh; ++y)
   {
-    const float* row0 = src + (2 * y + 0) * sp;
-    const float* row1 = src + (2 * y + 1) * sp;
+    const float* row0 = src + (2U * y + 0U) * sp;
+    const float* row1 = src + (2U * y + 1U) * sp;
     uint32_t x        = 0;
     for (; x < vecW; x += 8)
     {
       // Load 16 contiguous samples from each row
-      __m256 r0a = _mm256_loadu_ps(row0 + 2 * x + 0);
-      __m256 r0b = _mm256_loadu_ps(row0 + 2 * x + 8);
-      __m256 r1a = _mm256_loadu_ps(row1 + 2 * x + 0);
-      __m256 r1b = _mm256_loadu_ps(row1 + 2 * x + 8);
+      __m256 r0a = _mm256_loadu_ps(row0 + 2U * x + 0U);
+      __m256 r0b = _mm256_loadu_ps(row0 + 2U * x + 8U);
+      __m256 r1a = _mm256_loadu_ps(row1 + 2U * x + 0U);
+      __m256 r1b = _mm256_loadu_ps(row1 + 2U * x + 8U);
       // Horizontal add adjacent pairs within lanes
       __m256 s0  = _mm256_hadd_ps(r0a, r0b);
       __m256 s1  = _mm256_hadd_ps(r1a, r1b);
@@ -105,11 +100,11 @@ static ZX_TARGET_AVX2 void down2_avx2(const float* src, uint32_t sw, uint32_t sh
     }
     for (; x < dw; ++x)
     {
-      const float a   = row0[2 * x + 0];
-      const float b   = row0[2 * x + 1];
-      const float c   = row1[2 * x + 0];
-      const float d   = row1[2 * x + 1];
-      dst[y * dp + x] = 0.25f * (a + b + c + d);
+      const float a   = row0[2U * x + 0U];
+      const float b   = row0[2U * x + 1U];
+      const float c   = row1[2U * x + 0U];
+      const float d   = row1[2U * x + 1U];
+      dst[y * dp + x] = 0.25F * (a + b + c + d);
     }
   }
 }
@@ -142,38 +137,29 @@ static void init_down2_impl()
 static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                        uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (src == nullptr || dst == nullptr)
-  {
-    return;
-  }
-  if (sw == 0 || sh == 0 || dw == 0 || dh == 0 || sp < sw || dp < dw)
-  {
-    return;
-  }
-  if (dw != sw * 2 || dh != sh * 2)
-  {
-    return;
-  }
+  if ((src == nullptr) || (dst == nullptr)) { return; }
+  if ((sw == 0U) || (sh == 0U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw)) { return; }
+  if ((dw != (sw * 2U)) || (dh != (sh * 2U))) { return; }
   for (uint32_t y = 0; y < dh; ++y)
   {
-    float fy = (y + 0.5f) * 0.5f - 0.5f;
-    int y0   = (int) std::floor((double) fy);
+    const float fy = (static_cast<float>(y) + 0.5F) * 0.5F - 0.5F;
+    int y0         = (int) std::floor((double) fy);
     int y1   = std::min((int) sh - 1, y0 + 1);
-    float ty = fy - (float) y0;
+    const float ty = fy - (float) y0;
     y0       = std::max(0, y0);
     for (uint32_t x = 0; x < dw; ++x)
     {
-      float fx        = (x + 0.5f) * 0.5f - 0.5f;
+      const float fx  = (static_cast<float>(x) + 0.5F) * 0.5F - 0.5F;
       int x0          = (int) std::floor((double) fx);
       int x1          = std::min((int) sw - 1, x0 + 1);
-      float tx        = fx - (float) x0;
+      const float tx  = fx - (float) x0;
       x0              = std::max(0, x0);
-      float a         = src[y0 * sp + x0];
-      float b         = src[y0 * sp + x1];
-      float c         = src[y1 * sp + x0];
-      float d         = src[y1 * sp + x1];
-      float ab        = a + tx * (b - a);
-      float cd        = c + tx * (d - c);
+      const float a   = src[y0 * sp + x0];
+      const float b   = src[y0 * sp + x1];
+      const float c   = src[y1 * sp + x0];
+      const float d   = src[y1 * sp + x1];
+      const float ab  = a + tx * (b - a);
+      const float cd  = c + tx * (d - c);
       dst[y * dp + x] = ab + ty * (cd - ab);
     }
   }
@@ -203,12 +189,12 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, 
 static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                     float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if (!src || !dst || dw != sw * 2 || dh != sh * 2)
+  if ((!src) || (!dst) || (dw != sw * 2U) || (dh != sh * 2U))
   {
     up2_scalar(src, sw, sh, sp, dst, dw, dh, dp);
     return;
   }
-  const uint32_t vecW = (dw / 8) * 8;
+  const uint32_t vecW = (dw / 8U) * 8U;
   const uint32_t NV   = (vecW / 8);
   // Precompute x indices and fractional tx for all vector lanes across the row
   std::vector<int> pre_ix0;
@@ -217,8 +203,8 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
   pre_ix0.resize(static_cast<size_t>(NV) * 8U);
   pre_ix1.resize(static_cast<size_t>(NV) * 8U);
   pre_tx.resize(static_cast<size_t>(NV) * 8U);
-  __m256 half        = _mm256_set1_ps(0.5f);
-  __m256 neg_quarter = _mm256_set1_ps(-0.25f);
+  __m256 half        = _mm256_set1_ps(0.5F);
+  __m256 neg_quarter = _mm256_set1_ps(-0.25F);
   __m256i zero       = _mm256_set1_epi32(0);
   __m256i xmax       = _mm256_set1_epi32((int) sw - 1);
   for (uint32_t x = 0, i = 0; x < vecW; x += 8, ++i)
@@ -440,9 +426,11 @@ typedef float (*pp_border_fn)(const float*, uint32_t, uint32_t, uint32_t, const 
 static float border_scalar(const float* A, uint32_t Aw, uint32_t Ah, uint32_t Ap, const float* B,
                            uint32_t Bw, uint32_t Bh, uint32_t Bp, int side)
 {
-  if (!A || !B || Aw == 0 || Ah == 0 || Bw == 0 || Bh == 0)
-    return 0.0f;
-  float max_abs = 0.0f;
+  if ((!A) || (!B) || (Aw == 0U) || (Ah == 0U) || (Bw == 0U) || (Bh == 0U))
+  {
+    return 0.0F;
+  }
+  float max_abs = 0.0F;
   if (side == 0)
   {  // A right edge vs B left edge
     uint32_t xA = Aw - 1, xB = 0;
@@ -506,10 +494,10 @@ static ZX_TARGET_AVX2 float border_avx2(const float* A, uint32_t Aw, uint32_t Ah
                                         const float* B, uint32_t Bw, uint32_t Bh, uint32_t Bp,
                                         int side)
 {
-  if (!A || !B || Aw == 0 || Ah == 0 || Bw == 0 || Bh == 0)
-    return 0.0f;
-  float max_abs_scalar  = 0.0f;
-  __m256 vmax           = _mm256_set1_ps(0.0f);
+  if ((!A) || (!B) || (Aw == 0U) || (Ah == 0U) || (Bw == 0U) || (Bh == 0U))
+    return 0.0F;
+  float max_abs_scalar  = 0.0F;
+  __m256 vmax           = _mm256_set1_ps(0.0F);
   const __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffff));
   if (side == 0)
   {

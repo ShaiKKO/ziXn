@@ -1,6 +1,6 @@
-Note: Invalid Unicode symbols replaced with ASCII citation/marker text.
-
 # ziXn
+
+Note: Invalid Unicode symbols replaced with ASCII citation/marker text.
 
 A high-performance C-ABI terrain continuum library for **granular**, **snow**, and **slurry** materials, built for real-time engines (Unreal, Unity, custom).
 
@@ -43,6 +43,7 @@ Games typically fake deformable ground with decals, heightmap nudges, or VFX par
 **Backends.** D3D12 (descriptor heaps, timeline fences), Vulkan (descriptor indexing, timeline semaphores), Metal (argument buffers, heaps); CPU fallback with SIMD loops. Shader source (HLSL) cross-compiled for each backend. [CITE1]
 
 **Engine interop.**
+
 - **Unreal:** ziXn emits RDG passes that composite **Runtime Virtual Texture (RVT)** height/masks; **Virtual Heightfield Mesh (VHM)** renders displacement; Niagara DI exposes fields for VFX. [CITE3]
 - **Unity:** native plugin + C# bindings; GPU→GPU height updates via **TerrainData.CopyActiveRenderTextureToHeightmap**; masks via SRP; `GraphicsBuffer/ComputeBuffer` interop for zero-copy. [CITE2]
 
