@@ -257,10 +257,12 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
           p_grid_view[base3 + 0U] += mm * vx_aff;
           p_grid_view[base3 + 1U] += mm * vy_aff;
           p_grid_view[base3 + 2U] += mm * vz_aff;
-          continue;
         }
-        contribs->push_back(
-            Contrib{gi, static_cast<int>(i), mm, mm * vx_aff, mm * vy_aff, mm * vz_aff});
+        else
+        {
+          contribs->push_back(
+              Contrib{gi, static_cast<int>(i), mm, mm * vx_aff, mm * vy_aff, mm * vz_aff});
+        }
       }
     }
   }

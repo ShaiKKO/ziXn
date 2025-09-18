@@ -45,18 +45,18 @@ void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
 void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 {
-  const float E  = ep->young_E;
-  const float nu = ep->poisson_nu;
-  *mu            = E / (2.0F * (1.0F + nu));
-  *lambda        = (E * nu) / ((1.0F + nu) * (1.0F - 2.0F * nu));
+  const float young_e = ep->young_E;
+  const float nu      = ep->poisson_nu;
+  *mu                 = young_e / (k_two * (1.0F + nu));
+  *lambda             = (young_e * nu) / ((1.0F + nu) * (1.0F - k_two * nu));
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 {
-  const float I1v = s[0] + s[4] + s[8];
-  float p         = I1v / k_three;
+  const float i1v = s[0] + s[4] + s[8];
+  float p         = i1v / k_three;
   // deviatoric = s - pI
   float dev[zx_mat3_size];
   std::memcpy(dev, s, sizeof(dev));
@@ -65,11 +65,11 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
   dev[8] -= p;
   // J2 = 1/2 * dev:dev
   float dd = 0.0F;
-  for (int idx = 0; idx < 9; ++idx)
+  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
     dd += dev[idx] * dev[idx];
   }
-  *I1 = I1v;
+  *I1 = i1v;
   *J2 = k_half * dd;
 }
 
@@ -94,13 +94,15 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   {
     std::memcpy(sigma_out, sigma_trial, sizeof(float) * 9);
     if (delta_gamma_out != nullptr)
+    {
       *delta_gamma_out = 0.0F;
+    }
     return;
   }
 
   // Deviatoric decomposition
   float dev[9];
-  float p = I1 / 3.0F;
+  float p = I1 / k_three;
   for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
     dev[idx] = sigma_trial[idx];
@@ -194,7 +196,9 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
     {
       std::memcpy(sigma_out, sigma_candidate, sizeof(float) * 9);
       if (delta_gamma_out != nullptr)
+      {
         *delta_gamma_out = dgamma * step;
+      }
       return;
     }
     step *= 0.5F;  // backtrack
@@ -278,8 +282,8 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   // Simple radial reduction of deviatoric gap and volumetric shift to satisfy f=0 (approx)
   float scale = std::max(0.0F, (tau_max + alpha * (-p) - c_pa) / std::max(k_eps6, tau_max));
   float lam_new[3];
-  lam_new[0] = lam[0] - scale * 0.5f * (lam[0] - p);
-  lam_new[2] = lam[2] + scale * 0.5f * (p - lam[2]);
+  lam_new[0] = lam[0] - scale * 0.5F * (lam[0] - p);
+  lam_new[2] = lam[2] + scale * 0.5F * (p - lam[2]);
   lam_new[1] = lam[1];
 
   // Adjust volumetric part using dilatancy to reduce f; p_new = p - gamma * alpha_psi
@@ -296,9 +300,13 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   sigma_out[4] = lam_new[1];
   sigma_out[8] = lam_new[2];
   if (eps_v_pl != nullptr)
+  {
     *eps_v_pl += -gamma * 3.0F * alpha_psi;
+  }
   if (delta_gamma_out != nullptr)
+  {
     *delta_gamma_out = gamma;
+  }
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
