@@ -13,24 +13,24 @@
 #include <string>
 #include <vector>
 
-struct zx_sample
+struct ZxSample
 {
-  std::string scene;
-  uint32_t step;
-  std::vector<std::pair<std::string, float>> counters;
+  std::string scene{};
+  uint32_t step{0};
+  std::vector<std::pair<std::string, float>> counters{};
 };
 
 struct zx_telemetry
 {
-  std::mutex mtx;
-  std::vector<zx_sample> samples;
-  uint32_t capacity;
-  zx_sample current;
-  bool in_step;
+  std::mutex mtx{};
+  std::vector<ZxSample> samples{};
+  uint32_t capacity{0};
+  ZxSample current{};
+  bool in_step{false};
   struct ErrorRecord
   {
-    std::string scene;
-    uint32_t step;
+    std::string scene{};
+    uint32_t step{0};
     std::string code;
     std::string msg;
   };
@@ -94,7 +94,7 @@ extern "C"
       return;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    ctx->current       = zx_sample{};
+    ctx->current       = ZxSample{};
     ctx->current.scene = (scene != nullptr) ? scene : "";
     ctx->current.step  = step_index;
     ctx->in_step       = true;
@@ -190,7 +190,7 @@ extern "C"
    * @param f Destination file stream (must be non-null and open for writing).
    * @param s Sample whose counter names are used to build the header row.
    */
-  static void export_header(FILE* f, const zx_sample& s)
+  static void export_header(FILE* f, const ZxSample& s)
   {
     std::string line = "scene,step";
     for (const auto& kv : s.counters)

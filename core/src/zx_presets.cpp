@@ -19,43 +19,43 @@ struct PresetRow
 };
 
 static const std::array<PresetRow, 7> kPresets = {{{"Fine Sand",
-                                                    {1.5e7f, 0.3f},
-                                                    {32.0f, 0.5f},
-                                                    {1.2f, 0.18f, 0.05f, 1.0e4f, 0.85f, 1.0f, 0.6f},
-                                                    {0.90f}},
+                                                    {1.5e7F, 0.30F},
+                                                    {32.0F, 0.50F},
+                                                    {1.2F, 0.18F, 0.05F, 1.0e4F, 0.85F, 1.0F, 0.6F},
+                                                    {0.90F}},
                                                    {"Coarse Sand",
-                                                    {2.0e7f, 0.28f},
-                                                    {35.0f, 0.8f},
-                                                    {1.3f, 0.16f, 0.05f, 1.0e4f, 0.80f, 1.0f, 0.6f},
-                                                    {0.88f}},
+                                                    {2.0e7F, 0.28F},
+                                                    {35.0F, 0.80F},
+                                                    {1.3F, 0.16F, 0.05F, 1.0e4F, 0.80F, 1.0F, 0.6F},
+                                                    {0.88F}},
                                                    {"Gravel",
-                                                    {5.0e7f, 0.25f},
-                                                    {42.0f, 0.5f},
-                                                    {1.5f, 0.12f, 0.04f, 1.0e4f, 0.75f, 1.0f, 0.5f},
-                                                    {0.75f}},
+                                                    {5.0e7F, 0.25F},
+                                                    {42.0F, 0.50F},
+                                                    {1.5F, 0.12F, 0.04F, 1.0e4F, 0.75F, 1.0F, 0.5F},
+                                                    {0.75F}},
                                                    {"Loam",
-                                                    {1.0e7f, 0.30f},
-                                                    {28.0f, 2.0f},
-                                                    {1.1f, 0.22f, 0.06f, 1.0e4f, 0.95f, 1.0f, 0.7f},
-                                                    {1.0f}},
+                                                    {1.0e7F, 0.30F},
+                                                    {28.0F, 2.0F},
+                                                    {1.1F, 0.22F, 0.06F, 1.0e4F, 0.95F, 1.0F, 0.7F},
+                                                    {1.0F}},
                                                    {"Clay",
-                                                    {2.0e7f, 0.32f},
-                                                    {20.0f, 50.0f},
-                                                    {0.9f, 0.25f, 0.08f, 1.0e4f, 1.10f, 1.0f, 0.4f},
-                                                    {1.10f}},
+                                                    {2.0e7F, 0.32F},
+                                                    {20.0F, 50.0F},
+                                                    {0.9F, 0.25F, 0.08F, 1.0e4F, 1.10F, 1.0F, 0.4F},
+                                                    {1.10F}},
                                                    {"Powder Snow",
-                                                    {0.8e6f, 0.25f},
-                                                    {20.0f, 1.0f},
-                                                    {0.6f, 0.30f, 0.09f, 1.0e4f, 1.20f, 1.0f, 0.3f},
-                                                    {1.20f}},
+                                                    {0.8e6F, 0.25F},
+                                                    {20.0F, 1.0F},
+                                                    {0.6F, 0.30F, 0.09F, 1.0e4F, 1.20F, 1.0F, 0.3F},
+                                                    {1.20F}},
                                                    {"Packed Snow",
-                                                    {5.0e6f, 0.30f},
-                                                    {25.0f, 3.0f},
-                                                    {0.8f, 0.25f, 0.07f, 1.0e4f, 1.00f, 1.0f, 0.5f},
-                                                    {1.00f}}}};
+                                                    {5.0e6F, 0.30F},
+                                                    {25.0F, 3.0F},
+                                                    {0.8F, 0.25F, 0.07F, 1.0e4F, 1.00F, 1.0F, 0.5F},
+                                                    {1.00F}}}};
 
 /** \brief Number of available presets. */
-int zx_preset_count(void)
+int zx_preset_count()
 {
   return static_cast<int>(kPresets.size());
 }
@@ -73,8 +73,10 @@ int zx_preset_count(void)
  */
 const char* zx_preset_name(int index)
 {
-  if (index < 0 || index >= zx_preset_count())
+  if ((index < 0) || (index >= zx_preset_count()))
+  {
     return "";
+  }
   return kPresets.at(static_cast<size_t>(index)).name;
 }
 
