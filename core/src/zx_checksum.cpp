@@ -6,6 +6,9 @@
  */
 
 #include "zx/zx_checksum.h"
+// Local includes for byte operations and fixed-size array view
+#include <array>
+#include <cstring>
 
 namespace
 {
@@ -57,7 +60,8 @@ extern "C"
       a ^= static_cast<uint64_t>(u32[1]) << k_shift1;  // mom_x (low bits folded)
       a ^= static_cast<uint64_t>(u32[2]) << k_shift2;  // mom_y
       a ^= static_cast<uint64_t>(u32[3]) << k_shift3;  // mom_z
-      h ^= mix64(a + static_cast<uint64_t>(i << k_fold_shift));
+      // Shift on 64-bit to avoid UB from shifting a 32-bit int by >= 32
+      h ^= mix64(a + (static_cast<uint64_t>(i) << k_fold_shift));
     }
     return h;
   }
