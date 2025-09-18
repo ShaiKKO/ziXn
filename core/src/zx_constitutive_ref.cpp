@@ -34,7 +34,9 @@ void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
   out_dp->k     = (6.0F * c_pa * std::cos(phi)) / (sqrt3 * (3.0F - sinp));
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const float E  = ep->young_E;
   const float nu = ep->poisson_nu;
@@ -42,7 +44,9 @@ void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
   *lambda        = (E * nu) / ((1.0F + nu) * (1.0F - 2.0F * nu));
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const float I1v = s[0] + s[4] + s[8];
   float p         = I1v / 3.0F;
@@ -54,17 +58,19 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
   dev[8] -= p;
   // J2 = 1/2 * dev:dev
   float dd = 0.0F;
-  for (int i = 0; i < 9; ++i)
+  for (int idx = 0; idx < 9; ++idx)
   {
-    dd += dev[i] * dev[i];
+    dd += dev[idx] * dev[idx];
   }
   *I1 = I1v;
   *J2 = 0.5F * dd;
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const zx_cap_params* cap,
                       const float sigma_trial[zx_mat3_size], float sigma_out[zx_mat3_size],
                       float* delta_gamma_out)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   float I1, J2;
   zx_stress_invariants(sigma_trial, &I1, &J2);
@@ -88,17 +94,17 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   // Deviatoric decomposition
   float dev[9];
   float p = I1 / 3.0F;
-  for (int i = 0; i < (int) zx_mat3_size; ++i)
+  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
-    dev[i] = sigma_trial[i];
+    dev[idx] = sigma_trial[idx];
   }
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
   float s2 = 0.0F;
-  for (int i = 0; i < (int) zx_mat3_size; ++i)
+  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
-    s2 += dev[i] * dev[i];
+    s2 += dev[idx] * dev[idx];
   }
   float s_norm = std::sqrt(std::max(k_eps30, s2));
 
@@ -117,9 +123,9 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 
   float p_new = I1_new / 3.0F;
   float sigma_proj[zx_mat3_size];
-  for (int i = 0; i < (int) zx_mat3_size; ++i)
+  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
-    sigma_proj[i] = scale * dev[i];
+    sigma_proj[idx] = scale * dev[idx];
   }
   sigma_proj[0] += p_new;
   sigma_proj[4] += p_new;
@@ -135,9 +141,9 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   N[8] += dp->alpha;
   // deviatoric contribution from trial
   float denom = 2.0F * std::max(sqrtJ2, eps);
-  for (int i = 0; i < (int) zx_mat3_size; ++i)
+  for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
   {
-    N[i] += dev[i] / denom;
+    N[idx] += dev[idx] / denom;
   }
 
   // Plastic multiplier proxy from distance to yield
@@ -146,17 +152,17 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   auto dot9 = [](const float* a, const float* b)
   {
     float s = 0.0F;
-    for (int i = 0; i < (int) zx_mat3_size; ++i)
+    for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
-      s += a[i] * b[i];
+      s += a[idx] * b[idx];
     }
     return s;
   };
   auto sub9 = [](const float* a, const float* b, float* o)
   {
-    for (int i = 0; i < (int) zx_mat3_size; ++i)
+    for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
-      o[i] = a[i] - b[i];
+      o[idx] = a[idx] - b[idx];
     }
   };
 
@@ -164,14 +170,14 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   float sigma_candidate[zx_mat3_size];
   for (int iter = 0; iter < 10; ++iter)
   {
-    for (int i = 0; i < (int) zx_mat3_size; ++i)
+    for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
-      sigma_candidate[i] = sigma_trial[i] + step * (sigma_proj[i] - sigma_trial[i]);
+      sigma_candidate[idx] = sigma_trial[idx] + step * (sigma_proj[idx] - sigma_trial[idx]);
     }
     float d_eps_p[zx_mat3_size];
-    for (int i = 0; i < (int) zx_mat3_size; ++i)
+    for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
-      d_eps_p[i] = (dgamma * step) * N[i];
+      d_eps_p[idx] = (dgamma * step) * N[idx];
     }
     float d_sigma[zx_mat3_size];
     sub9(sigma_candidate, sigma_trial, d_sigma);
@@ -227,9 +233,11 @@ static void eig3_sym(const float s[9], float eval[3])
   }
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float dilatancy_deg,
                       const float sigma_trial[zx_mat3_size], float sigma_out[zx_mat3_size],
                       float* delta_gamma_out, float* eps_v_pl)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   (void) ep;  // reserved for scaling in full implementation
   // Principal stresses (approximate) and invariants
@@ -285,7 +293,9 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
     *delta_gamma_out = gamma;
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 float zx_norsand_e_cs(float p_mean, const zx_norsand_params* ns)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   // Ensure pressure positive for log; use absolute
   float p     = std::max(1.0F, std::fabs(p_mean) + ns->p_ref);
@@ -294,15 +304,19 @@ float zx_norsand_e_cs(float p_mean, const zx_norsand_params* ns)
   return ns->e_ref - ns->lambda_cs * term;
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 float zx_norsand_state_parameter(const zx_norsand_state* st, float p_mean,
                                  const zx_norsand_params* ns)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   return st->void_ratio_e - zx_norsand_e_cs(p_mean, ns);
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params* ns,
                            zx_norsand_state* state, const float sigma_trial[zx_mat3_size],
                            float sigma_out[zx_mat3_size], float* delta_gamma_out, float* eps_v_pl)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   (void) ep;
   float I1, J2;
