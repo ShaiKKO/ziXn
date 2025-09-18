@@ -11,14 +11,16 @@
 
 namespace
 {
-  constexpr float K_PI    = 3.14159265358979323846F;
-  constexpr float K_DEG   = 180.0F;
-  constexpr float K_SQRT3 = 1.7320508075688772F;
+  constexpr float k_pi    = 3.14159265358979323846F;
+  constexpr float k_deg   = 180.0F;
+  constexpr float k_sqrt3 = 1.7320508075688772F;
+  constexpr float k_eps30 = 1e-30F;
+  constexpr float k_eps6  = 1e-6F;
 }  // namespace
 
 static inline float deg2rad(float d)
 {
-  return d * K_PI / K_DEG;
+  return d * k_pi / k_deg;
 }
 
 void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
@@ -26,10 +28,10 @@ void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
   const float phi   = deg2rad(mc->friction_deg);
   const float c_pa  = mc->cohesion_kpa * 1000.0F;
   const float sinp  = std::sin(phi);
-  const float sqrt3 = K_SQRT3;
+  const float sqrt3 = k_sqrt3;
   // Common MC->DP mapping (triaxial compression fit)
-  out_dp->alpha = (2.0f * sinp) / (sqrt3 * (3.0f - sinp));
-  out_dp->k     = (6.0f * c_pa * std::cos(phi)) / (sqrt3 * (3.0f - sinp));
+  out_dp->alpha = (2.0F * sinp) / (sqrt3 * (3.0F - sinp));
+  out_dp->k     = (6.0F * c_pa * std::cos(phi)) / (sqrt3 * (3.0F - sinp));
 }
 
 void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
@@ -51,9 +53,11 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
   dev[4] -= p;
   dev[8] -= p;
   // J2 = 1/2 * dev:dev
-  float dd = 0.0f;
+  float dd = 0.0F;
   for (int i = 0; i < 9; ++i)
+  {
     dd += dev[i] * dev[i];
+  }
   *I1 = I1v;
   *J2 = 0.5F * dd;
 }
@@ -69,7 +73,7 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 
   // Cap check (compression): if I1 < i1_min, project to cap line in I1
   float I1c = I1;
-  if ((cap != nullptr) && cap->enabled && I1 < cap->i1_min)
+  if ((cap != nullptr) && (cap->enabled != 0) && (I1 < cap->i1_min))
   {
     I1c = cap->i1_min;
   }
@@ -85,14 +89,18 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   float dev[9];
   float p = I1 / 3.0F;
   for (int i = 0; i < (int) zx_mat3_size; ++i)
+  {
     dev[i] = sigma_trial[i];
+  }
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
-  float s2 = 0.0f;
+  float s2 = 0.0F;
   for (int i = 0; i < (int) zx_mat3_size; ++i)
+  {
     s2 += dev[i] * dev[i];
-  float s_norm = std::sqrt(std::max(1e-30F, s2));
+  }
+  float s_norm = std::sqrt(std::max(k_eps30, s2));
 
   // Target invariants on the yield surface after cap clamp
   float I1_new     = I1c;
@@ -110,14 +118,16 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   float p_new = I1_new / 3.0F;
   float sigma_proj[zx_mat3_size];
   for (int i = 0; i < (int) zx_mat3_size; ++i)
+  {
     sigma_proj[i] = scale * dev[i];
+  }
   sigma_proj[0] += p_new;
   sigma_proj[4] += p_new;
   sigma_proj[8] += p_new;
 
   // Line search to ensure non-negative plastic work with associated flow
   // Flow direction N = ∂f/∂σ ≈ alpha*I + dev/(2*sqrt(J2)+eps)
-  const float eps       = 1e-6F;
+  const float eps       = k_eps6;
   float N[zx_mat3_size] = {0};
   // alpha*I contribution
   N[0] += dp->alpha;
@@ -126,22 +136,28 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   // deviatoric contribution from trial
   float denom = 2.0F * std::max(sqrtJ2, eps);
   for (int i = 0; i < (int) zx_mat3_size; ++i)
+  {
     N[i] += dev[i] / denom;
+  }
 
   // Plastic multiplier proxy from distance to yield
   float dgamma = std::max(0.0F, f);
 
   auto dot9 = [](const float* a, const float* b)
   {
-    float s = 0;
+    float s = 0.0F;
     for (int i = 0; i < (int) zx_mat3_size; ++i)
+    {
       s += a[i] * b[i];
+    }
     return s;
   };
   auto sub9 = [](const float* a, const float* b, float* o)
   {
     for (int i = 0; i < (int) zx_mat3_size; ++i)
+    {
       o[i] = a[i] - b[i];
+    }
   };
 
   float step = 1.0F;
@@ -149,14 +165,18 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   for (int iter = 0; iter < 10; ++iter)
   {
     for (int i = 0; i < (int) zx_mat3_size; ++i)
+    {
       sigma_candidate[i] = sigma_trial[i] + step * (sigma_proj[i] - sigma_trial[i]);
+    }
     float d_eps_p[zx_mat3_size];
     for (int i = 0; i < (int) zx_mat3_size; ++i)
+    {
       d_eps_p[i] = (dgamma * step) * N[i];
+    }
     float d_sigma[zx_mat3_size];
     sub9(sigma_candidate, sigma_trial, d_sigma);
     float W = dot9(d_sigma, d_eps_p);  // plastic work increment
-    if (W >= -1e-6F)
+    if (W >= -k_eps6)
     {
       std::memcpy(sigma_out, sigma_candidate, sizeof(float) * 9);
       if (delta_gamma_out != nullptr)
@@ -220,7 +240,7 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
 
   const float phi  = deg2rad(mc->friction_deg);
   const float psi  = deg2rad(dilatancy_deg);
-  const float c_pa = mc->cohesion_kpa * 1000.0f;
+  const float c_pa = mc->cohesion_kpa * 1000.0F;
 
   // MC yield in principal space: tau_max + alpha p - c <= 0
   const float p       = (lam[0] + lam[1] + lam[2]) / 3.0F;
@@ -228,11 +248,11 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   const float alpha   = std::sin(phi) / (1.0F - std::sin(phi));
   float f =
       tau_max + alpha * (-p) - c_pa;  // note p is compression negative if using sign convention
-  if (f <= 0.0f)
+  if (f <= 0.0F)
   {
     std::memcpy(sigma_out, sigma_trial, sizeof(float) * 9);
     if (delta_gamma_out)
-      *delta_gamma_out = 0.0f;
+      *delta_gamma_out = 0.0F;
     return;
   }
 
@@ -240,7 +260,7 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   const float alpha_psi = std::sin(psi) / (1.0F - std::sin(psi));
 
   // Simple radial reduction of deviatoric gap and volumetric shift to satisfy f=0 (approx)
-  float scale = std::max(0.0F, (tau_max + alpha * (-p) - c_pa) / std::max(1e-6F, tau_max));
+  float scale = std::max(0.0F, (tau_max + alpha * (-p) - c_pa) / std::max(k_eps6, tau_max));
   float lam_new[3];
   lam_new[0] = lam[0] - scale * 0.5f * (lam[0] - p);
   lam_new[2] = lam[2] + scale * 0.5f * (p - lam[2]);
@@ -287,7 +307,7 @@ void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params*
   (void) ep;
   float I1, J2;
   zx_stress_invariants(sigma_trial, &I1, &J2);
-  float p   = I1 / 3.0f;
+  float p   = I1 / 3.0F;
   float q   = std::sqrt(std::max(0.0F, 3.0F * J2));
   float psi = zx_norsand_state_parameter(state, p, ns);
 
@@ -304,10 +324,12 @@ void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params*
   dev[0] -= p;
   dev[4] -= p;
   dev[8] -= p;
-  float s2 = 0.0f;
+  float s2 = 0.0F;
   for (int i = 0; i < 9; ++i)
+  {
     s2 += dev[i] * dev[i];
-  float s_norm        = std::sqrt(std::max(1e-30F, s2));
+  }
+  float s_norm        = std::sqrt(std::max(k_eps30, s2));
   float target_s_norm = std::sqrt(2.0F * J2_new);
   float scale         = target_s_norm / s_norm;
   for (int i = 0; i < 9; ++i)

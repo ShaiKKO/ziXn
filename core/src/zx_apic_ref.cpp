@@ -83,10 +83,7 @@ static inline void finalize_p2g_contribs(std::vector<Contrib>& contribs,
                      {
                        return a.gi < b.gi;
                      }
-                     else
-                     {
-                       return a.pid < b.pid;
-                     }
+                     return a.pid < b.pid;
                    });
   int cur     = -1;
   float msum  = 0.0F;
@@ -171,6 +168,7 @@ static inline void compute_support_and_weights(float gx, float gy, float gz, int
 }
 
 // Helper to accumulate a single particle's P2G contributions (deterministic or not)
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float>& pos_view,
                                            const ArrayView<const float>& vel_view, const float* C,
                                            size_t N, float mp,
@@ -178,6 +176,7 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
                                            int ny, int nz, ArrayView<float>& m_grid_view,
                                            ArrayView<float>& p_grid_view,
                                            std::vector<Contrib>* contribs)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const size_t pbase = static_cast<size_t>(k_vec3) * i;
   const float px     = pos_view[pbase + 0U];
@@ -270,12 +269,14 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
 }
 
 // Helper to accumulate a single particle's G2P gather
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 static inline void accumulate_g2p_particle(size_t i, const ArrayView<const float>& pos_view,
                                            ArrayView<float>& out_vel_view, ArrayView<float>* out_c,
                                            const std::array<float, 3>& origin_arr, float h, int nx,
                                            int ny, int nz,
                                            const ArrayView<const float>& m_grid_view,
                                            const ArrayView<const float>& v_grid_view)
+// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const size_t pbase = i * static_cast<size_t>(k_vec3);
   const float px     = pos_view[pbase + 0U];

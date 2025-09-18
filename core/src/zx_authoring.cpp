@@ -23,8 +23,8 @@ namespace
   constexpr float k_sand_friction_gain_grain   = 14.0F;
   constexpr float k_sand_friction_gain_dryness = 6.0F;
   constexpr float k_sand_cohesion_kpa_base     = 3.0F;
-  constexpr float k_sand_ns_M_base             = 1.1F;
-  constexpr float k_sand_ns_M_gain_grain       = 0.4F;
+  constexpr float k_sand_ns_m_base             = 1.1F;
+  constexpr float k_sand_ns_m_gain_grain       = 0.4F;
   constexpr float k_sand_lambda_cs_base        = 0.18F;
   constexpr float k_sand_lambda_cs_slope_grain = -0.06F;
   constexpr float k_sand_kappa                 = 0.05F;
@@ -75,7 +75,7 @@ void zx_authoring_map_sand(const zx_ui_sand* ui, zx_elastic_params* ep, zx_mc_pa
                      k_sand_friction_gain_dryness * dryness;
   mc->cohesion_kpa = (k_one - dryness) * k_sand_cohesion_kpa_base;
   // NorSand
-  ns->M               = k_sand_ns_M_base + k_sand_ns_M_gain_grain * grain;
+  ns->M               = k_sand_ns_m_base + k_sand_ns_m_gain_grain * grain;
   ns->lambda_cs       = k_sand_lambda_cs_base + k_sand_lambda_cs_slope_grain * grain;
   ns->kappa           = k_sand_kappa;
   ns->p_ref           = k_sand_p_ref;
