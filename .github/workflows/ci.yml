@@ -58,7 +58,7 @@ jobs:
         run: echo "C:\\Program Files\\LLVM\\bin" >> $env:GITHUB_PATH
 
       - name: Configure (Ninja + compile_commands)
-        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release --parallel
 
@@ -68,8 +68,11 @@ jobs:
       - name: Verify zx_cli.exe exists
         shell: pwsh
         run: |
-          if (-not (Test-Path .\build\Release\zx_cli.exe)) {
-            Write-Error 'zx_cli.exe not found in build/Release'
+          $exe = Get-ChildItem -Path .\build -Recurse -Filter zx_cli.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) {
+            Write-Error 'zx_cli.exe not found under build'
+          } else {
+            Write-Host ("Found zx_cli.exe at {0}" -f $exe.FullName)
           }
       - name: Format check (clang-format)
         shell: bash
