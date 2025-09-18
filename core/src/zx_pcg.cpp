@@ -54,7 +54,7 @@ extern "C"
    */
   static inline void copy(size_t n, const float* x, float* y)
   {
-    std::copy_n(x, n, y);
+    std::copy(x, x + n, y);
   }
 
   /**
@@ -80,11 +80,9 @@ extern "C"
    * input or degenerate ||b|| == 0; a numerical failure (non-positive or non-finite p^T A p) also
    * terminates the iteration early.
    */
-  // NOLINTBEGIN(bugprone-easily-swappable-parameters)
   uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_a_fn apply_A,
                                 zx_apply_prec_fn apply_prec, void* user, const zx_pcg_opts* opts,
                                 float* out_final_resid)
-  // NOLINTEND(bugprone-easily-swappable-parameters)
   {
     if ((b == nullptr) || (x == nullptr) || (apply_A == nullptr) || (opts == nullptr) || (n == 0))
     {
@@ -127,44 +125,48 @@ extern "C"
     for (; k < max_iters; ++k)
     {
       apply_A(p.data(), Ap.data(), user);
-      float p_ap = dot(n, p.data(), Ap.data());
-      if ((p_ap <= 0.0F) || std::isnan(p_ap) || std::isinf(p_ap))
+      float pAp = dot(n, p.data(), Ap.data());
+      if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
       {
-        break;  // not SPD or numerical failure
-      }
-      float alpha = rz_old / p_ap;
-
-      float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
-      float thresh = std::max(tol_abs, tol_rel * b_norm);
-      if (r_norm <= thresh)
-      {
-        if (out_final_resid != nullptr)
+        if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
         {
-          *out_final_resid = r_norm;
+          if (out_final_resid != nullptr)
+            *out_final_resid = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
+          break;  // not SPD or numerical failure
         }
-        ++k;
-        break;
+        float alpha = rz_old / pAp;
+
+        float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
+        float thresh = std::max(tol_abs, tol_rel * b_norm);
+        if (r_norm <= thresh)
+        {
+          if (out_final_resid != nullptr)
+          {
+            *out_final_resid = r_norm;
+          }
+          ++k;
+          break;
+        }
+
+        if (apply_prec != nullptr)
+        {
+          apply_prec(r.data(), z.data(), user);
+        }
+        else
+        {
+          copy(n, r.data(), z.data());
+        }
+        float rz_new              = dot(n, r.data(), z.data());
+        constexpr float k_epsilon = 1e-30F;
+        float beta                = rz_new / std::max(k_epsilon, rz_old);
+        for (size_t i = 0; i < n; ++i)
+        {
+          p[i] = z[i] + beta * p[i];
+        }
+        rz_old = rz_new;
       }
 
-      if (apply_prec != nullptr)
-      {
-        apply_prec(r.data(), z.data(), user);
-      }
-      else
-      {
-        copy(n, r.data(), z.data());
-      }
-      float rz_new              = dot(n, r.data(), z.data());
-      constexpr float k_epsilon = 1e-30F;
-      float beta                = rz_new / std::max(k_epsilon, rz_old);
-      for (size_t i = 0; i < n; ++i)
-      {
-        p[i] = z[i] + beta * p[i];
-      }
-      rz_old = rz_new;
+      return k;
     }
 
-    return k;
-  }
-
-}  // extern "C"
+  }  // extern "C"

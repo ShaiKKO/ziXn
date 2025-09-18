@@ -1,7 +1,12 @@
 ---
 name: MCP Usage (ziXn)
-description: Advanced MCP context passing and thought framework for ziXn; auto-applied with objectives/constraints/acceptance/risks scaffolds, linking, and tags.
+description: Advanced MCP context passing and thought framework for ziXn; auto-applied with objectives/constraints/acceptance/risks scaffolds, linking, and tags. Ensures enhanced thinking + debug MCP servers run for every task.
 alwaysApply: true
+servers:
+  - name: enhanced-sequential-thinking-server
+    require: true
+  - name: debug
+    require: true
 ---
 
 # MCP Usage: Advanced Context Passing for ziXn

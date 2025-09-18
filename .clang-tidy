@@ -38,4 +38,5 @@ CheckOptions:
   - { key: readability-identifier-length.MinimumParameterNameLength, value: '0' }
   - { key: readability-identifier-length.MinimumVariableNameLength, value: '0' }
   - { key: readability-identifier-length.IgnoredParameterNames, value: '^(x|y|z|w|h|dt|mu|nu|ns|st|mc|ep|dp|p|r|g|i|j|k|cx|cy|cz)$' }
+  - { key: readability-function-cognitive-complexity.Threshold, value: '60' }
 

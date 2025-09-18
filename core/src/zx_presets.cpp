@@ -94,9 +94,13 @@ const char* zx_preset_name(int index)
  * @param out_ns_state If non-null, receives the preset's NorSand state.
  * @return int 1 if a preset with the given name was found and values copied, 0 otherwise.
  */
-int zx_preset_get(const char* name, zx_elastic_params* out_elastic, zx_mc_params* out_mc,
-                  zx_norsand_params* out_ns_params, zx_norsand_state* out_ns_state)
+extern "C" int zx_preset_get(const char* name, zx_elastic_params* out_elastic, zx_mc_params* out_mc,
+                             zx_norsand_params* out_ns_params, zx_norsand_state* out_ns_state)
 {
+  if ((name == nullptr) || (name[0] == '\0'))
+  {
+    return 0;
+  }
   for (int i = 0; i < zx_preset_count(); ++i)
   {
     if (std::strcmp(name, k_presets.at(static_cast<size_t>(i)).name) == 0)

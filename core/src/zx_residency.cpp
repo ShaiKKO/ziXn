@@ -7,9 +7,10 @@
 
 #include "zx/zx_residency.h"
 #include <algorithm>
+#include <limits>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
-
 struct tile_state  // NOLINT(readability-identifier-naming)
 {
   int hot_frames  = 0;
@@ -209,110 +210,115 @@ extern "C"
       s.hot_frames  = std::max(s.hot_frames, static_cast<int>(ctx->opts.enter_frames));
       s.cold_frames = 0;
     }
-
     if (prefetch_count != nullptr)
     {
-      const int pr = static_cast<int>(ctx->opts.prefetch_rings);
-      *prefetch_count =
-          static_cast<uint32_t>(((2 * (r + pr) + 1) * (2 * (r + pr) + 1) * (2 * (r + pr) + 1)) -
-                                ((2 * r + 1) * (2 * r + 1) * (2 * r + 1)));
+      const int pr             = static_cast<int>(ctx->opts.prefetch_rings);
+      const int64_t a          = 2LL * (r + pr) + 1;
+      const int64_t b          = 2LL * r + 1;
+      const uint64_t vol_shell = static_cast<uint64_t>(a) * a * a;
+      const uint64_t vol_core  = static_cast<uint64_t>(b) * b * b;
+      const uint64_t diff      = (vol_shell > vol_core) ? (vol_shell - vol_core) : 0ULL;
+      *prefetch_count          = (diff > std::numeric_limits<uint32_t>::max())
+                                     ? std::numeric_limits<uint32_t>::max()
+                                     : static_cast<uint32_t>(diff);
     }
   }
+}
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
-                                    int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
+                                  int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
+{
+  if (ctx == nullptr)
   {
-    if (ctx == nullptr)
+    return;
+  }
+  if (x0 > x1)
+  {
+    std::swap(x0, x1);
+  }
+  if (y0 > y1)
+  {
+    std::swap(y0, y1);
+  }
+  if (z0 > z1)
+  {
+    std::swap(z0, z1);
+  }
+  for (int z = z0; z <= z1; ++z)
+  {
+    for (int y = y0; y <= y1; ++y)
     {
-      return;
-    }
-    if (x0 > x1)
-    {
-      std::swap(x0, x1);
-    }
-    if (y0 > y1)
-    {
-      std::swap(y0, y1);
-    }
-    if (z0 > z1)
-    {
-      std::swap(z0, z1);
-    }
-    for (int z = z0; z <= z1; ++z)
-    {
-      for (int y = y0; y <= y1; ++y)
+      for (int x = x0; x <= x1; ++x)
       {
-        for (int x = x0; x <= x1; ++x)
-        {
-          ctx->pinned[key(x, y, z)] = true;
-        }
+        ctx->pinned[key(x, y, z)] = true;
       }
     }
   }
+}
 
-  void ZX_CALL zx_residency_unpin_all(zx_residency* ctx)
+void ZX_CALL zx_residency_unpin_all(zx_residency* ctx)
+{
+  if (ctx == nullptr)
   {
-    if (ctx == nullptr)
-    {
-      return;
-    }
-    ctx->pinned.clear();
+    return;
   }
+  ctx->pinned.clear();
+}
 
-  void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings)
+void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings)
+{
+  if (ctx == nullptr)
   {
-    if (ctx == nullptr)
-    {
-      return;
-    }
-    ctx->opts.prefetch_rings = rings;
+    return;
   }
+  ctx->opts.prefetch_rings = rings;
+}
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void ZX_CALL
-  zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
-                              uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+void ZX_CALL
+zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
+                            uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
+{
+  if (ctx == nullptr)
   {
-    if (ctx == nullptr)
-    {
-      if (enters != nullptr)
-      {
-        *enters = 0;
-      }
-      if (exits != nullptr)
-      {
-        *exits = 0;
-      }
-      if (churn != nullptr)
-      {
-        *churn = 0;
-      }
-      return;
-    }
     if (enters != nullptr)
     {
-      *enters = ctx->last_enters;
+      *enters = 0;
     }
     if (exits != nullptr)
     {
-      *exits = ctx->last_exits;
+      *exits = 0;
     }
     if (churn != nullptr)
     {
-      *churn = ctx->last_enters + ctx->last_exits;
+      *churn = 0;
     }
+    return;
   }
-
-  /**
-   * @brief Returns the number of tiles currently marked active (from the last tick).
-   *
-   * If `ctx` is null, returns 0.
-   *
-   * @return uint32_t Current active tile count.
-   */
-  uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
+  if (enters != nullptr)
   {
-    return (ctx != nullptr) ? ctx->active_count : 0;
+    *enters = ctx->last_enters;
   }
+  if (exits != nullptr)
+  {
+    *exits = ctx->last_exits;
+  }
+  if (churn != nullptr)
+  {
+    *churn = ctx->last_enters + ctx->last_exits;
+  }
+}
+
+/**
+ * @brief Returns the number of tiles currently marked active (from the last tick).
+ *
+ * If `ctx` is null, returns 0.
+ *
+ * @return uint32_t Current active tile count.
+ */
+uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
+{
+  return (ctx != nullptr) ? ctx->active_count : 0;
+}
 }

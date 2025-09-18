@@ -9,17 +9,24 @@
 #include <cstring>
 #include <functional>
 
+namespace
+{
+  constexpr float K_PI    = 3.14159265358979323846F;
+  constexpr float K_DEG   = 180.0F;
+  constexpr float K_SQRT3 = 1.7320508075688772F;
+}  // namespace
+
 static inline float deg2rad(float d)
 {
-  return d * 3.14159265358979323846f / 180.0f;
+  return d * K_PI / K_DEG;
 }
 
 void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
 {
   const float phi   = deg2rad(mc->friction_deg);
-  const float c_pa  = mc->cohesion_kpa * 1000.0f;
+  const float c_pa  = mc->cohesion_kpa * 1000.0F;
   const float sinp  = std::sin(phi);
-  const float sqrt3 = 1.7320508075688772f;
+  const float sqrt3 = K_SQRT3;
   // Common MC->DP mapping (triaxial compression fit)
   out_dp->alpha = (2.0f * sinp) / (sqrt3 * (3.0f - sinp));
   out_dp->k     = (6.0f * c_pa * std::cos(phi)) / (sqrt3 * (3.0f - sinp));
@@ -29,14 +36,14 @@ void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
 {
   const float E  = ep->young_E;
   const float nu = ep->poisson_nu;
-  *mu            = E / (2.0f * (1.0f + nu));
-  *lambda        = (E * nu) / ((1.0f + nu) * (1.0f - 2.0f * nu));
+  *mu            = E / (2.0F * (1.0F + nu));
+  *lambda        = (E * nu) / ((1.0F + nu) * (1.0F - 2.0F * nu));
 }
 
 void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
 {
   const float I1v = s[0] + s[4] + s[8];
-  float p         = I1v / 3.0f;
+  float p         = I1v / 3.0F;
   // deviatoric = s - pI
   float dev[zx_mat3_size];
   std::memcpy(dev, s, sizeof(dev));
@@ -48,7 +55,7 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* I1, float* J2)
   for (int i = 0; i < 9; ++i)
     dd += dev[i] * dev[i];
   *I1 = I1v;
-  *J2 = 0.5f * dd;
+  *J2 = 0.5F * dd;
 }
 
 void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const zx_cap_params* cap,
@@ -57,26 +64,26 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 {
   float I1, J2;
   zx_stress_invariants(sigma_trial, &I1, &J2);
-  float sqrtJ2 = std::sqrt(std::max(0.0f, J2));
+  float sqrtJ2 = std::sqrt(std::max(0.0F, J2));
   float f      = dp->alpha * I1 + sqrtJ2 - dp->k;
 
   // Cap check (compression): if I1 < i1_min, project to cap line in I1
   float I1c = I1;
-  if (cap && cap->enabled && I1 < cap->i1_min)
+  if ((cap != nullptr) && cap->enabled && I1 < cap->i1_min)
   {
     I1c = cap->i1_min;
   }
-  if (f <= 0.0f && I1 == I1c)
+  if (f <= 0.0F && I1 == I1c)
   {
     std::memcpy(sigma_out, sigma_trial, sizeof(float) * 9);
-    if (delta_gamma_out)
-      *delta_gamma_out = 0.0f;
+    if (delta_gamma_out != nullptr)
+      *delta_gamma_out = 0.0F;
     return;
   }
 
   // Deviatoric decomposition
   float dev[9];
-  float p = I1 / 3.0f;
+  float p = I1 / 3.0F;
   for (int i = 0; i < (int) zx_mat3_size; ++i)
     dev[i] = sigma_trial[i];
   dev[0] -= p;
@@ -85,22 +92,22 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   float s2 = 0.0f;
   for (int i = 0; i < (int) zx_mat3_size; ++i)
     s2 += dev[i] * dev[i];
-  float s_norm = std::sqrt(std::max(1e-30f, s2));
+  float s_norm = std::sqrt(std::max(1e-30F, s2));
 
   // Target invariants on the yield surface after cap clamp
   float I1_new     = I1c;
-  float sqrtJ2_new = std::max(0.0f, dp->k - dp->alpha * I1_new);
+  float sqrtJ2_new = std::max(0.0F, dp->k - dp->alpha * I1_new);
   float J2_new     = sqrtJ2_new * sqrtJ2_new;
 
   // Scale deviatoric part to match J2_new
-  float scale = 0.0f;
-  if (s_norm > 0.0f)
+  float scale = 0.0F;
+  if (s_norm > 0.0F)
   {
-    float target_s_norm = std::sqrt(2.0f * J2_new);
+    float target_s_norm = std::sqrt(2.0F * J2_new);
     scale               = target_s_norm / s_norm;
   }
 
-  float p_new = I1_new / 3.0f;
+  float p_new = I1_new / 3.0F;
   float sigma_proj[zx_mat3_size];
   for (int i = 0; i < (int) zx_mat3_size; ++i)
     sigma_proj[i] = scale * dev[i];
@@ -110,19 +117,19 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 
   // Line search to ensure non-negative plastic work with associated flow
   // Flow direction N = ∂f/∂σ ≈ alpha*I + dev/(2*sqrt(J2)+eps)
-  const float eps       = 1e-6f;
+  const float eps       = 1e-6F;
   float N[zx_mat3_size] = {0};
   // alpha*I contribution
   N[0] += dp->alpha;
   N[4] += dp->alpha;
   N[8] += dp->alpha;
   // deviatoric contribution from trial
-  float denom = 2.0f * std::max(sqrtJ2, eps);
+  float denom = 2.0F * std::max(sqrtJ2, eps);
   for (int i = 0; i < (int) zx_mat3_size; ++i)
     N[i] += dev[i] / denom;
 
   // Plastic multiplier proxy from distance to yield
-  float dgamma = std::max(0.0f, f);
+  float dgamma = std::max(0.0F, f);
 
   auto dot9 = [](const float* a, const float* b)
   {
@@ -137,7 +144,7 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
       o[i] = a[i] - b[i];
   };
 
-  float step = 1.0f;
+  float step = 1.0F;
   float sigma_candidate[zx_mat3_size];
   for (int iter = 0; iter < 10; ++iter)
   {
@@ -149,18 +156,18 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
     float d_sigma[zx_mat3_size];
     sub9(sigma_candidate, sigma_trial, d_sigma);
     float W = dot9(d_sigma, d_eps_p);  // plastic work increment
-    if (W >= -1e-6f)
+    if (W >= -1e-6F)
     {
       std::memcpy(sigma_out, sigma_candidate, sizeof(float) * 9);
-      if (delta_gamma_out)
+      if (delta_gamma_out != nullptr)
         *delta_gamma_out = dgamma * step;
       return;
     }
-    step *= 0.5f;  // backtrack
+    step *= 0.5F;  // backtrack
   }
   // Fallback if line search fails (should not): accept projection
   std::memcpy(sigma_out, sigma_proj, sizeof(float) * 9);
-  if (delta_gamma_out)
+  if (delta_gamma_out != nullptr)
     *delta_gamma_out = dgamma * step;
 }
 
@@ -178,25 +185,25 @@ static void eig3_sym(const float s[9], float eval[3])
   const float a = -I1;
   const float b = I2;
   const float c = -I3;
-  const float Q = (3 * b - a * a) / 9.0f;
-  const float R = (9 * a * b - 27 * c - 2 * a * a * a) / 54.0f;
+  const float Q = (3 * b - a * a) / 9.0F;
+  const float R = (9 * a * b - 27 * c - 2 * a * a * a) / 54.0F;
   const float D = Q * Q * Q + R * R;
-  if (D >= 0.0f)
+  if (D >= 0.0F)
   {
     float sqrtD = std::sqrt(D);
     float S     = std::cbrt(R + sqrtD);
     float T     = std::cbrt(R - sqrtD);
-    eval[0]     = -a / 3.0f + (S + T);
-    eval[1]     = -a / 3.0f - (S + T) / 2.0f;
+    eval[0]     = -a / 3.0F + (S + T);
+    eval[1]     = -a / 3.0F - (S + T) / 2.0F;
     eval[2]     = eval[1];
   }
   else
   {
     float theta = std::acos(R / std::sqrt(-Q * Q * Q));
-    float r     = 2.0f * std::sqrt(-Q);
-    eval[0]     = -a / 3.0f + r * std::cos(theta / 3.0f);
-    eval[1]     = -a / 3.0f + r * std::cos((theta + 2.0f * 3.14159265358979323846f) / 3.0f);
-    eval[2]     = -a / 3.0f + r * std::cos((theta + 4.0f * 3.14159265358979323846f) / 3.0f);
+    float r     = 2.0F * std::sqrt(-Q);
+    eval[0]     = -a / 3.0F + r * std::cos(theta / 3.0F);
+    eval[1]     = -a / 3.0F + r * std::cos((theta + 2.0F * K_PI) / 3.0F);
+    eval[2]     = -a / 3.0F + r * std::cos((theta + 4.0F * K_PI) / 3.0F);
   }
 }
 
@@ -216,9 +223,9 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   const float c_pa = mc->cohesion_kpa * 1000.0f;
 
   // MC yield in principal space: tau_max + alpha p - c <= 0
-  const float p       = (lam[0] + lam[1] + lam[2]) / 3.0f;
-  const float tau_max = 0.5f * (lam[0] - lam[2]);
-  const float alpha   = std::sin(phi) / (1.0f - std::sin(phi));
+  const float p       = (lam[0] + lam[1] + lam[2]) / 3.0F;
+  const float tau_max = 0.5F * (lam[0] - lam[2]);
+  const float alpha   = std::sin(phi) / (1.0F - std::sin(phi));
   float f =
       tau_max + alpha * (-p) - c_pa;  // note p is compression negative if using sign convention
   if (f <= 0.0f)
@@ -230,10 +237,10 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   }
 
   // Non-associated flow: use dilatancy ψ for plastic potential
-  const float alpha_psi = std::sin(psi) / (1.0f - std::sin(psi));
+  const float alpha_psi = std::sin(psi) / (1.0F - std::sin(psi));
 
   // Simple radial reduction of deviatoric gap and volumetric shift to satisfy f=0 (approx)
-  float scale = std::max(0.0f, (tau_max + alpha * (-p) - c_pa) / std::max(1e-6f, tau_max));
+  float scale = std::max(0.0F, (tau_max + alpha * (-p) - c_pa) / std::max(1e-6F, tau_max));
   float lam_new[3];
   lam_new[0] = lam[0] - scale * 0.5f * (lam[0] - p);
   lam_new[2] = lam[2] + scale * 0.5f * (p - lam[2]);
@@ -252,16 +259,16 @@ void zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_params* mc, float
   sigma_out[0] = lam_new[0];
   sigma_out[4] = lam_new[1];
   sigma_out[8] = lam_new[2];
-  if (eps_v_pl)
-    *eps_v_pl += -gamma * 3.0f * alpha_psi;
-  if (delta_gamma_out)
+  if (eps_v_pl != nullptr)
+    *eps_v_pl += -gamma * 3.0F * alpha_psi;
+  if (delta_gamma_out != nullptr)
     *delta_gamma_out = gamma;
 }
 
 float zx_norsand_e_cs(float p_mean, const zx_norsand_params* ns)
 {
   // Ensure pressure positive for log; use absolute
-  float p     = std::max(1.0f, std::fabs(p_mean) + ns->p_ref);
+  float p     = std::max(1.0F, std::fabs(p_mean) + ns->p_ref);
   float ratio = p / ns->p_ref;
   float term  = std::pow(std::log(ratio), ns->n_exp);
   return ns->e_ref - ns->lambda_cs * term;
@@ -281,14 +288,14 @@ void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params*
   float I1, J2;
   zx_stress_invariants(sigma_trial, &I1, &J2);
   float p   = I1 / 3.0f;
-  float q   = std::sqrt(std::max(0.0f, 3.0f * J2));
+  float q   = std::sqrt(std::max(0.0F, 3.0F * J2));
   float psi = zx_norsand_state_parameter(state, p, ns);
 
   // Target critical stress ratio q = M * (-p)
   float q_target = ns->M * (-p);
-  float t        = 0.5f;  // relaxation factor
-  float q_new    = (1.0f - t) * q + t * q_target;
-  float J2_new   = (q_new * q_new) / 3.0f;
+  float t        = 0.5F;  // relaxation factor
+  float q_new    = (1.0F - t) * q + t * q_target;
+  float J2_new   = (q_new * q_new) / 3.0F;
 
   // Deviatoric scaling
   float dev[9];
@@ -300,8 +307,8 @@ void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params*
   float s2 = 0.0f;
   for (int i = 0; i < 9; ++i)
     s2 += dev[i] * dev[i];
-  float s_norm        = std::sqrt(std::max(1e-30f, s2));
-  float target_s_norm = std::sqrt(2.0f * J2_new);
+  float s_norm        = std::sqrt(std::max(1e-30F, s2));
+  float target_s_norm = std::sqrt(2.0F * J2_new);
   float scale         = target_s_norm / s_norm;
   for (int i = 0; i < 9; ++i)
     sigma_out[i] = scale * dev[i];
@@ -312,10 +319,10 @@ void zx_norsand_return_map(const zx_elastic_params* ep, const zx_norsand_params*
   // Volumetric update from dilatancy: dε_v^pl ≈ k * ψ * dγ
   float dgamma    = std::fabs(q - q_new);
   float deps_v_pl = ns->dilatancy_scale * psi * dgamma;
-  if (eps_v_pl)
+  if (eps_v_pl != nullptr)
     *eps_v_pl += deps_v_pl;
   // Update void ratio with volumetric change proxy: e_new = e * exp(deps_v)
   state->void_ratio_e = state->void_ratio_e * std::exp(deps_v_pl);
-  if (delta_gamma_out)
+  if (delta_gamma_out != nullptr)
     *delta_gamma_out = dgamma;
 }
