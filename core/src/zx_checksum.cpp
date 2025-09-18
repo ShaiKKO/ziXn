@@ -41,7 +41,9 @@ extern "C"
     h ^= mix64(static_cast<uint64_t>(static_cast<uint32_t>(tile->coord_x)));
     h ^= mix64(static_cast<uint64_t>(static_cast<uint32_t>(tile->coord_y)));
     h ^= mix64(static_cast<uint64_t>(static_cast<uint32_t>(tile->coord_z)));
-    for (int i = 0; i < ZX_TILE_B * ZX_TILE_B * ZX_TILE_B; ++i)
+    constexpr int k_tile_node_count = ZX_TILE_B * ZX_TILE_B * ZX_TILE_B;
+    constexpr int k_fold_shift      = 33;  // 33-bit rotation spread constant
+    for (int i = 0; i < k_tile_node_count; ++i)
     {
       const zx_tile_node& n = tile->nodes[i];
       // consume three floats of momentum and one float of mass as 4x32; fold to 64
@@ -53,7 +55,7 @@ extern "C"
       a ^= static_cast<uint64_t>(u32[1]) << k_shift1;  // mom_x (low bits folded)
       a ^= static_cast<uint64_t>(u32[2]) << k_shift2;  // mom_y
       a ^= static_cast<uint64_t>(u32[3]) << k_shift3;  // mom_z
-      h ^= mix64(a + static_cast<uint64_t>(i));
+      h ^= mix64(a + static_cast<uint64_t>(i << k_fold_shift));
     }
     return h;
   }

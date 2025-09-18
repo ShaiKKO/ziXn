@@ -134,7 +134,7 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   // Line search to ensure non-negative plastic work with associated flow
   // Flow direction N = ∂f/∂σ ≈ alpha*I + dev/(2*sqrt(J2)+eps)
   const float eps       = k_eps6;
-  float N[zx_mat3_size] = {0};
+  float N[zx_mat3_size] = {0.0F};
   // alpha*I contribution
   N[0] += dp->alpha;
   N[4] += dp->alpha;
@@ -168,7 +168,8 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
 
   float step = 1.0F;
   float sigma_candidate[zx_mat3_size];
-  for (int iter = 0; iter < 10; ++iter)
+  constexpr int k_max_iters = 10;
+  for (int iter = 0; iter < k_max_iters; ++iter)
   {
     for (int idx = 0; idx < (int) zx_mat3_size; ++idx)
     {
@@ -228,8 +229,8 @@ static void eig3_sym(const float s[9], float eval[3])
     float theta = std::acos(R / std::sqrt(-Q * Q * Q));
     float r     = 2.0F * std::sqrt(-Q);
     eval[0]     = -a / 3.0F + r * std::cos(theta / 3.0F);
-    eval[1]     = -a / 3.0F + r * std::cos((theta + 2.0F * K_PI) / 3.0F);
-    eval[2]     = -a / 3.0F + r * std::cos((theta + 4.0F * K_PI) / 3.0F);
+    eval[1]     = -a / 3.0F + r * std::cos((theta + 2.0F * k_pi) / 3.0F);
+    eval[2]     = -a / 3.0F + r * std::cos((theta + 4.0F * k_pi) / 3.0F);
   }
 }
 

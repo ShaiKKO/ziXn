@@ -360,17 +360,27 @@ static inline void accumulate_g2p_particle(size_t i, const ArrayView<const float
   out_vel_view[out_base + 2U] = vz;
   if (out_c != nullptr)
   {
-    const float s        = k_four * invh * invh;  // common APIC scaling
-    const size_t cbase   = i * static_cast<size_t>(k_cdim);
-    (*out_c)[cbase + 0U] = s * cx[0];
-    (*out_c)[cbase + 1U] = s * cx[1];
-    (*out_c)[cbase + 2U] = s * cx[2];
-    (*out_c)[cbase + 3U] = s * cy[0];
-    (*out_c)[cbase + 4U] = s * cy[1];
-    (*out_c)[cbase + 5U] = s * cy[2];
-    (*out_c)[cbase + 6U] = s * cz[0];
-    (*out_c)[cbase + 7U] = s * cz[1];
-    (*out_c)[cbase + 8U] = s * cz[2];
+    const float s      = k_four * invh * invh;  // common APIC scaling
+    const size_t cbase = i * static_cast<size_t>(k_cdim);
+    // Named indices for readability and to avoid magic numbers
+    constexpr size_t k_i0  = 0U;
+    constexpr size_t k_i1  = 1U;
+    constexpr size_t k_i2  = 2U;
+    constexpr size_t k_i3  = 3U;
+    constexpr size_t k_i4  = 4U;
+    constexpr size_t k_i5  = 5U;
+    constexpr size_t k_i6  = 6U;
+    constexpr size_t k_i7  = 7U;
+    constexpr size_t k_i8  = 8U;
+    (*out_c)[cbase + k_i0] = s * cx[k_i0];
+    (*out_c)[cbase + k_i1] = s * cx[k_i1];
+    (*out_c)[cbase + k_i2] = s * cx[k_i2];
+    (*out_c)[cbase + k_i3] = s * cy[k_i0];
+    (*out_c)[cbase + k_i4] = s * cy[k_i1];
+    (*out_c)[cbase + k_i5] = s * cy[k_i2];
+    (*out_c)[cbase + k_i6] = s * cz[k_i0];
+    (*out_c)[cbase + k_i7] = s * cz[k_i1];
+    (*out_c)[cbase + k_i8] = s * cz[k_i2];
   }
 }
 
