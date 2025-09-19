@@ -7,20 +7,19 @@
 #ifndef ZX_CHECKSUM_H
 #define ZX_CHECKSUM_H
 
-#include <stdint.h>
 #include "zx_abi.h"
 #include "zx_tiles.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-ZX_API uint64_t ZX_CALL zx_checksum_tile(const zx_tile* tile);
+  ZX_API uint64_t ZX_CALL zx_checksum_tile(const zx_tile* tile);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* ZX_CHECKSUM_H */
-
-

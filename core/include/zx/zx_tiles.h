@@ -20,7 +20,7 @@ enum
 {
   ZX_TILE_B = 16
 };
-    /* nodes per dimension per tile */  // NOLINT(cppcoreguidelines-use-enum-class,performance-enum-size)
+/* nodes per dimension per tile */  // NOLINT(cppcoreguidelines-use-enum-class,performance-enum-size)
 
 typedef struct zx_particle_soa
 {
@@ -49,8 +49,9 @@ typedef struct zx_tile
 {
   int32_t coord_x, coord_y, coord_z;
   uint32_t generation;
-  zx_tile_node nodes[ZX_TILE_B * ZX_TILE_B * ZX_TILE_B];  // NOLINT(cppcoreguidelines-avoid-c-arrays,
-                                                          // modernize-avoid-c-arrays)
+  zx_tile_node
+      nodes[ZX_TILE_B * ZX_TILE_B * ZX_TILE_B];  // NOLINT(cppcoreguidelines-avoid-c-arrays,
+                                                 // modernize-avoid-c-arrays)
 } zx_tile;
 
 #endif /* ZX_TILES_H */

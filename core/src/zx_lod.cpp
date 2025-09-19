@@ -22,11 +22,11 @@
 
 #include "zx/zx_lod.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <mutex>
 #include <vector>
-#include <array>
 #if defined(__x86_64__) || defined(_M_X64)
 #include <immintrin.h>
 #endif
@@ -38,7 +38,7 @@
 #endif
 
 /* SIMD override: -1 auto, 0 scalar, 2 AVX2 */
-static int g_simd_override = -1; // -1 auto, 0 scalar, 2 AVX2
+static int g_simd_override = -1;  // -1 auto, 0 scalar, 2 AVX2
 
 #if defined(__x86_64__) || defined(_M_X64)
 static inline int cpu_supports_avx2(); /* forward */
@@ -52,9 +52,18 @@ typedef void (*pp_up2_fn)(const float*, uint32_t, uint32_t, uint32_t, float*, ui
 static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                          uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if ((src == nullptr) || (dst == nullptr)) { return; }
-  if ((sw < 2U) || (sh < 2U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw)) { return; }
-  if (((dw * 2U) != sw) || ((dh * 2U) != sh)) { return; }
+  if ((src == nullptr) || (dst == nullptr))
+  {
+    return;
+  }
+  if ((sw < 2U) || (sh < 2U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw))
+  {
+    return;
+  }
+  if (((dw * 2U) != sw) || ((dh * 2U) != sh))
+  {
+    return;
+  }
   constexpr float k_quarter = 0.25F;
   for (uint32_t y = 0; y < dh; ++y)
   {
@@ -137,16 +146,25 @@ static void init_down2_impl()
 static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                        uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if ((src == nullptr) || (dst == nullptr)) { return; }
-  if ((sw == 0U) || (sh == 0U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw)) { return; }
-  if ((dw != (sw * 2U)) || (dh != (sh * 2U))) { return; }
+  if ((src == nullptr) || (dst == nullptr))
+  {
+    return;
+  }
+  if ((sw == 0U) || (sh == 0U) || (dw == 0U) || (dh == 0U) || (sp < sw) || (dp < dw))
+  {
+    return;
+  }
+  if ((dw != (sw * 2U)) || (dh != (sh * 2U)))
+  {
+    return;
+  }
   for (uint32_t y = 0; y < dh; ++y)
   {
     const float fy = (static_cast<float>(y) + 0.5F) * 0.5F - 0.5F;
     int y0         = (int) std::floor((double) fy);
-    int y1   = std::min((int) sh - 1, y0 + 1);
+    int y1         = std::min((int) sh - 1, y0 + 1);
     const float ty = fy - (float) y0;
-    y0       = std::max(0, y0);
+    y0             = std::max(0, y0);
     for (uint32_t x = 0; x < dw; ++x)
     {
       const float fx  = (static_cast<float>(x) + 0.5F) * 0.5F - 0.5F;
