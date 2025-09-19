@@ -17,14 +17,26 @@ static std::atomic<uint64_t> g_seed{0x9e3779b97f4a7c15ULL};
 extern "C"
 {
 
+  /**
+   * @brief Enable or disable deterministic mode.
+   * @param enable Non-zero to enable determinism; zero to disable.
+   */
   void ZX_CALL zx_set_determinism(int enable)
   {
     g_det.store((enable != 0) ? 1 : 0, std::memory_order_relaxed);
   }
+  /**
+   * @brief Query whether deterministic mode is enabled.
+   * @return int Non-zero if enabled; zero otherwise.
+   */
   int ZX_CALL zx_get_determinism(void)
   {
     return g_det.load(std::memory_order_relaxed);
   }
+  /**
+   * @brief Set the global RNG seed used in deterministic modes.
+   * @param seed New seed; if zero, it is coerced to 1.
+   */
   void ZX_CALL zx_seed_rng(uint64_t seed)
   {
     if (seed == 0)
@@ -33,6 +45,10 @@ extern "C"
     }
     g_seed.store(seed, std::memory_order_relaxed);
   }
+  /**
+   * @brief Get the current global RNG seed.
+   * @return uint64_t Current seed value.
+   */
   uint64_t ZX_CALL zx_get_rng_seed(void)
   {
     return g_seed.load(std::memory_order_relaxed);

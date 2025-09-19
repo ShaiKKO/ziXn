@@ -17,14 +17,14 @@
  * in-range. Rows are copied with contiguous memcpy operations; rows of the source that
  * fall outside r or outside the source extent are skipped.
  *
- * @param src Pointer to the source patch (sw * sh floats). Must not be NULL.
+ * @param src Pointer to the source patch (sw * sh floats). Must not be null.
  * @param sw Width of the source patch in floats.
  * @param sh Height of the source patch in rows.
  * @param t Target write surface; its disp pointer and dimensions are used and must be valid.
  * @param r Destination rectangle in target pixel coordinates (x,y,w,h).
  *
  * @note No return value. The function returns immediately without writes if inputs are
- * invalid (NULL pointers, zero dimensions, or if the clipped rectangle has non-positive size).
+ * invalid (null pointers, zero dimensions, or if the clipped rectangle has non-positive size).
  */
 void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, zx_write_target* t,
                                     zx_rect r)

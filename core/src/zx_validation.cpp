@@ -19,8 +19,8 @@ namespace
 
 /**
  * @brief Compute the critical slope angle theta_c (radians) from material friction.
- * @param mc Input Mohr–Coulomb parameters; uses `friction_deg` (degrees).
- * @return theta_c in radians (lower bound when cohesion present).
+ * @param mc Input Mohr–Coulomb parameters; uses friction_deg (degrees).
+ * @return float theta_c in radians (lower bound when cohesion present).
  */
 float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
 {
@@ -30,9 +30,9 @@ float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
 
 /**
  * @brief Estimate collapse runout ratio (L/H) for a granular column.
- * @param friction_deg Friction angle in degrees (φ).
+ * @param friction_deg Friction angle in degrees.
  * @param ar Initial aspect ratio (height/width).
- * @return Estimated runout ratio L/H using a clamped proxy.
+ * @return float Estimated runout ratio L/H using a clamped proxy.
  */
 float zx_validation_column_collapse_runout_ratio(float friction_deg, float ar)
 {

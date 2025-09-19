@@ -39,6 +39,15 @@ static inline uint64_t mix64(uint64_t x)
 extern "C"
 {
 
+  /**
+   * @brief Compute a stable 64-bit checksum over a tile's node payload.
+   *
+   * Mixes tile coordinates and all node records into a deterministic 64-bit hash
+   * suitable for parity checks and determinism tests.
+   *
+   * @param tile Pointer to tile; may be null (returns 0).
+   * @return uint64_t Stable checksum value (0 if tile is null).
+   */
   uint64_t ZX_CALL zx_checksum_tile(const zx_tile* tile)
   {
     if (tile == nullptr)

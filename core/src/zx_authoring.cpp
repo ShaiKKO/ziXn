@@ -62,6 +62,18 @@ static float clamp01(float x)
   return x;
 }
 
+/**
+ * @brief Map UI sand sliders to solver parameters.
+ *
+ * Translates authoring-time sand controls into physically meaningful
+ * elastic, Mohr–Coulomb, and NorSand parameters, clamping inputs to [0,1].
+ *
+ * @param ui Input UI parameters for sand (dryness, grain size).
+ * @param ep Output elastic parameters (Young's modulus and Poisson ratio).
+ * @param mc Output Mohr–Coulomb parameters (friction, cohesion).
+ * @param ns Output NorSand material parameters.
+ * @param st Output NorSand state parameters.
+ */
 void zx_authoring_map_sand(const zx_ui_sand* ui, zx_elastic_params* ep, zx_mc_params* mc,
                            zx_norsand_params* ns, zx_norsand_state* st)
 {
