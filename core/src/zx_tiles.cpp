@@ -26,6 +26,13 @@ extern "C"
 
   /* Allocation helpers are exposed as C symbols to ease testing and early wiring. */
 
+  /**
+   * @brief Allocate a particle SoA of length count using a user allocator and zero-initialize.
+   * @param count Number of particles.
+   * @param alloc_fn User allocator callback: alloc_fn(num_bytes, user) -> pointer.
+   * @param user Opaque pointer forwarded to the allocator.
+   * @return zx_particle_soa SoA with all pointers set (or zeroed if allocation fails/invalid).
+   */
   zx_particle_soa ZX_CALL zx_create_particle_soa(size_t count, void* (*alloc_fn)(size_t, void*),
                                                  void* user)
   {
@@ -63,6 +70,12 @@ extern "C"
     return soa;
   }
 
+  /**
+   * @brief Destroy a particle SoA using a user-provided free function and reset fields.
+   * @param soa SoA to destroy; may be null.
+   * @param free_fn User free callback: free_fn(ptr, user).
+   * @param user Opaque pointer forwarded to the free callback.
+   */
   void ZX_CALL zx_destroy_particle_soa(zx_particle_soa* soa, void (*free_fn)(void*, void*),
                                        void* user)
   {
@@ -85,6 +98,13 @@ extern "C"
     *soa = zx_particle_soa{};
   }
 
+  /**
+   * @brief Allocate a tile pool of given capacity using a user allocator and zero-initialize.
+   * @param capacity Number of tiles to allocate.
+   * @param alloc_fn User allocator callback.
+   * @param user Opaque pointer forwarded to the allocator.
+   * @return zx_tile* Pointer to zeroed tile array, or nullptr on invalid input.
+   */
   zx_tile* ZX_CALL zx_create_tile_pool(uint32_t capacity, void* (*alloc_fn)(size_t, void*),
                                        void* user)
   {
@@ -97,6 +117,12 @@ extern "C"
     return pool;
   }
 
+  /**
+   * @brief Free a tile pool via user callback (no-op on null inputs).
+   * @param pool Pointer to tile pool array.
+   * @param free_fn User free callback.
+   * @param user Opaque pointer forwarded to the free callback.
+   */
   void ZX_CALL zx_destroy_tile_pool(zx_tile* pool, void (*free_fn)(void*, void*), void* user)
   {
     if (pool == nullptr || free_fn == nullptr)
