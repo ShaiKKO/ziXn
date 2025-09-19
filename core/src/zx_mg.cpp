@@ -140,6 +140,12 @@ extern "C"
    * @param opts Options (must not be NULL)
    * @return Context pointer or NULL on failure
    */
+  /**
+   * @brief Create a 1D Poisson V-cycle hierarchy for PCG preconditioning.
+   * @param n Finest grid size (>= 3).
+   * @param opts Options (must not be NULL).
+   * @return New multigrid context or NULL on failure.
+   */
   zx_mg_context* ZX_CALL zx_mg_create_poisson1d(size_t n, const zx_mg_opts* opts)
   {
     if ((n < 3) || (opts == nullptr))
@@ -182,6 +188,7 @@ extern "C"
   }
 
   /** \brief Destroy multigrid context. */
+  /** @brief Destroy multigrid context. */
   void ZX_CALL zx_mg_destroy(zx_mg_context* ctx)
   {
     delete ctx;
@@ -199,6 +206,12 @@ extern "C"
    *
    * @param r Input residual vector on the finest grid (length = finest level n).
    * @param z Output vector that receives the preconditioned result (length = finest level n).
+   */
+  /**
+   * @brief Apply multigrid preconditioner: compute z = M^{-1} r.
+   * @param r Input residual (length finest n).
+   * @param z Output vector (length finest n).
+   * @param user_ctx Opaque zx_mg_context* passed from PCG caller.
    */
   void ZX_CALL zx_mg_prec_apply(const float* r, float* z, void* user_ctx)
   {

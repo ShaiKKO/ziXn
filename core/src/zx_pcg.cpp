@@ -72,6 +72,22 @@ extern "C"
    * input or degenerate ||b|| == 0; a numerical failure (non-positive or non-finite p^T A p) also
    * terminates the iteration early.
    */
+  /**
+   * @brief Solve SPD system A x = b using Preconditioned Conjugate Gradient (reference CPU).
+   *
+   * Runs up to opts->max_iters iterations and stops when ||r|| <= max(tol_abs, tol_rel * ||b||).
+   * Uses apply_A to compute matrix-vector products and optional apply_prec for z = M^{-1} r.
+   *
+   * @param n Vector length and dimension of A.
+   * @param b Right-hand side vector (length n).
+   * @param x In: initial guess; Out: final solution (length n).
+   * @param apply_A Callback computing y := A x.
+   * @param apply_prec Optional preconditioner callback computing z := M^{-1} r; may be NULL.
+   * @param user Opaque context pointer forwarded to callbacks.
+   * @param opts Solver options (must not be NULL).
+   * @param out_final_resid If non-null, receives final residual norm.
+   * @return Iteration count (<= max_iters). Returns 0 on invalid input.
+   */
   uint32_t ZX_CALL zx_pcg_solve(size_t n, const float* b, float* x, zx_apply_a_fn apply_A,
                                 zx_apply_prec_fn apply_prec, void* user, const zx_pcg_opts* opts,
                                 float* out_final_resid)
