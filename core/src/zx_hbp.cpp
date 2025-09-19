@@ -1,8 +1,12 @@
-/*!
- * \file zx_hbp.cpp
- * \brief Herschel–Bulkley–Papanastasiou coarse-grid viscous update (CPU reference).
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_hbp.cpp
+ * @brief Herschel–Bulkley–Papanastasiou coarse-grid viscous update (CPU reference).
+ * @details Implements coarse-grid viscosity update using HBP rheology for integration proxies
+ *          (dam-break, bogging, puddle). Stateless wrt global state; functions operate on
+ *          provided tile pools. Thread-safety depends on non-overlapping tile buffers.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_hbp.h"
@@ -43,7 +47,8 @@ namespace
 
   inline uint32_t node_index(uint32_t ix, uint32_t iy, uint32_t iz)
   {
-    return ix + static_cast<uint32_t>(ZX_TILE_B) * (iy + static_cast<uint32_t>(ZX_TILE_B) * iz);
+    const auto b = static_cast<uint32_t>(ZX_TILE_B);
+    return ix + (b * (iy + (b * iz)));
   }
 
   struct NeighborRef
@@ -65,7 +70,9 @@ namespace
     int niy = iy + dy;
     int niz = iz + dz;
 
-    int carry_x = 0, carry_y = 0, carry_z = 0;
+    int carry_x = 0;
+    int carry_y = 0;
+    int carry_z = 0;
     if (nix < 0)
     {
       nix += ZX_TILE_B;
@@ -116,18 +123,20 @@ extern "C"
   float ZX_CALL zx_hbp_mu_eff(float gamma_dot, const zx_hbp_params* params, float mu_min,
                               float mu_max)
   {
-    if (!params)
-      return std::clamp(0.0f, mu_min, mu_max);
-    const float g      = std::max(gamma_dot, 0.0f);
-    const float eps    = 1e-8f;
+    if (params == nullptr)
+    {
+      return std::clamp(0.0F, mu_min, mu_max);
+    }
+    const float g      = std::max(gamma_dot, 0.0F);
+    const float eps    = 1.0e-8F;
     const float g_safe = std::max(g, eps);
 
-    float f_y = 0.0f;
-    if (params->tau_y > 0.0f && params->m > 0.0f)
+    float f_y = 0.0F;
+    if ((params->tau_y > 0.0F) && (params->m > 0.0F))
     {
       if (g > eps)
       {
-        f_y = (1.0f - std::exp(-params->m * g)) / g;
+        f_y = (1.0F - std::exp(-params->m * g)) / g;
       }
       else
       {
@@ -135,13 +144,13 @@ extern "C"
       }
     }
 
-    float power_term = 0.0f;
-    if (params->K > 0.0f)
+    float power_term = 0.0F;
+    if (params->K > 0.0F)
     {
-      power_term = params->K * std::pow(g_safe, params->n - 1.0f);
+      power_term = params->K * std::pow(g_safe, params->n - 1.0F);
     }
 
-    float mu = params->mu0 + power_term + params->tau_y * f_y;
+    float mu = params->mu0 + power_term + (params->tau_y * f_y);
     if (!(mu_min <= mu_max))
     {
       std::swap(mu_min, mu_max);
@@ -167,12 +176,12 @@ extern "C"
       break;
     case ZX_MU_CLAMP_SMOOTH_TANH:
     {
-      const float k = (softness_k > 0.0f) ? softness_k : 1.0f;
+      const float k = (softness_k > 0.0F) ? softness_k : 1.0F;
       // Smoothly push into range using tanh-based soft clipping near bounds
       // Map to [-1,1] via affine, then invert mapping
-      const float mid  = 0.5f * (mu_min + mu_max);
-      const float half = 0.5f * (mu_max - mu_min);
-      float t          = (mu - mid) / std::max(half, 1e-12f);
+      const float mid  = 0.5F * (mu_min + mu_max);
+      const float half = 0.5F * (mu_max - mu_min);
+      float t          = (mu - mid) / std::max(half, 1.0e-12F);
       t                = std::tanh(k * t);
       mu               = mid + half * t;
       // tiny extra hard clamp to ensure numeric safety
@@ -188,32 +197,34 @@ extern "C"
 
   int ZX_CALL zx_hbp_validate_params(zx_hbp_params* inout)
   {
-    if (!inout)
-      return -1;
-    int adjusted = 0;
-    if (!(inout->mu0 >= 0.0f))
+    if (inout == nullptr)
     {
-      inout->mu0 = std::max(inout->mu0, 0.0f);
+      return -1;
+    }
+    int adjusted = 0;
+    if (!(inout->mu0 >= 0.0F))
+    {
+      inout->mu0 = std::max(inout->mu0, 0.0F);
       adjusted   = 1;
     }
-    if (!(inout->K >= 0.0f))
+    if (!(inout->K >= 0.0F))
     {
-      inout->K = std::max(inout->K, 0.0f);
+      inout->K = std::max(inout->K, 0.0F);
       adjusted = 1;
     }
-    if (!(inout->n > 0.0f))
+    if (!(inout->n > 0.0F))
     {
-      inout->n = std::max(inout->n, 1e-6f);
+      inout->n = std::max(inout->n, 1.0e-6F);
       adjusted = 1;
     }
-    if (!(inout->tau_y >= 0.0f))
+    if (!(inout->tau_y >= 0.0F))
     {
-      inout->tau_y = std::max(inout->tau_y, 0.0f);
+      inout->tau_y = std::max(inout->tau_y, 0.0F);
       adjusted     = 1;
     }
-    if (!(inout->m >= 0.0f))
+    if (!(inout->m >= 0.0F))
     {
-      inout->m = std::max(inout->m, 0.0f);
+      inout->m = std::max(inout->m, 0.0F);
       adjusted = 1;
     }
     return adjusted;
@@ -221,34 +232,39 @@ extern "C"
 
   float ZX_CALL zx_hbp_dt_stable_upper_bound(float h, float mu_max, float rho_min)
   {
-    if (h <= 0.0f || mu_max <= 0.0f || rho_min <= 0.0f)
-      return 0.0f;
-    return (h * h * rho_min) / (6.0f * mu_max);
+    if ((h <= 0.0F) || (mu_max <= 0.0F) || (rho_min <= 0.0F))
+    {
+      return 0.0F;
+    }
+    return (h * h * rho_min) / (6.0F * mu_max);
   }
 
   void ZX_CALL zx_hbp_update_coarse_grid(zx_tile* pool, uint32_t tile_count, float h, float dt,
                                          const zx_hbp_params* params, float mu_min, float mu_max)
   {
-    if (!pool || tile_count == 0 || h <= 0.0f || dt <= 0.0f || !params)
+    if ((pool == nullptr) || (tile_count == 0U) || (h <= 0.0F) || (dt <= 0.0F) ||
+        (params == nullptr))
     {
       return;
     }
 
-    const uint32_t B              = static_cast<uint32_t>(ZX_TILE_B);
-    const uint32_t nodes_per_tile = B * B * B;
+    const auto b                  = static_cast<uint32_t>(ZX_TILE_B);
+    const uint32_t nodes_per_tile = b * b * b;
     const uint64_t total_nodes =
         static_cast<uint64_t>(tile_count) * static_cast<uint64_t>(nodes_per_tile);
 
     std::unordered_map<TileKey, int, TileKeyHash> key_to_index;
-    key_to_index.reserve(tile_count * 2);
+    key_to_index.reserve(static_cast<size_t>(tile_count) * 2ULL);
     for (uint32_t t = 0; t < tile_count; ++t)
     {
       key_to_index.insert(
           {TileKey{pool[t].coord_x, pool[t].coord_y, pool[t].coord_z}, static_cast<int>(t)});
     }
 
-    std::vector<float> vx(total_nodes, 0.0f), vy(total_nodes, 0.0f), vz(total_nodes, 0.0f);
-    std::vector<float> mass(total_nodes, 0.0f);
+    std::vector<float> vx(total_nodes, 0.0F);
+    std::vector<float> vy(total_nodes, 0.0F);
+    std::vector<float> vz(total_nodes, 0.0F);
+    std::vector<float> mass(total_nodes, 0.0F);
     for (uint32_t t = 0; t < tile_count; ++t)
     {
       const zx_tile& tile = pool[t];
@@ -258,7 +274,7 @@ extern "C"
         const zx_tile_node& n = tile.nodes[k];
         const float m         = n.mass;
         mass[base + k]        = m;
-        if (m > 0.0f)
+        if (m > 0.0F)
         {
           vx[base + k] = n.mom_x / m;
           vy[base + k] = n.mom_y / m;
@@ -268,19 +284,19 @@ extern "C"
     }
 
     std::vector<float> mu(total_nodes, mu_min);
-    const float inv2h = 0.5f / h;
+    const float inv2h = 0.5F / h;
     for (uint32_t t = 0; t < tile_count; ++t)
     {
       const uint64_t base = static_cast<uint64_t>(t) * nodes_per_tile;
-      for (uint32_t iz = 0; iz < B; ++iz)
+      for (uint32_t iz = 0; iz < b; ++iz)
       {
-        for (uint32_t iy = 0; iy < B; ++iy)
+        for (uint32_t iy = 0; iy < b; ++iy)
         {
-          for (uint32_t ix = 0; ix < B; ++ix)
+          for (uint32_t ix = 0; ix < b; ++ix)
           {
             const uint32_t k   = node_index(ix, iy, iz);
             const float m_node = mass[base + k];
-            if (m_node <= 0.0f)
+            if (m_node <= 0.0F)
             {
               mu[base + k] = mu_min;
               continue;
@@ -319,16 +335,16 @@ extern "C"
             const float dvz_dy = (vy_p[2] - vy_m[2]) * inv2h;
             const float dvz_dz = (vz_p[2] - vz_m[2]) * inv2h;
 
-            const float Sxx = dvx_dx;
-            const float Syy = dvy_dy;
-            const float Szz = dvz_dz;
-            const float Sxy = 0.5f * (dvx_dy + dvy_dx);
-            const float Sxz = 0.5f * (dvx_dz + dvz_dx);
-            const float Syz = 0.5f * (dvy_dz + dvz_dy);
+            const float sxx = dvx_dx;
+            const float syy = dvy_dy;
+            const float szz = dvz_dz;
+            const float sxy = 0.5F * (dvx_dy + dvy_dx);
+            const float sxz = 0.5F * (dvx_dz + dvz_dx);
+            const float syz = 0.5F * (dvy_dz + dvz_dy);
 
-            const float frob2 =
-                Sxx * Sxx + Syy * Syy + Szz * Szz + 2.0f * (Sxy * Sxy + Sxz * Sxz + Syz * Syz);
-            const float gamma_dot = std::sqrt(std::max(0.0f, 2.0f * frob2));
+            const float frob2 = (sxx * sxx) + (syy * syy) + (szz * szz) +
+                                (2.0F * ((sxy * sxy) + (sxz * sxz) + (syz * syz)));
+            const float gamma_dot = std::sqrt(std::max(0.0F, 2.0F * frob2));
 
             mu[base + k] = zx_hbp_mu_eff(gamma_dot, params, mu_min, mu_max);
           }
@@ -336,24 +352,26 @@ extern "C"
       }
     }
 
-    const float inv_h2 = 1.0f / (h * h);
-    std::vector<float> n_vx(total_nodes, 0.0f), n_vy(total_nodes, 0.0f), n_vz(total_nodes, 0.0f);
+    const float inv_h2 = 1.0F / (h * h);
+    std::vector<float> n_vx(total_nodes, 0.0F);
+    std::vector<float> n_vy(total_nodes, 0.0F);
+    std::vector<float> n_vz(total_nodes, 0.0F);
     for (uint32_t t = 0; t < tile_count; ++t)
     {
       const uint64_t base = static_cast<uint64_t>(t) * nodes_per_tile;
-      for (uint32_t iz = 0; iz < B; ++iz)
+      for (uint32_t iz = 0; iz < b; ++iz)
       {
-        for (uint32_t iy = 0; iy < B; ++iy)
+        for (uint32_t iy = 0; iy < b; ++iy)
         {
-          for (uint32_t ix = 0; ix < B; ++ix)
+          for (uint32_t ix = 0; ix < b; ++ix)
           {
             const uint32_t k   = node_index(ix, iy, iz);
             const float m_node = mass[base + k];
-            if (m_node <= 0.0f)
+            if (m_node <= 0.0F)
             {
-              n_vx[base + k] = 0.0f;
-              n_vy[base + k] = 0.0f;
-              n_vz[base + k] = 0.0f;
+              n_vx[base + k] = 0.0F;
+              n_vy[base + k] = 0.0F;
+              n_vz[base + k] = 0.0F;
               continue;
             }
 
@@ -367,7 +385,9 @@ extern "C"
               NeighborRef nr =
                   get_neighbor_ref(pool, key_to_index, static_cast<int>(t), static_cast<int>(ix),
                                    static_cast<int>(iy), static_cast<int>(iz), dx, dy, dz);
-              float vxn = vxc, vyn = vyc, vzn = vzc;
+              float vxn = vxc;
+              float vyn = vyc;
+              float vzn = vzc;
               float muf = muc;
               if (nr.tile_idx >= 0)
               {
@@ -375,14 +395,16 @@ extern "C"
                 vxn                  = vx[nbase + nr.local_idx];
                 vyn                  = vy[nbase + nr.local_idx];
                 vzn                  = vz[nbase + nr.local_idx];
-                muf                  = 0.5f * (muc + mu[nbase + nr.local_idx]);
+                muf                  = 0.5F * (muc + mu[nbase + nr.local_idx]);
               }
               ax += muf * (vxn - vxc);
               ay += muf * (vyn - vyc);
               az += muf * (vzn - vzc);
             };
 
-            float ax = 0.0f, ay = 0.0f, az = 0.0f;
+            float ax = 0.0F;
+            float ay = 0.0F;
+            float az = 0.0F;
             accum_axis(+1, 0, 0, ax, ay, az);
             accum_axis(-1, 0, 0, ax, ay, az);
             accum_axis(0, +1, 0, ax, ay, az);
@@ -391,7 +413,7 @@ extern "C"
             accum_axis(0, 0, -1, ax, ay, az);
 
             const float rho   = m_node / (h * h * h);
-            const float scale = (dt * inv_h2) / std::max(rho, 1e-12f);
+            const float scale = (dt * inv_h2) / std::max(rho, 1.0e-12F);
             n_vx[base + k]    = vxc + scale * ax;
             n_vy[base + k]    = vyc + scale * ay;
             n_vz[base + k]    = vzc + scale * az;
@@ -407,7 +429,7 @@ extern "C"
       for (uint32_t k = 0; k < nodes_per_tile; ++k)
       {
         const float m = mass[base + k];
-        if (m > 0.0f)
+        if (m > 0.0F)
         {
           tile.nodes[k].mom_x = n_vx[base + k] * m;
           tile.nodes[k].mom_y = n_vy[base + k] * m;
@@ -415,9 +437,9 @@ extern "C"
         }
         else
         {
-          tile.nodes[k].mom_x = 0.0f;
-          tile.nodes[k].mom_y = 0.0f;
-          tile.nodes[k].mom_z = 0.0f;
+          tile.nodes[k].mom_x = 0.0F;
+          tile.nodes[k].mom_y = 0.0F;
+          tile.nodes[k].mom_z = 0.0F;
         }
       }
     }

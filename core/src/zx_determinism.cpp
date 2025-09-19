@@ -1,8 +1,11 @@
-/*!
- * \file zx_determinism.cpp
- * \brief Global determinism controls (CPU reference path).
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_determinism.cpp
+ * @brief Global determinism controls (CPU reference path).
+ * @details Provides process-wide toggles for determinism and a fixed RNG seed to ensure
+ *          reproducible runs in deterministic test modes. Uses relaxed atomics for thread safety.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_determinism.h"
@@ -16,7 +19,7 @@ extern "C"
 
   void ZX_CALL zx_set_determinism(int enable)
   {
-    g_det.store(enable ? 1 : 0, std::memory_order_relaxed);
+    g_det.store((enable != 0) ? 1 : 0, std::memory_order_relaxed);
   }
   int ZX_CALL zx_get_determinism(void)
   {
@@ -25,7 +28,9 @@ extern "C"
   void ZX_CALL zx_seed_rng(uint64_t seed)
   {
     if (seed == 0)
+    {
       seed = 1;
+    }
     g_seed.store(seed, std::memory_order_relaxed);
   }
   uint64_t ZX_CALL zx_get_rng_seed(void)

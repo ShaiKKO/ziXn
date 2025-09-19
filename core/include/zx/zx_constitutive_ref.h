@@ -8,27 +8,27 @@
 #define ZX_CONSTITUTIVE_REF_H
 
 #include "zx_abi.h"
-#include <stdint.h>
+#include <cstdint>
 
-typedef struct zx_elastic_params
+typedef struct ZxElasticParams
 {
   float young_E;
   float poisson_nu;
 } zx_elastic_params;
 
-typedef struct zx_mc_params
+typedef struct ZxMcParams
 {
   float friction_deg; /* φ in degrees */
   float cohesion_kpa; /* cohesion in kPa */
 } zx_mc_params;
 
-typedef struct zx_dp_params
+typedef struct ZxDpParams
 {
   float alpha; /* slope in I1-J2 space */
   float k;     /* yield size */
 } zx_dp_params;
 
-typedef struct zx_cap_params
+typedef struct ZxCapParams
 {
   int enabled;  /* 0/1 */
   float i1_min; /* minimum I1 (compression cap), negative value */
@@ -62,7 +62,7 @@ ZX_API void ZX_CALL zx_mc_return_map(const zx_elastic_params* ep, const zx_mc_pa
                                      float* eps_v_pl /* in/out, may be null */);
 
 /* NorSand parameters and state */
-typedef struct zx_norsand_params
+typedef struct ZxNorsandParams
 {
   float M;               /* critical stress ratio */
   float lambda_cs;       /* CSL slope in e-ln p space */
@@ -73,7 +73,7 @@ typedef struct zx_norsand_params
   float dilatancy_scale; /* scale for dilatancy vs state parameter */
 } zx_norsand_params;
 
-typedef struct zx_norsand_state
+typedef struct ZxNorsandState
 {
   float void_ratio_e; /* current void ratio */
 } zx_norsand_state;

@@ -1,8 +1,11 @@
-/*!
- * \file zx_presets.cpp
- * \brief Authoring presets mapped to solver parameters.
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_presets.cpp
+ * @brief Authoring presets mapped to solver parameters.
+ * @details Holds a small table of named presets for elastic, Mohr–Coulomb, and NorSand parameters
+ *          and exposes C-ABI helpers to query and copy those presets. Pure, read-only data.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_presets.h"

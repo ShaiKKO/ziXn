@@ -1,8 +1,11 @@
-/*!
- * \file zx_checksum.cpp
- * \brief Stable 64-bit checksum for grid/node snapshots.
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_checksum.cpp
+ * @brief Stable 64-bit checksum for grid/node snapshots.
+ * @details Implements a deterministic 64-bit hash over a tile's node payload using
+ *          FNV-like mixing and shift-folding of node fields. Thread-safe and pure.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_checksum.h"
@@ -50,7 +53,6 @@ extern "C"
     for (int i = 0; i < k_tile_node_count; ++i)
     {
       // Access by runtime index is required to walk nodes; struct layout is ABI-fixed.
-      // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
       const zx_tile_node& n = tile->nodes[i];
       // consume three floats of momentum and one float of mass as 4x32; fold to 64
       uint64_t a = 0ULL;

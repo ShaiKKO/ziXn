@@ -10,7 +10,7 @@
 #ifndef ZX_MIXTURE_H
 #define ZX_MIXTURE_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "zx_abi.h"
 #include "zx_hbp.h"
@@ -20,7 +20,7 @@ extern "C"
 {
 #endif
 
-  typedef struct zx_mixture_params
+  typedef struct ZxMixtureParams
   {
     /* Biot coefficient (0..1) linking pore pressure to total stress */
     float alpha_biot;

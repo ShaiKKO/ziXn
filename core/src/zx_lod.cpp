@@ -37,6 +37,32 @@
 #define ZX_TARGET_AVX2
 #endif
 
+// Internal SIMD constants
+namespace
+{
+  constexpr int k_avx_lanes            = 8;
+  constexpr int k_avx_align            = 32;
+  constexpr uint32_t k_prefetch_offset = 64U;
+  constexpr uint32_t k_block8          = 8U;
+  constexpr uint32_t k_block16         = 16U;
+#ifdef ZX_LOD_ENABLE_AVX2_BLOCK32
+  constexpr uint32_t k_block32 = 32U;
+#endif
+  constexpr float k_half                           = 0.5F;
+  constexpr float k_quarter                        = 0.25F;
+  constexpr float k_neg_quarter                    = -0.25F;
+  constexpr int k_gather_scale                     = static_cast<int>(sizeof(float));
+  constexpr int k_cpuid_leaf_avx2                  = 7;       // CPUID leaf 7 (structured extended)
+  constexpr int k_cpuid_ebx_avx2_bit               = 5;       // EBX bit 5 => AVX2
+  constexpr int k_cpuid_ecx_osxsave_bit            = 27;      // ECX bit 27 => OSXSAVE
+  constexpr unsigned long long k_xcr0_xmm_ymm_mask = 0x6ULL;  // XMM|YMM enabled in XCR0
+  constexpr uint32_t k_default_active_tiles_max    = 1000000U;
+  constexpr float k_default_step_ms_max            = 1.0e9F;
+  constexpr uint32_t k_default_enter_frames        = 2U;
+  constexpr uint32_t k_default_exit_frames         = 2U;
+  constexpr uint32_t k_default_blend_frames        = 3U;
+}  // namespace
+
 /* SIMD override: -1 auto, 0 scalar, 2 AVX2 */
 static int g_simd_override = -1;  // -1 auto, 0 scalar, 2 AVX2
 
@@ -69,11 +95,11 @@ static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp
   {
     for (uint32_t x = 0; x < dw; ++x)
     {
-      const float a   = src[(2U * y + 0U) * sp + (2U * x + 0U)];
-      const float b   = src[(2U * y + 0U) * sp + (2U * x + 1U)];
-      const float c   = src[(2U * y + 1U) * sp + (2U * x + 0U)];
-      const float d   = src[(2U * y + 1U) * sp + (2U * x + 1U)];
-      dst[y * dp + x] = k_quarter * (a + b + c + d);
+      const float a                          = src[((2U * y + 0U) * sp) + (2U * x + 0U)];
+      const float b                          = src[((2U * y + 0U) * sp) + (2U * x + 1U)];
+      const float c                          = src[((2U * y + 1U) * sp) + (2U * x + 0U)];
+      const float d                          = src[((2U * y + 1U) * sp) + (2U * x + 1U)];
+      dst[(static_cast<size_t>(y) * dp) + x] = k_quarter * (a + b + c + d);
     }
   }
 }
@@ -82,38 +108,44 @@ static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp
 static ZX_TARGET_AVX2 void down2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                       float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if ((!src) || (!dst) || (sw < 2U) || (sh < 2U) || ((dw * 2U) != sw) || ((dh * 2U) != sh))
+  if ((src == nullptr) || (dst == nullptr) || (sw < 2U) || (sh < 2U) || ((dw * 2U) != sw) ||
+      ((dh * 2U) != sh))
   {
     return;
   }
-  const uint32_t vecW  = (dw / 8U) * 8U;
-  const __m256 quarter = _mm256_set1_ps(0.25F);
+  const uint32_t vec_w = (dw / k_block8) * k_block8;
+  const __m256 quarter = _mm256_set1_ps(k_quarter);
   for (uint32_t y = 0; y < dh; ++y)
   {
-    const float* row0 = src + (2U * y + 0U) * sp;
-    const float* row1 = src + (2U * y + 1U) * sp;
+    const float* row0 = src + static_cast<size_t>((2U * y + 0U) * sp);
+    const float* row1 = src + static_cast<size_t>((2U * y + 1U) * sp);
     uint32_t x        = 0;
-    for (; x < vecW; x += 8)
+    for (; x < vec_w; x += k_block8)
     {
       // Load 16 contiguous samples from each row
-      __m256 r0a = _mm256_loadu_ps(row0 + 2U * x + 0U);
-      __m256 r0b = _mm256_loadu_ps(row0 + 2U * x + 8U);
-      __m256 r1a = _mm256_loadu_ps(row1 + 2U * x + 0U);
-      __m256 r1b = _mm256_loadu_ps(row1 + 2U * x + 8U);
+      const float* r0a_ptr = row0 + static_cast<size_t>((2U * x) + 0U);
+      const float* r0b_ptr = row0 + static_cast<size_t>((2U * x) + 8U);
+      const float* r1a_ptr = row1 + static_cast<size_t>((2U * x) + 0U);
+      const float* r1b_ptr = row1 + static_cast<size_t>((2U * x) + 8U);
+      __m256 r0a           = _mm256_loadu_ps(r0a_ptr);
+      __m256 r0b           = _mm256_loadu_ps(r0b_ptr);
+      __m256 r1a           = _mm256_loadu_ps(r1a_ptr);
+      __m256 r1b           = _mm256_loadu_ps(r1b_ptr);
       // Horizontal add adjacent pairs within lanes
-      __m256 s0  = _mm256_hadd_ps(r0a, r0b);
-      __m256 s1  = _mm256_hadd_ps(r1a, r1b);
-      __m256 sum = _mm256_add_ps(s0, s1);
-      __m256 out = _mm256_mul_ps(sum, quarter);
-      _mm256_storeu_ps(dst + y * dp + x, out);
+      __m256 s0            = _mm256_hadd_ps(r0a, r0b);
+      __m256 s1            = _mm256_hadd_ps(r1a, r1b);
+      __m256 sum           = _mm256_add_ps(s0, s1);
+      __m256 out           = _mm256_mul_ps(sum, quarter);
+      const size_t dst_row = static_cast<size_t>(y) * static_cast<size_t>(dp);
+      _mm256_storeu_ps(dst + dst_row + x, out);
     }
     for (; x < dw; ++x)
     {
-      const float a   = row0[2U * x + 0U];
-      const float b   = row0[2U * x + 1U];
-      const float c   = row1[2U * x + 0U];
-      const float d   = row1[2U * x + 1U];
-      dst[y * dp + x] = 0.25F * (a + b + c + d);
+      const float a                          = row0[(2U * x) + 0U];
+      const float b                          = row0[(2U * x) + 1U];
+      const float c                          = row1[(2U * x) + 0U];
+      const float d                          = row1[(2U * x) + 1U];
+      dst[(static_cast<size_t>(y) * dp) + x] = k_quarter * (a + b + c + d);
     }
   }
 }
@@ -131,10 +163,10 @@ static void init_down2_impl()
 #if defined(__x86_64__) || defined(_M_X64)
   if (g_simd_override == 2)
   {
-    g_down2_impl = cpu_supports_avx2() ? down2_avx2 : down2_scalar;
+    g_down2_impl = (cpu_supports_avx2() != 0) ? down2_avx2 : down2_scalar;  // explicit int->bool
     return;
   }
-  if (cpu_supports_avx2())
+  if (cpu_supports_avx2() != 0)
   {
     g_down2_impl = down2_avx2;
     return;
@@ -160,25 +192,25 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, 
   }
   for (uint32_t y = 0; y < dh; ++y)
   {
-    const float fy = (static_cast<float>(y) + 0.5F) * 0.5F - 0.5F;
+    const float fy = ((static_cast<float>(y) + k_half) * k_half) - k_half;
     int y0         = (int) std::floor((double) fy);
     int y1         = std::min((int) sh - 1, y0 + 1);
     const float ty = fy - (float) y0;
     y0             = std::max(0, y0);
     for (uint32_t x = 0; x < dw; ++x)
     {
-      const float fx  = (static_cast<float>(x) + 0.5F) * 0.5F - 0.5F;
-      int x0          = (int) std::floor((double) fx);
-      int x1          = std::min((int) sw - 1, x0 + 1);
-      const float tx  = fx - (float) x0;
-      x0              = std::max(0, x0);
-      const float a   = src[y0 * sp + x0];
-      const float b   = src[y0 * sp + x1];
-      const float c   = src[y1 * sp + x0];
-      const float d   = src[y1 * sp + x1];
-      const float ab  = a + tx * (b - a);
-      const float cd  = c + tx * (d - c);
-      dst[y * dp + x] = ab + ty * (cd - ab);
+      const float fx                         = ((static_cast<float>(x) + k_half) * k_half) - k_half;
+      int x0                                 = (int) std::floor((double) fx);
+      int x1                                 = std::min((int) sw - 1, x0 + 1);
+      const float tx                         = fx - (float) x0;
+      x0                                     = std::max(0, x0);
+      const float a                          = src[(y0 * sp) + x0];
+      const float b                          = src[(y0 * sp) + x1];
+      const float c                          = src[(y1 * sp) + x0];
+      const float d                          = src[(y1 * sp) + x1];
+      const float ab                         = a + (tx * (b - a));
+      const float cd                         = c + (tx * (d - c));
+      dst[(static_cast<size_t>(y) * dp) + x] = ab + ty * (cd - ab);
     }
   }
 }
@@ -207,44 +239,46 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, 
 static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
                                     float* dst, uint32_t dw, uint32_t dh, uint32_t dp)
 {
-  if ((!src) || (!dst) || (dw != sw * 2U) || (dh != sh * 2U))
+  if ((src == nullptr) || (dst == nullptr) || (dw != sw * 2U) || (dh != sh * 2U))
   {
     up2_scalar(src, sw, sh, sp, dst, dw, dh, dp);
     return;
   }
-  const uint32_t vecW = (dw / 8U) * 8U;
-  const uint32_t NV   = (vecW / 8);
+  const uint32_t vec_w = (dw / k_block8) * k_block8;
+  const uint32_t nv    = (vec_w / k_block8);
   // Precompute x indices and fractional tx for all vector lanes across the row
   std::vector<int> pre_ix0;
   std::vector<int> pre_ix1;
   std::vector<float> pre_tx;
-  pre_ix0.resize(static_cast<size_t>(NV) * 8U);
-  pre_ix1.resize(static_cast<size_t>(NV) * 8U);
-  pre_tx.resize(static_cast<size_t>(NV) * 8U);
-  __m256 half        = _mm256_set1_ps(0.5F);
-  __m256 neg_quarter = _mm256_set1_ps(-0.25F);
+  pre_ix0.resize(static_cast<size_t>(nv) * 8U);
+  pre_ix1.resize(static_cast<size_t>(nv) * 8U);
+  pre_tx.resize(static_cast<size_t>(nv) * 8U);
+  __m256 half        = _mm256_set1_ps(k_half);
+  __m256 neg_quarter = _mm256_set1_ps(k_neg_quarter);
   __m256i zero       = _mm256_set1_epi32(0);
-  __m256i xmax       = _mm256_set1_epi32((int) sw - 1);
-  for (uint32_t x = 0, i = 0; x < vecW; x += 8, ++i)
+  __m256i xmax       = _mm256_set1_epi32(static_cast<int>(sw) - 1);
+  for (uint32_t x = 0, i = 0; x < vec_w; x += k_block8, ++i)
   {
-    __m256i vx = _mm256_setr_epi32((int) x + 0, (int) x + 1, (int) x + 2, (int) x + 3, (int) x + 4,
-                                   (int) x + 5, (int) x + 6, (int) x + 7);
-    __m256 vxf = _mm256_cvtepi32_ps(vx);
-    __m256 vfx = _mm256_add_ps(_mm256_mul_ps(vxf, half), neg_quarter);
+    __m256i vx =
+        _mm256_setr_epi32(static_cast<int>(x) + 0, static_cast<int>(x) + 1, static_cast<int>(x) + 2,
+                          static_cast<int>(x) + 3, static_cast<int>(x) + 4, static_cast<int>(x) + 5,
+                          static_cast<int>(x) + 6, static_cast<int>(x) + 7);
+    __m256 vxf    = _mm256_cvtepi32_ps(vx);
+    __m256 vfx    = _mm256_add_ps(_mm256_mul_ps(vxf, half), neg_quarter);
     __m256 vfloor = _mm256_floor_ps(vfx);
     __m256i vx0   = _mm256_cvttps_epi32(vfloor);
     vx0           = _mm256_max_epi32(zero, _mm256_min_epi32(vx0, xmax));
     __m256 vtx    = _mm256_sub_ps(vfx, vfloor);
     __m256i vx1   = _mm256_min_epi32(_mm256_add_epi32(vx0, _mm256_set1_epi32(1)), xmax);
     // store into scalar arrays to avoid template attribute warnings on __m256* vector elements
-    size_t base = static_cast<size_t>(i) * 8U;
-    alignas(32) int x0buf[8];
-    alignas(32) int x1buf[8];
-    alignas(32) float txbuf[8];
-    _mm256_store_si256((__m256i*) x0buf, vx0);
-    _mm256_store_si256((__m256i*) x1buf, vx1);
-    _mm256_store_ps(txbuf, vtx);
-    for (int k = 0; k < 8; ++k)
+    size_t base = static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes);
+    alignas(k_avx_align) std::array<int, k_avx_lanes> x0buf{};
+    alignas(k_avx_align) std::array<int, k_avx_lanes> x1buf{};
+    alignas(k_avx_align) std::array<float, k_avx_lanes> txbuf{};
+    _mm256_store_si256(reinterpret_cast<__m256i*>(x0buf.data()), vx0);
+    _mm256_store_si256(reinterpret_cast<__m256i*>(x1buf.data()), vx1);
+    _mm256_store_ps(txbuf.data(), vtx);
+    for (int k = 0; k < k_avx_lanes; ++k)
     {
       pre_ix0[base + k] = x0buf[k];
       pre_ix1[base + k] = x1buf[k];
@@ -253,67 +287,64 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
   }
   for (uint32_t y = 0; y < dh; ++y)
   {
-    float fy = (float) ((double) (y + 0.5) * 0.5 - 0.5);
-    float ty_scalar;
+    auto fy = static_cast<float>(
+        ((static_cast<double>(y) + static_cast<double>(k_half)) * static_cast<double>(k_half)) -
+        static_cast<double>(k_half));
+    float ty_scalar = 0.0F;
     __m256 vty;
-    int y0i, y1i;
+    int y0i = 0;
+    int y1i = 0;
     {
-      float f0 = std::floor((double) fy);
-      y0i      = (int) f0;
-      if (y0i < 0)
-        y0i = 0;
-      if (y0i > (int) sh - 1)
-        y0i = (int) sh - 1;
-      y1i = y0i + 1;
-      if (y1i > (int) sh - 1)
-        y1i = (int) sh - 1;
-      float ty  = fy - (float) std::floor((double) fy);
-      ty_scalar = ty;
-      vty       = _mm256_set1_ps(ty_scalar);
+      const int y_floor = static_cast<int>(std::floor(static_cast<double>(fy)));
+      y0i               = std::clamp(y_floor, 0, static_cast<int>(sh) - 1);
+      y1i               = std::min(y0i + 1, static_cast<int>(sh) - 1);
+      ty_scalar         = fy - static_cast<float>(y0i);
+      vty               = _mm256_set1_ps(ty_scalar);
     }
-    const float* row0 = src + (size_t) y0i * sp;
-    const float* row1 = src + (size_t) y1i * sp;
+    const float* row0 = src + (static_cast<size_t>(y0i) * sp);
+    const float* row1 = src + (static_cast<size_t>(y1i) * sp);
     // process 16 columns per iteration where possible
     uint32_t x = 0;
     uint32_t i = 0;
-    for (; x + 16 <= vecW; x += 16, i += 2)
+    for (; (x + k_block16) <= vec_w; x += k_block16, i += 2U)
     {
-      const int* px0a   = &pre_ix0[static_cast<size_t>(i) * 8U];
-      const int* px1a   = &pre_ix1[static_cast<size_t>(i) * 8U];
-      const float* ptxa = &pre_tx[static_cast<size_t>(i) * 8U];
-      const int* px0b   = &pre_ix0[static_cast<size_t>(i + 1) * 8U];
-      const int* px1b   = &pre_ix1[static_cast<size_t>(i + 1) * 8U];
-      const float* ptxb = &pre_tx[static_cast<size_t>(i + 1) * 8U];
-      __m256i vx0a      = _mm256_loadu_si256((const __m256i*) px0a);
-      __m256i vx1a      = _mm256_loadu_si256((const __m256i*) px1a);
+      const int* px0a   = &pre_ix0[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      const int* px1a   = &pre_ix1[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      const float* ptxa = &pre_tx[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      const int* px0b   = &pre_ix0[static_cast<size_t>(i + 1) * static_cast<size_t>(k_avx_lanes)];
+      const int* px1b   = &pre_ix1[static_cast<size_t>(i + 1) * static_cast<size_t>(k_avx_lanes)];
+      const float* ptxb = &pre_tx[static_cast<size_t>(i + 1) * static_cast<size_t>(k_avx_lanes)];
+      __m256i vx0a      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px0a));
+      __m256i vx1a      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px1a));
       __m256 vtxa       = _mm256_loadu_ps(ptxa);
-      __m256i vx0b      = _mm256_loadu_si256((const __m256i*) px0b);
-      __m256i vx1b      = _mm256_loadu_si256((const __m256i*) px1b);
+      __m256i vx0b      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px0b));
+      __m256i vx1b      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px1b));
       __m256 vtxb       = _mm256_loadu_ps(ptxb);
       // prefetch further ahead
-      _mm_prefetch((const char*) (row0 + x + 64), _MM_HINT_T0);
-      _mm_prefetch((const char*) (row1 + x + 64), _MM_HINT_T0);
-      __m256 a0   = _mm256_i32gather_ps(row0, vx0a, 4);
-      __m256 b0   = _mm256_i32gather_ps(row0, vx1a, 4);
-      __m256 c0   = _mm256_i32gather_ps(row1, vx0a, 4);
-      __m256 d0   = _mm256_i32gather_ps(row1, vx1a, 4);
+      _mm_prefetch(reinterpret_cast<const char*>(row0 + x + k_prefetch_offset), _MM_HINT_T0);
+      _mm_prefetch(reinterpret_cast<const char*>(row1 + x + k_prefetch_offset), _MM_HINT_T0);
+      // Portability: AVX2 intrinsics
+      __m256 a0   = _mm256_i32gather_ps(row0, vx0a, k_gather_scale);
+      __m256 b0   = _mm256_i32gather_ps(row0, vx1a, k_gather_scale);
+      __m256 c0   = _mm256_i32gather_ps(row1, vx0a, k_gather_scale);
+      __m256 d0   = _mm256_i32gather_ps(row1, vx1a, k_gather_scale);
       __m256 ab0  = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(b0, a0)), a0);
       __m256 cd0  = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(d0, c0)), c0);
       __m256 out0 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd0, ab0)), ab0);
-      _mm256_storeu_ps(dst + (size_t) y * dp + x, out0);
+      _mm256_storeu_ps(dst + (static_cast<size_t>(y) * dp) + x, out0);
 
-      __m256 a1   = _mm256_i32gather_ps(row0, vx0b, 4);
-      __m256 b1   = _mm256_i32gather_ps(row0, vx1b, 4);
-      __m256 c1   = _mm256_i32gather_ps(row1, vx0b, 4);
-      __m256 d1   = _mm256_i32gather_ps(row1, vx1b, 4);
+      __m256 a1   = _mm256_i32gather_ps(row0, vx0b, k_gather_scale);
+      __m256 b1   = _mm256_i32gather_ps(row0, vx1b, k_gather_scale);
+      __m256 c1   = _mm256_i32gather_ps(row1, vx0b, k_gather_scale);
+      __m256 d1   = _mm256_i32gather_ps(row1, vx1b, k_gather_scale);
       __m256 ab1  = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(b1, a1)), a1);
       __m256 cd1  = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(d1, c1)), c1);
       __m256 out1 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd1, ab1)), ab1);
-      _mm256_storeu_ps(dst + (size_t) y * dp + x + 8, out1);
+      _mm256_storeu_ps(dst + (static_cast<size_t>(y) * dp) + x + k_block8, out1);
     }
 #ifdef ZX_LOD_ENABLE_AVX2_BLOCK32
     // Optional: process 32 columns per iteration when enough width remains
-    while (x + 32 <= vecW)
+    while ((x + k_block32) <= vec_w)
     {
       // two iterations of the 16-col body
       for (int rep = 0; rep < 2; ++rep)
@@ -324,18 +355,18 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
         const int* px0b   = &pre_ix0[static_cast<size_t>(i + 1) * 8U];
         const int* px1b   = &pre_ix1[static_cast<size_t>(i + 1) * 8U];
         const float* ptxb = &pre_tx[static_cast<size_t>(i + 1) * 8U];
-        __m256i vx0a      = _mm256_loadu_si256((const __m256i*) px0a);
-        __m256i vx1a      = _mm256_loadu_si256((const __m256i*) px1a);
+        __m256i vx0a      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px0a));
+        __m256i vx1a      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px1a));
         __m256 vtxa       = _mm256_loadu_ps(ptxa);
-        __m256i vx0b      = _mm256_loadu_si256((const __m256i*) px0b);
-        __m256i vx1b      = _mm256_loadu_si256((const __m256i*) px1b);
+        __m256i vx0b      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px0b));
+        __m256i vx1b      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px1b));
         __m256 vtxb       = _mm256_loadu_ps(ptxb);
-        _mm_prefetch((const char*) (row0 + x + 64), _MM_HINT_T0);
-        _mm_prefetch((const char*) (row1 + x + 64), _MM_HINT_T0);
-        __m256 a0   = _mm256_i32gather_ps(row0, vx0a, 4);
-        __m256 b0   = _mm256_i32gather_ps(row0, vx1a, 4);
-        __m256 c0   = _mm256_i32gather_ps(row1, vx0a, 4);
-        __m256 d0   = _mm256_i32gather_ps(row1, vx1a, 4);
+        _mm_prefetch(reinterpret_cast<const char*>(row0 + x + k_prefetch_offset), _MM_HINT_T0);
+        _mm_prefetch(reinterpret_cast<const char*>(row1 + x + k_prefetch_offset), _MM_HINT_T0);
+        __m256 a0   = _mm256_i32gather_ps(row0, vx0a, k_gather_scale);
+        __m256 b0   = _mm256_i32gather_ps(row0, vx1a, k_gather_scale);
+        __m256 c0   = _mm256_i32gather_ps(row1, vx0a, k_gather_scale);
+        __m256 d0   = _mm256_i32gather_ps(row1, vx1a, k_gather_scale);
         __m256 ab0  = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(b0, a0)), a0);
         __m256 cd0  = _mm256_add_ps(_mm256_mul_ps(vtxa, _mm256_sub_ps(d0, c0)), c0);
         __m256 out0 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd0, ab0)), ab0);
@@ -348,49 +379,48 @@ static ZX_TARGET_AVX2 void up2_avx2(const float* src, uint32_t sw, uint32_t sh, 
         __m256 ab1  = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(b1, a1)), a1);
         __m256 cd1  = _mm256_add_ps(_mm256_mul_ps(vtxb, _mm256_sub_ps(d1, c1)), c1);
         __m256 out1 = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd1, ab1)), ab1);
-        _mm256_storeu_ps(dst + (size_t) y * dp + x + 8, out1);
+        _mm256_storeu_ps(dst + (size_t) y * dp + x + k_block8, out1);
 
-        x += 16;
+        x += k_block16;
         i += 2;
       }
     }
 #endif
-    for (; x < vecW; x += 8, ++i)
+    for (; x < vec_w; x += k_block8, ++i)
     {
-      const int* px0   = &pre_ix0[static_cast<size_t>(i) * 8U];
-      const int* px1   = &pre_ix1[static_cast<size_t>(i) * 8U];
-      const float* ptx = &pre_tx[static_cast<size_t>(i) * 8U];
-      __m256i vx0      = _mm256_loadu_si256((const __m256i*) px0);
-      __m256i vx1      = _mm256_loadu_si256((const __m256i*) px1);
+      const int* px0   = &pre_ix0[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      const int* px1   = &pre_ix1[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      const float* ptx = &pre_tx[static_cast<size_t>(i) * static_cast<size_t>(k_avx_lanes)];
+      __m256i vx0      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px0));
+      __m256i vx1      = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(px1));
       __m256 vtx       = _mm256_loadu_ps(ptx);
       // gathers
-      __m256 a   = _mm256_i32gather_ps(row0, vx0, 4);
-      __m256 b   = _mm256_i32gather_ps(row0, vx1, 4);
-      __m256 c   = _mm256_i32gather_ps(row1, vx0, 4);
-      __m256 d   = _mm256_i32gather_ps(row1, vx1, 4);
+      __m256 a   = _mm256_i32gather_ps(row0, vx0, k_gather_scale);
+      __m256 b   = _mm256_i32gather_ps(row0, vx1, k_gather_scale);
+      __m256 c   = _mm256_i32gather_ps(row1, vx0, k_gather_scale);
+      __m256 d   = _mm256_i32gather_ps(row1, vx1, k_gather_scale);
       __m256 ab  = _mm256_add_ps(_mm256_mul_ps(vtx, _mm256_sub_ps(b, a)), a);
       __m256 cd  = _mm256_add_ps(_mm256_mul_ps(vtx, _mm256_sub_ps(d, c)), c);
       __m256 out = _mm256_add_ps(_mm256_mul_ps(vty, _mm256_sub_ps(cd, ab)), ab);
-      _mm256_storeu_ps(dst + (size_t) y * dp + x, out);
+      _mm256_storeu_ps(dst + (static_cast<size_t>(y) * dp) + x, out);
     }
     // tail
     for (; x < dw; ++x)
     {
-      float fx = (float) ((double) (x + 0.5) * 0.5 - 0.5);
-      int x0   = (int) std::floor((double) fx);
-      if (x0 < 0)
-        x0 = 0;
-      if (x0 > (int) sw - 1)
-        x0 = (int) sw - 1;
-      int x1 = x0 + 1;
-      if (x1 > (int) sw - 1)
-        x1 = (int) sw - 1;
-      float tx = fx - (float) std::floor((double) fx);
-      float a = row0[x0], b = row0[x1];
-      float c = row1[x0], d = row1[x1];
-      float ab                 = a + tx * (b - a);
-      float cd                 = c + tx * (d - c);
-      dst[(size_t) y * dp + x] = ab + ty_scalar * (cd - ab);
+      auto fx = static_cast<float>(
+          ((static_cast<double>(x) + static_cast<double>(k_half)) * static_cast<double>(k_half)) -
+          static_cast<double>(k_half));
+      int x0   = static_cast<int>(std::floor(static_cast<double>(fx)));
+      x0       = std::clamp(x0, 0, static_cast<int>(sw) - 1);
+      int x1   = std::min(x0 + 1, static_cast<int>(sw) - 1);
+      float tx = fx - static_cast<float>(x0);
+      float a  = row0[x0];
+      float b  = row0[x1];
+      float c  = row1[x0];
+      float d  = row1[x1];
+      float ab = a + (tx * (b - a));
+      float cd = c + (tx * (d - c));
+      dst[(static_cast<size_t>(y) * dp) + x] = ab + ty_scalar * (cd - ab);
     }
   }
 }
@@ -408,10 +438,10 @@ static void init_up2_impl()
 #if defined(__x86_64__) || defined(_M_X64)
   if (g_simd_override == 2)
   {
-    g_up2_impl = cpu_supports_avx2() ? up2_avx2 : up2_scalar;
+    g_up2_impl = (cpu_supports_avx2() != 0) ? up2_avx2 : up2_scalar;
     return;
   }
-  if (cpu_supports_avx2())
+  if (cpu_supports_avx2() != 0)
   {
     g_up2_impl = up2_avx2;
     return;
@@ -441,38 +471,38 @@ void zx_lod_upsample_2x(const float* src, uint32_t sw, uint32_t sh, uint32_t sp,
 typedef float (*pp_border_fn)(const float*, uint32_t, uint32_t, uint32_t, const float*, uint32_t,
                               uint32_t, uint32_t, int);
 
-static float border_scalar(const float* A, uint32_t Aw, uint32_t Ah, uint32_t Ap, const float* B,
-                           uint32_t Bw, uint32_t Bh, uint32_t Bp, int side)
+static float border_scalar(const float* a, uint32_t a_w, uint32_t a_h, uint32_t a_p, const float* b,
+                           uint32_t b_w, uint32_t b_h, uint32_t b_p, int side)
 {
-  if ((!A) || (!B) || (Aw == 0U) || (Ah == 0U) || (Bw == 0U) || (Bh == 0U))
+  if ((a == nullptr) || (b == nullptr) || (a_w == 0U) || (a_h == 0U) || (b_w == 0U) || (b_h == 0U))
   {
     return 0.0F;
   }
   float max_abs = 0.0F;
   if (side == 0)
   {  // A right edge vs B left edge
-    uint32_t xA = Aw - 1, xB = 0;
-    uint32_t h = std::min(Ah, Bh);
+    uint32_t x_a = a_w - 1U;
+    uint32_t x_b = 0U;
+    uint32_t h   = std::min(a_h, b_h);
     for (uint32_t y = 0; y < h; ++y)
     {
-      float da = A[y * Ap + xA];
-      float db = B[y * Bp + xB];
-      float d  = (float) std::fabs((double) da - (double) db);
-      if (d > max_abs)
-        max_abs = d;
+      float da = a[(y * a_p) + x_a];
+      float db = b[(y * b_p) + x_b];
+      auto d   = static_cast<float>(std::fabs(static_cast<double>(da) - static_cast<double>(db)));
+      max_abs  = std::max(max_abs, d);
     }
   }
   else
   {  // bottom vs top
-    uint32_t yA = Ah - 1, yB = 0;
-    uint32_t w = std::min(Aw, Bw);
+    uint32_t y_a = a_h - 1U;
+    uint32_t y_b = 0U;
+    uint32_t w   = std::min(a_w, b_w);
     for (uint32_t x = 0; x < w; ++x)
     {
-      float da = A[yA * Ap + x];
-      float db = B[yB * Bp + x];
-      float d  = (float) std::fabs((double) da - (double) db);
-      if (d > max_abs)
-        max_abs = d;
+      float da = a[(y_a * a_p) + x];
+      float db = b[(y_b * b_p) + x];
+      auto d   = static_cast<float>(std::fabs(static_cast<double>(da) - static_cast<double>(db)));
+      max_abs  = std::max(max_abs, d);
     }
   }
   return max_abs;
@@ -482,23 +512,25 @@ static float border_scalar(const float* A, uint32_t Aw, uint32_t Ah, uint32_t Ap
 static inline int cpu_supports_avx2()
 {
 #if defined(_MSC_VER)
-  int cpuInfo[4] = {0};
-  __cpuid(cpuInfo, 0);
-  int nIds = cpuInfo[0];
-  int avx2 = 0;
-  if (nIds >= 7)
+  int cpu_info[4] = {0};
+  __cpuid(cpu_info, 0);
+  int n_ids = cpu_info[0];
+  int avx2  = 0;
+  if (n_ids >= k_cpuid_leaf_avx2)
   {
-    __cpuidex(cpuInfo, 7, 0);
-    avx2 = (cpuInfo[1] & (1 << 5)) != 0;
+    __cpuidex(cpu_info, k_cpuid_leaf_avx2, 0);
+    avx2 = ((cpu_info[1] & (1 << k_cpuid_ebx_avx2_bit)) != 0) ? 1 : 0;
   }
   // Check OSXSAVE/AVX state
-  __cpuid(cpuInfo, 1);
-  int osxsave = (cpuInfo[2] & (1 << 27)) != 0;
+  __cpuid(cpu_info, 1);
+  const bool osxsave = ((cpu_info[2] & (1 << k_cpuid_ecx_osxsave_bit)) != 0);
   if (osxsave)
   {
     unsigned long long x = _xgetbv(0);
-    if ((x & 0x6) != 0x6)
+    if ((x & k_xcr0_xmm_ymm_mask) != k_xcr0_xmm_ymm_mask)
+    {
       avx2 = 0;
+    }
   }
   return avx2;
 #elif defined(__GNUC__) || defined(__clang__)
@@ -508,74 +540,82 @@ static inline int cpu_supports_avx2()
 #endif
 }
 
-static ZX_TARGET_AVX2 float border_avx2(const float* A, uint32_t Aw, uint32_t Ah, uint32_t Ap,
-                                        const float* B, uint32_t Bw, uint32_t Bh, uint32_t Bp,
+static ZX_TARGET_AVX2 float border_avx2(const float* a, uint32_t a_w, uint32_t a_h, uint32_t a_p,
+                                        const float* b, uint32_t b_w, uint32_t b_h, uint32_t b_p,
                                         int side)
 {
-  if ((!A) || (!B) || (Aw == 0U) || (Ah == 0U) || (Bw == 0U) || (Bh == 0U))
+  if ((a == nullptr) || (b == nullptr) || (a_w == 0U) || (a_h == 0U) || (b_w == 0U) || (b_h == 0U))
+  {
     return 0.0F;
+  }
   float max_abs_scalar  = 0.0F;
   __m256 vmax           = _mm256_set1_ps(0.0F);
   const __m256 signmask = _mm256_castsi256_ps(_mm256_set1_epi32(0x7fffffff));
   if (side == 0)
   {
-    uint32_t xA = Aw - 1, xB = 0;
-    uint32_t h = std::min(Ah, Bh);
-    uint32_t y = 0;
-    for (; y + 8 <= h; y += 8)
+    uint32_t x_a = a_w - 1U;
+    uint32_t x_b = 0U;
+    uint32_t h   = std::min(a_h, b_h);
+    uint32_t y   = 0;
+    for (; (y + k_block8) <= h; y += k_block8)
     {
-      int idxA[8];
-      int idxB[8];
-      for (int i = 0; i < 8; ++i)
+      std::array<int, k_avx_lanes> idx_a{};
+      std::array<int, k_avx_lanes> idx_b{};
+      for (int i = 0; i < k_avx_lanes; ++i)
       {
-        idxA[i] = (int) ((y + i) * Ap + xA);
-        idxB[i] = (int) ((y + i) * Bp + xB);
+        idx_a[static_cast<size_t>(i)] =
+            static_cast<int>((static_cast<uint32_t>(y + i) * a_p) + x_a);
+        idx_b[static_cast<size_t>(i)] =
+            static_cast<int>((static_cast<uint32_t>(y + i) * b_p) + x_b);
       }
-      __m256 a = _mm256_i32gather_ps(A, _mm256_loadu_si256((const __m256i*) idxA), 4);
-      __m256 b = _mm256_i32gather_ps(B, _mm256_loadu_si256((const __m256i*) idxB), 4);
-      __m256 d = _mm256_sub_ps(a, b);
+      __m256 va = _mm256_i32gather_ps(
+          a, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(idx_a.data())), k_gather_scale);
+      __m256 vb = _mm256_i32gather_ps(
+          b, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(idx_b.data())), k_gather_scale);
+      __m256 d = _mm256_sub_ps(va, vb);
       d        = _mm256_and_ps(d, signmask);
       vmax     = _mm256_max_ps(vmax, d);
     }
-    alignas(32) float tmp[8];
-    _mm256_store_ps(tmp, vmax);
-    for (int i = 0; i < 8; ++i)
-      if (tmp[i] > max_abs_scalar)
-        max_abs_scalar = tmp[i];
+    alignas(k_avx_align) std::array<float, k_avx_lanes> tmp{};
+    _mm256_store_ps(tmp.data(), vmax);
+    for (float v : tmp)
+    {
+      max_abs_scalar = std::max(max_abs_scalar, v);
+    }
     for (; y < h; ++y)
     {
-      float da = A[y * Ap + xA];
-      float db = B[y * Bp + xB];
-      float d  = (float) std::fabs((double) da - (double) db);
-      if (d > max_abs_scalar)
-        max_abs_scalar = d;
+      float da = a[(y * a_p) + x_a];
+      float db = b[(y * b_p) + x_b];
+      auto d   = static_cast<float>(std::fabs(static_cast<double>(da) - static_cast<double>(db)));
+      max_abs_scalar = std::max(max_abs_scalar, d);
     }
   }
   else
   {
-    uint32_t yA = Ah - 1, yB = 0;
-    uint32_t w = std::min(Aw, Bw);
-    uint32_t x = 0;
-    for (; x + 8 <= w; x += 8)
+    uint32_t y_a = a_h - 1U;
+    uint32_t y_b = 0U;
+    uint32_t w   = std::min(a_w, b_w);
+    uint32_t x   = 0;
+    for (; (x + k_block8) <= w; x += k_block8)
     {
-      __m256 a = _mm256_loadu_ps(&A[yA * Ap + x]);
-      __m256 b = _mm256_loadu_ps(&B[yB * Bp + x]);
-      __m256 d = _mm256_sub_ps(a, b);
-      d        = _mm256_and_ps(d, signmask);
-      vmax     = _mm256_max_ps(vmax, d);
+      __m256 va = _mm256_loadu_ps(&a[(y_a * a_p) + x]);
+      __m256 vb = _mm256_loadu_ps(&b[(y_b * b_p) + x]);
+      __m256 d  = _mm256_sub_ps(va, vb);
+      d         = _mm256_and_ps(d, signmask);
+      vmax      = _mm256_max_ps(vmax, d);
     }
-    alignas(32) float tmp[8];
-    _mm256_store_ps(tmp, vmax);
-    for (int i = 0; i < 8; ++i)
-      if (tmp[i] > max_abs_scalar)
-        max_abs_scalar = tmp[i];
+    alignas(k_avx_align) std::array<float, k_avx_lanes> tmp{};
+    _mm256_store_ps(tmp.data(), vmax);
+    for (float v : tmp)
+    {
+      max_abs_scalar = std::max(max_abs_scalar, v);
+    }
     for (; x < w; ++x)
     {
-      float da = A[yA * Ap + x];
-      float db = B[yB * Bp + x];
-      float d  = (float) std::fabs((double) da - (double) db);
-      if (d > max_abs_scalar)
-        max_abs_scalar = d;
+      float da = a[(y_a * a_p) + x];
+      float db = b[(y_b * b_p) + x];
+      auto d   = static_cast<float>(std::fabs(static_cast<double>(da) - static_cast<double>(db)));
+      max_abs_scalar = std::max(max_abs_scalar, d);
     }
   }
   return max_abs_scalar;
@@ -595,10 +635,10 @@ static void init_border_impl()
 #if defined(__x86_64__) || defined(_M_X64)
   if (g_simd_override == 2)
   {
-    g_border_impl = cpu_supports_avx2() ? border_avx2 : border_scalar;
+    g_border_impl = (cpu_supports_avx2() != 0) ? border_avx2 : border_scalar;
     return;
   }
-  if (cpu_supports_avx2())
+  if (cpu_supports_avx2() != 0)
   {
     g_border_impl = border_avx2;
     return;
@@ -607,50 +647,65 @@ static void init_border_impl()
   g_border_impl = border_scalar;
 }
 
-float zx_lod_border_consistency_check(const float* A, uint32_t Aw, uint32_t Ah, uint32_t Ap,
-                                      const float* B, uint32_t Bw, uint32_t Bh, uint32_t Bp,
+float zx_lod_border_consistency_check(const float* a, uint32_t a_w, uint32_t a_h, uint32_t a_p,
+                                      const float* b, uint32_t b_w, uint32_t b_h, uint32_t b_p,
                                       int side)
 {
   std::call_once(g_border_once, init_border_impl);
-  return g_border_impl(A, Aw, Ah, Ap, B, Bw, Bh, Bp, side);
+  return g_border_impl(a, a_w, a_h, a_p, b, b_w, b_h, b_p, side);
 }
 
 static void recompute_dispatch()
 {
   // border
 #if defined(__x86_64__) || defined(_M_X64)
-  if (g_simd_override == 0)
+  const bool has_avx2 = (cpu_supports_avx2() != 0);
+  switch (g_simd_override)
+  {
+  case 0:
     g_border_impl = border_scalar;
-  else if (g_simd_override == 2)
-    g_border_impl = cpu_supports_avx2() ? border_avx2 : border_scalar;
-  else
-    g_border_impl = cpu_supports_avx2() ? border_avx2 : border_scalar;
+    break;
+  case 2:
+    g_border_impl = has_avx2 ? border_avx2 : border_scalar;
+    break;
+  default:
+    g_border_impl = border_scalar;
+    break;
+  }
 #else
   g_border_impl = border_scalar;
 #endif
   // downsample
-  extern pp_down2_fn g_down2_impl;
-  extern void init_down2_impl();
 #if defined(__x86_64__) || defined(_M_X64)
-  if (g_simd_override == 0)
+  switch (g_simd_override)
+  {
+  case 0:
     g_down2_impl = down2_scalar;
-  else if (g_simd_override == 2)
-    g_down2_impl = cpu_supports_avx2() ? down2_avx2 : down2_scalar;
-  else
-    g_down2_impl = cpu_supports_avx2() ? down2_avx2 : down2_scalar;
+    break;
+  case 2:
+    g_down2_impl = has_avx2 ? down2_avx2 : down2_scalar;
+    break;
+  default:
+    g_down2_impl = down2_scalar;
+    break;
+  }
 #else
   g_down2_impl = down2_scalar;
 #endif
   // upsample
-  extern pp_up2_fn g_up2_impl;
-  extern void init_up2_impl();
 #if defined(__x86_64__) || defined(_M_X64)
-  if (g_simd_override == 0)
+  switch (g_simd_override)
+  {
+  case 0:
     g_up2_impl = up2_scalar;
-  else if (g_simd_override == 2)
-    g_up2_impl = cpu_supports_avx2() ? up2_avx2 : up2_scalar;
-  else
-    g_up2_impl = cpu_supports_avx2() ? up2_avx2 : up2_scalar;
+    break;
+  case 2:
+    g_up2_impl = has_avx2 ? up2_avx2 : up2_scalar;
+    break;
+  default:
+    g_up2_impl = up2_scalar;
+    break;
+  }
 #else
   g_up2_impl = up2_scalar;
 #endif
@@ -664,7 +719,7 @@ void ZX_CALL zx_lod_set_simd_override(int mode)
 
 void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)
 {
-  if (s)
+  if (s != nullptr)
   {
     s->active_frames   = 0;
     s->inactive_frames = 0;
@@ -676,12 +731,14 @@ void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)
 int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p, uint32_t residency_active_tiles,
                                    float last_step_ms, zx_lod_fallback_state* s)
 {
-  if (!p || !s)
+  if ((p == nullptr) || (s == nullptr))
+  {
     return 0;
+  }
   const int pressure =
-      (residency_active_tiles > p->active_tiles_max) || (last_step_ms > p->step_ms_max);
-  int use_coarse = (s->active_frames > 0);
-  if (pressure)
+      ((residency_active_tiles > p->active_tiles_max) || (last_step_ms > p->step_ms_max)) ? 1 : 0;
+  int use_coarse = (s->active_frames > 0) ? 1 : 0;
+  if (pressure != 0)
   {
     s->active_frames += 1;
     s->inactive_frames = 0;
@@ -697,33 +754,45 @@ int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p, uint32_t res
     s->active_frames = (s->inactive_frames >= p->exit_frames) ? 0 : s->active_frames;
   }
   if (s->active_frames >= p->enter_frames)
+  {
     use_coarse = 1;
+  }
   if (s->inactive_frames >= p->exit_frames)
+  {
     use_coarse = 0;
+  }
   if (s->blend_remaining > 0)
+  {
     s->blend_remaining -= 1;
+  }
   return use_coarse;
 }
 
 /* Global fallback defaults */
 static int g_lod_enabled                   = 0;
-static zx_lod_fallback_policy g_lod_policy = {1000000U, 1.0e9F, 2U, 2U, 3U};
+static zx_lod_fallback_policy g_lod_policy = {k_default_active_tiles_max, k_default_step_ms_max,
+                                              k_default_enter_frames, k_default_exit_frames,
+                                              k_default_blend_frames};
 
 void ZX_CALL zx_lod_set_enabled(int on)
 {
-  g_lod_enabled = (on != 0);
+  g_lod_enabled = (on != 0) ? 1 : 0;
 }
-int ZX_CALL zx_lod_is_enabled(void)
+int ZX_CALL zx_lod_is_enabled()
 {
   return g_lod_enabled;
 }
 void ZX_CALL zx_lod_set_default_policy(const zx_lod_fallback_policy* p)
 {
-  if (p)
+  if (p != nullptr)
+  {
     g_lod_policy = *p;
+  }
 }
 void ZX_CALL zx_lod_get_default_policy(zx_lod_fallback_policy* out)
 {
-  if (out)
+  if (out != nullptr)
+  {
     *out = g_lod_policy;
+  }
 }

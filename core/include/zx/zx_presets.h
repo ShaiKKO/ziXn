@@ -10,7 +10,7 @@
 
 #include "zx_abi.h"
 #include "zx_constitutive_ref.h"
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C"

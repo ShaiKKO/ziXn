@@ -11,7 +11,7 @@
 #ifndef ZX_TELEMETRY_H
 #define ZX_TELEMETRY_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "zx_abi.h"
 

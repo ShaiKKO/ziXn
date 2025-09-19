@@ -10,7 +10,7 @@
 #ifndef ZX_HBP_H
 #define ZX_HBP_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "zx_abi.h"
 #include "zx_tiles.h"
@@ -19,8 +19,7 @@
 extern "C"
 {
 #endif
-
-  typedef struct zx_hbp_params
+  typedef struct ZxHbpParams
   {
     /* Base (solvent) viscosity [Pa·s] */
     float mu0;
@@ -34,7 +33,7 @@ extern "C"
     float m;
   } zx_hbp_params;
 
-  typedef enum zx_mu_clamp_policy
+  typedef enum ZxMuClampPolicy
   {
     ZX_MU_CLAMP_NONE        = 0,
     ZX_MU_CLAMP_HARD        = 1,

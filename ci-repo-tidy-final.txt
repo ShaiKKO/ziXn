@@ -1,0 +1,26 @@
+==== core/src/zx_api.cpp ====
+clang-tidy.exe : 7867 warnings generated.
+At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:25 char:10
++     $r = & $ct @args 2>&1 | Out-String
++          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (7867 warnings generated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+==== core/src/zx_apic_ref.cpp ====
+clang-tidy.exe : 138951 warnings generated.
+At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:25 char:10
++     $r = & $ct @args 2>&1 | Out-String
++          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (138951 warnings generated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+==== core/src/zx_residency.cpp ====
+clang-tidy.exe : 144689 warnings generated.
+At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:25 char:10
++     $r = & $ct @args 2>&1 | Out-String
++          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (144689 warnings generated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

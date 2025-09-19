@@ -346,9 +346,9 @@ if(ZX_ENABLE_TESTS)
   target_link_libraries(determinism_strict_test PRIVATE zx)
   add_test(NAME determinism_strict_test COMMAND determinism_strict_test)
 
-  # Wrap the WSL determinism script as a CTest for convenience
-  add_test(NAME determinism_script
-    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/wsl-determinism.sh --scene dambreak --seed 42 --fallback off)
+  # Wrap the determinism script as a CTest. On Windows, use a working directory to avoid path translation issues.
+  add_test(NAME determinism_script COMMAND bash wsl-determinism.sh --scene dambreak --seed 42 --fallback off)
+  set_tests_properties(determinism_script PROPERTIES WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 
   add_executable(checksum_parity_test
     tests/checksum_parity_test.cpp

@@ -1,8 +1,12 @@
-/*!
- * \file zx_integration.cpp
- * \brief Dam-break over porous bed (coarse proxy) metrics implementation.
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_integration.cpp
+ * @brief Dam-break over porous bed (coarse proxy) metrics implementation.
+ * @details Implements coarse proxy integrations for dam-break, wheel bogging, and puddle creep
+ *          scenarios using HBP updates and simple drag models. Functions return minimal metrics
+ *          used by validation tests. Thread-safe given independent tiles/contexts.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_integration.h"
@@ -41,29 +45,35 @@ extern "C"
    */
   zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak_params* p)
   {
-    zx_dambreak_metrics M{0.0f, 0.0f};
-    if (!p || p->tiles == 0 || p->h <= 0.0f || p->dt <= 0.0f || p->steps == 0)
-      return M;
+    zx_dambreak_metrics m{0.0F, 0.0F};
+    if ((p == nullptr) || (p->tiles == 0U) || (p->h <= 0.0F) || (p->dt <= 0.0F) || (p->steps == 0U))
+    {
+      return m;
+    }
+    constexpr float k_vx_thresh = 0.05F;
+    constexpr float k_rho_eps   = 1.0e-12F;
     // Allocate a single-tile pool and simple initial condition: left half moving, right half at
     // rest
     zx_tile tile{};
-    tile.coord_x     = 0;
-    tile.coord_y     = 0;
-    tile.coord_z     = 0;
-    const uint32_t B = (uint32_t) ZX_TILE_B;
-    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + B * (iy + B * iz); };
-    for (uint32_t iz = 0; iz < B; ++iz)
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+    tile.coord_x = 0;
+    tile.coord_y = 0;
+    tile.coord_z = 0;
+    const auto b = static_cast<uint32_t>(ZX_TILE_B);
+    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + (b * (iy + (b * iz))); };
+    for (uint32_t iz = 0; iz < b; ++iz)
+    {
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
           auto& n         = tile.nodes[idx(ix, iy, iz)];
-          n.mass          = 1.0f;
-          const bool left = ix < (B / 2);
-          const bool bed  = iz < std::min<uint32_t>(p->bed_k, B);
-          const float vx0 = left ? p->init_head_u : 0.0f;
+          n.mass          = 1.0F;
+          const bool left = ix < (b / 2U);
+          const bool bed  = iz < std::min<uint32_t>(p->bed_k, b);
+          const float vx0 = left ? p->init_head_u : 0.0F;
           n.mom_x         = vx0 * n.mass;
-          n.mom_y         = 0.0f;
-          n.mom_z         = 0.0f;
+          n.mom_y         = 0.0F;
+          n.mom_z         = 0.0F;
           // Apply immediate Darcy drag in bed region to mimic porous damping
           if (bed)
           {
@@ -71,18 +81,22 @@ extern "C"
                 zx_bog_beta_hbp(p->gamma_dot, &p->hbp, p->permeability, p->k_min, p->mu_min,
                                 p->mu_max, p->beta_min, p->beta_max, p->policy, p->softness_k);
             const float rho = n.mass / (p->h * p->h * p->h);
-            const float ax  = -(beta / std::max(rho, 1e-12f)) * vx0;  // dv/dt = -(beta/rho)*v
-            const float vx1 = vx0 + p->dt * ax;
-            n.mom_x         = std::max(0.0f, vx1) * n.mass;
+            const float ax  = -(beta / std::max(rho, k_rho_eps)) * vx0;  // dv/dt = -(beta/rho)*v
+            const float vx1 = vx0 + (p->dt * ax);
+            n.mom_x         = std::max(0.0F, vx1) * n.mass;
           }
         }
+      }
+    }
 
     // Diffuse via HBP for 'steps' with optional LOD fallback pressure loop
     zx_tile pool[1];
     pool[0] = tile;
     zx_residency_opts ro{1, 2, 1};
     zx_residency* rez    = zx_residency_create(&ro);
-    uint32_t churn_enter = 0, churn_exit = 0, pf_count = 0;
+    uint32_t churn_enter = 0;
+    uint32_t churn_exit  = 0;
+    uint32_t pf_count    = 0;
     zx_lod_fallback_state fbs;
     zx_lod_fallback_init(&fbs);
     zx_lod_fallback_policy fbp;
@@ -90,20 +104,24 @@ extern "C"
     for (uint32_t s = 0; s < p->steps; ++s)
     {
       // If fallback enabled, track active frames via residency and policy
-      if (zx_lod_is_enabled())
+      if (zx_lod_is_enabled() != 0)
       {
-        uint32_t en = 0, ex = 0, pf = 0;
-        zx_residency_tick(rez, (int) s, 0, 0, 0, &en, &ex, &pf);
+        uint32_t en = 0;
+        uint32_t ex = 0;
+        uint32_t pf = 0;
+        zx_residency_tick(rez, static_cast<int>(s), 0, 0, 0, &en, &ex, &pf);
         churn_enter += en;
         churn_exit += ex;
         pf_count        = pf;
         uint32_t active = zx_residency_get_active_count(rez);
-        (void) zx_lod_fallback_update(&fbp, active, /*last_step_ms*/ 1.0f, &fbs);
+        (void) zx_lod_fallback_update(&fbp, active, /*last_step_ms*/ 1.0F, &fbs);
       }
       else
       {
-        uint32_t en = 0, ex = 0, pf = 0;
-        zx_residency_tick(rez, (int) s, 0, 0, 0, &en, &ex, &pf);
+        uint32_t en = 0;
+        uint32_t ex = 0;
+        uint32_t pf = 0;
+        zx_residency_tick(rez, static_cast<int>(s), 0, 0, 0, &en, &ex, &pf);
         churn_enter += en;
         churn_exit += ex;
         pf_count = pf;
@@ -112,32 +130,40 @@ extern "C"
     }
 
     // Metrics: front advance via threshold on vx, and kinetic energy sum
-    float max_ix = 0.0f;
-    float ke     = 0.0f;
-    for (uint32_t iz = 0; iz < B; ++iz)
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+    float max_ix = 0.0F;
+    float ke     = 0.0F;
+    for (uint32_t iz = 0; iz < b; ++iz)
+    {
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
           const auto& n = pool[0].nodes[idx(ix, iy, iz)];
           const float m = n.mass;
-          if (m <= 0.0f)
+          if (m <= 0.0F)
+          {
             continue;
+          }
           const float vx = n.mom_x / m;
           const float vy = n.mom_y / m;
           const float vz = n.mom_z / m;
-          const float v2 = vx * vx + vy * vy + vz * vz;
-          if (vx > 0.05f)
-            max_ix = std::max(max_ix, (float) ix);
-          ke += 0.5f * m * v2;
+          const float v2 = (vx * vx) + (vy * vy) + (vz * vz);
+          if (vx > k_vx_thresh)
+          {
+            max_ix = std::max(max_ix, static_cast<float>(ix));
+          }
+          ke += 0.5F * m * v2;
         }
-    M.front_x   = max_ix * p->h;
-    M.kinetic_j = ke;
+      }
+    }
+    m.front_x   = max_ix * p->h;
+    m.kinetic_j = ke;
     // Could export churn/fallback counters via telemetry externally
     (void) churn_enter;
     (void) churn_exit;
     (void) pf_count;
     zx_residency_destroy(rez);
-    return M;
+    return m;
   }
 
   /**
@@ -163,49 +189,59 @@ extern "C"
    */
   zx_bogging_metrics ZX_CALL zx_integration_wheel_bogging_run(const zx_bogging_params* p)
   {
-    zx_bogging_metrics M{0.0f, 0.0f};
-    if (!p || p->h <= 0.0f || p->dt <= 0.0f || p->steps == 0)
-      return M;
-    const uint32_t B = (uint32_t) ZX_TILE_B;
+    zx_bogging_metrics m{0.0F, 0.0F};
+    if ((p == nullptr) || (p->h <= 0.0F) || (p->dt <= 0.0F) || (p->steps == 0U))
+    {
+      return m;
+    }
+    const auto b = static_cast<uint32_t>(ZX_TILE_B);
     zx_tile tile{};
-    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + B * (iy + B * iz); };
-    for (uint32_t iz = 0; iz < B; ++iz)
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + (b * (iy + (b * iz))); };
+    for (uint32_t iz = 0; iz < b; ++iz)
+    {
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
           auto& n = tile.nodes[idx(ix, iy, iz)];
-          n.mass  = 1.0f;
-          n.mom_x = 0.0f;
-          n.mom_y = 0.0f;
-          n.mom_z = 0.0f;
+          n.mass  = 1.0F;
+          n.mom_x = 0.0F;
+          n.mom_y = 0.0F;
+          n.mom_z = 0.0F;
         }
-    const float r_nodes = static_cast<float>(std::max(1U, p->wheel_radius_nodes));
-    const float cx = B / 2.0f, cy = B / 2.0f;
-    const float ground_z = (float) (B / 2);
+      }
+    }
+    const float r_nodes       = static_cast<float>(std::max(1U, p->wheel_radius_nodes));
+    const float cx            = static_cast<float>(b) / 2.0F;
+    const float cy            = static_cast<float>(b) / 2.0F;
+    const auto ground_z       = static_cast<float>(b) / 2.0F;
+    constexpr float k_rho_eps = 1.0e-12F;
 
     for (uint32_t s = 0; s < p->steps; ++s)
     {
       // approximate wheel imprint by pushing nodes downwards within radius; resist horizontal drag
       // via Darcy
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
-          float dx = ix - cx;
-          float dy = iy - cy;
-          float r  = std::sqrt(dx * dx + dy * dy);
+          const float dx = static_cast<float>(ix) - cx;
+          const float dy = static_cast<float>(iy) - cy;
+          const float r  = std::sqrt((dx * dx) + (dy * dy));
           if (r <= r_nodes)
           {
-            uint32_t iz = (uint32_t) ground_z;
-            auto& n     = tile.nodes[idx(ix, iy, iz)];
-            float vx    = p->wheel_pull_u;
+            auto iz  = static_cast<uint32_t>(ground_z);
+            auto& n  = tile.nodes[idx(ix, iy, iz)];
+            float vx = p->wheel_pull_u;
             float beta =
                 zx_bog_beta_hbp(p->gamma_dot, &p->hbp, p->permeability, p->k_min, p->mu_min,
                                 p->mu_max, p->beta_min, p->beta_max, p->policy, p->softness_k);
             const float rho = n.mass / (p->h * p->h * p->h);
-            float ax        = -(beta / std::max(rho, 1e-12f)) * (n.mom_x / n.mass - vx);
+            float ax        = -(beta / std::max(rho, k_rho_eps)) * (n.mom_x / n.mass - vx);
             n.mom_x += p->dt * ax * n.mass;
           }
         }
+      }
       zx_tile pool[1];
       pool[0] = tile;
       zx_hbp_update_coarse_grid(pool, 1, p->h, p->dt, &p->hbp, p->mu_min, p->mu_max);
@@ -213,22 +249,20 @@ extern "C"
     }
 
     // metrics: sink depth proxy (momentum loss in z) and drag force
-    float drag   = 0.0f;
-    float vx_sum = 0.0f;
-    float count  = 0.0f;
-    for (uint32_t iy = 0; iy < B; ++iy)
-      for (uint32_t ix = 0; ix < B; ++ix)
+    float drag = 0.0F;
+    for (uint32_t iy = 0; iy < b; ++iy)
+    {
+      for (uint32_t ix = 0; ix < b; ++ix)
       {
-        uint32_t iz = (uint32_t) ground_z;
-        auto& n     = tile.nodes[idx(ix, iy, iz)];
-        float vx    = n.mom_x / std::max(n.mass, 1e-12f);
-        vx_sum += vx;
-        count += 1.0f;
-        drag += std::max(0.0f, p->wheel_pull_u - vx);
+        auto iz  = static_cast<uint32_t>(ground_z);
+        auto& n  = tile.nodes[idx(ix, iy, iz)];
+        float vx = n.mom_x / std::max(n.mass, k_rho_eps);
+        drag += std::max(0.0F, p->wheel_pull_u - vx);
       }
-    M.drag_N       = drag;
-    M.sink_depth_m = std::max(0.0f, p->wheel_push_w * p->dt * p->steps);
-    return M;
+    }
+    m.drag_N       = drag;
+    m.sink_depth_m = std::max(0.0F, p->wheel_push_w * p->dt * static_cast<float>(p->steps));
+    return m;
   }
 
   /**
@@ -247,52 +281,65 @@ extern "C"
    */
   zx_puddle_metrics ZX_CALL zx_integration_puddle_creep_run(const zx_puddle_params* p)
   {
-    zx_puddle_metrics M{0.0f};
-    if (!p || p->h <= 0.0f || p->dt <= 0.0f || p->steps == 0)
-      return M;
-    const uint32_t B = (uint32_t) ZX_TILE_B;
+    zx_puddle_metrics m{0.0F};
+    if ((p == nullptr) || (p->h <= 0.0F) || (p->dt <= 0.0F) || (p->steps == 0U))
+    {
+      return m;
+    }
+    constexpr float k_vx_thresh = 0.05F;
+    constexpr float k_rho_eps   = 1.0e-12F;
+    const auto b                = static_cast<uint32_t>(ZX_TILE_B);
     zx_tile tile{};
-    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + B * (iy + B * iz); };
-    for (uint32_t iz = 0; iz < B; ++iz)
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+    auto idx = [&](uint32_t ix, uint32_t iy, uint32_t iz) { return ix + (b * (iy + (b * iz))); };
+    for (uint32_t iz = 0; iz < b; ++iz)
+    {
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
           auto& n = tile.nodes[idx(ix, iy, iz)];
-          n.mass  = 1.0f;
-          n.mom_x = (ix < B / 3) ? p->init_head_u : 0.0f;
-          n.mom_y = 0.0f;
-          n.mom_z = 0.0f;
+          n.mass  = 1.0F;
+          n.mom_x = (ix < (b / 3U)) ? p->init_head_u : 0.0F;
+          n.mom_y = 0.0F;
+          n.mom_z = 0.0F;
         }
+      }
+    }
     zx_tile pool[1];
     pool[0] = tile;
     for (uint32_t s = 0; s < p->steps; ++s)
     {
       // apply Darcy globally to damp
-      for (uint32_t k = 0; k < B * B * B; ++k)
+      for (auto& n : pool[0].nodes)
       {
-        auto& n    = pool[0].nodes[k];
-        float vx   = n.mom_x / std::max(n.mass, 1e-12f);
+        float vx   = n.mom_x / std::max(n.mass, k_rho_eps);
         float beta = zx_bog_beta_hbp(p->gamma_dot, &p->hbp, p->permeability, p->k_min, p->mu_min,
                                      p->mu_max, p->beta_min, p->beta_max, p->policy, p->softness_k);
         float rho  = n.mass / (p->h * p->h * p->h);
-        float ax   = -(beta / std::max(rho, 1e-12f)) * vx;
+        float ax   = -(beta / std::max(rho, k_rho_eps)) * vx;
         n.mom_x += p->dt * ax * n.mass;
       }
       zx_hbp_update_coarse_grid(pool, 1, p->h, p->dt, &p->hbp, p->mu_min, p->mu_max);
     }
     // creep distance: max ix where vx above threshold
-    float max_ix = 0.0f;
-    for (uint32_t iz = 0; iz < B; ++iz)
-      for (uint32_t iy = 0; iy < B; ++iy)
-        for (uint32_t ix = 0; ix < B; ++ix)
+    float max_ix = 0.0F;
+    for (uint32_t iz = 0; iz < b; ++iz)
+    {
+      for (uint32_t iy = 0; iy < b; ++iy)
+      {
+        for (uint32_t ix = 0; ix < b; ++ix)
         {
           auto& n  = pool[0].nodes[idx(ix, iy, iz)];
-          float vx = n.mom_x / std::max(n.mass, 1e-12f);
-          if (vx > 0.05f)
-            max_ix = std::max(max_ix, (float) ix);
+          float vx = n.mom_x / std::max(n.mass, k_rho_eps);
+          if (vx > k_vx_thresh)
+          {
+            max_ix = std::max(max_ix, static_cast<float>(ix));
+          }
         }
-    M.creep_dist_x = max_ix * p->h;
-    return M;
+      }
+    }
+    m.creep_dist_x = max_ix * p->h;
+    return m;
   }
 
 }  // extern "C"

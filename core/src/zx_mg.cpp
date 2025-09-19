@@ -8,44 +8,53 @@
 #include "zx/zx_mg.h"
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <vector>
 
-struct zx_mg_level
+namespace
 {
-  size_t n;
-  float h2inv;
+  constexpr float k_two     = 2.0F;
+  constexpr float k_half    = 0.5F;
+  constexpr float k_quarter = 0.25F;
+  constexpr float k_four    = 4.0F;
+}  // namespace
+
+struct ZxMgLevel
+{
+  size_t n    = 0;
+  float h2inv = 0.0F;
   std::vector<float> x, r, z, tmp;
 };
 
 struct zx_mg_context
 {
-  std::vector<zx_mg_level> levels;
-  zx_mg_opts opts;
+  std::vector<ZxMgLevel> levels;
+  zx_mg_opts opts{};
 };
 
-static inline void apply_A_1d(const float* x, float* y, size_t n, float h2inv)
+static inline void apply_a_1d(const float* x, float* y, size_t n, float h2inv)
 {
-  y[0] = h2inv * (2.0F * x[0] - x[1]);
+  y[0] = h2inv * (k_two * x[0] - x[1]);
   for (size_t i = 1; i < n - 1; ++i)
   {
-    y[i] = h2inv * (-x[i - 1] + 2.0F * x[i] - x[i + 1]);
+    y[i] = h2inv * (-x[i - 1] + k_two * x[i] - x[i + 1]);
   }
-  y[n - 1] = h2inv * (2.0F * x[n - 1] - x[n - 2]);
+  y[n - 1] = h2inv * (k_two * x[n - 1] - x[n - 2]);
 }
 
-static void jacobi_smooth(size_t iters, float omega, zx_mg_level& L)
+static void jacobi_smooth(size_t iters, float omega, ZxMgLevel& level)
 {
-  const size_t n = L.n;
-  auto& Ax       = L.tmp;
-  Ax.resize(n);
+  const size_t n = level.n;
+  auto& ax       = level.tmp;
+  ax.resize(n);
   for (size_t k = 0; k < iters; ++k)
   {
-    apply_A_1d(L.x.data(), Ax.data(), n, L.h2inv);
+    apply_a_1d(level.x.data(), ax.data(), n, level.h2inv);
     for (size_t i = 0; i < n; ++i)
     {
-      float diag = 2.0f * L.h2inv;
-      float res  = L.r[i] - Ax[i];
-      L.x[i] += omega * res / diag;
+      float diag = k_two * level.h2inv;
+      float res  = level.r[i] - ax[i];
+      level.x[i] += omega * res / diag;
     }
   }
 }
@@ -54,14 +63,13 @@ static void restrict_full_weighting(const std::vector<float>& fine, std::vector<
 {
   const size_t nf = fine.size();
   const size_t nc = coarse.size();
-  // Assume nf = 2*nc - 1 (standard 1D restriction)
-  coarse[0] = 0.5F * (fine[0] + fine[1]);
+  coarse[0]       = k_half * (fine[0] + fine[1]);
   for (size_t i = 1; i < nc - 1; ++i)
   {
     size_t j  = 2 * i;
-    coarse[i] = 0.25F * (fine[j - 1] + 2.0F * fine[j] + fine[j + 1]);
+    coarse[i] = k_quarter * (fine[j - 1] + k_two * fine[j] + fine[j + 1]);
   }
-  coarse[nc - 1] = 0.5F * (fine[nf - 2] + fine[nf - 1]);
+  coarse[nc - 1] = k_half * (fine[nf - 2] + fine[nf - 1]);
 }
 
 /**
@@ -85,38 +93,42 @@ static void prolong_linear(const std::vector<float>& coarse, std::vector<float>&
   }
   for (size_t i = 0; i < nc - 1; ++i)
   {
-    fine[2 * i + 1] = 0.5F * (coarse[i] + coarse[i + 1]);
+    fine[(2 * i) + 1] = k_half * (coarse[i] + coarse[i + 1]);
   }
 }
 
 static void vcycle(zx_mg_context* ctx, size_t level_idx)
 {
-  zx_mg_level& L      = ctx->levels[level_idx];
+  ZxMgLevel& level    = ctx->levels[level_idx];
   const zx_mg_opts& o = ctx->opts;
-  jacobi_smooth(o.pre_smooth, o.omega, L);
+  jacobi_smooth(o.pre_smooth, o.omega, level);
 
   if (level_idx + 1 < ctx->levels.size())
   {
     // compute residual r - A x
-    auto& Ax = L.tmp;
-    Ax.resize(L.n);
-    apply_A_1d(L.x.data(), Ax.data(), L.n, L.h2inv);
-    for (size_t i = 0; i < L.n; ++i)
-      L.tmp[i] = L.r[i] - Ax[i];
+    auto& ax = level.tmp;
+    ax.resize(level.n);
+    apply_a_1d(level.x.data(), ax.data(), level.n, level.h2inv);
+    for (size_t i = 0; i < level.n; ++i)
+    {
+      level.tmp[i] = level.r[i] - ax[i];
+    }
     // restrict to coarse
-    zx_mg_level& C = ctx->levels[level_idx + 1];
-    restrict_full_weighting(L.tmp, C.r);
-    std::fill(C.x.begin(), C.x.end(), 0.0f);
+    ZxMgLevel& coarse = ctx->levels[level_idx + 1];
+    restrict_full_weighting(level.tmp, coarse.r);
+    std::fill(coarse.x.begin(), coarse.x.end(), 0.0F);
     vcycle(ctx, level_idx + 1);
     // prolong and correct
-    prolong_linear(C.x, L.tmp);
-    for (size_t i = 0; i < L.n; ++i)
-      L.x[i] += L.tmp[i];
-    jacobi_smooth(o.post_smooth, o.omega, L);
+    prolong_linear(coarse.x, level.tmp);
+    for (size_t i = 0; i < level.n; ++i)
+    {
+      level.x[i] += level.tmp[i];
+    }
+    jacobi_smooth(o.post_smooth, o.omega, level);
   }
   else
   {
-    jacobi_smooth(o.coarse_iters, o.omega, L);
+    jacobi_smooth(o.coarse_iters, o.omega, level);
   }
 }
 
@@ -134,20 +146,21 @@ extern "C"
     {
       return nullptr;
     }
-    zx_mg_context* ctx = new zx_mg_context();
-    ctx->opts          = *opts;
-    size_t cur         = n;
-    float h2inv        = 1.0F;
+    // C-ABI factory with RAII during construction
+    auto ctx    = std::make_unique<zx_mg_context>();
+    ctx->opts   = *opts;
+    size_t cur  = n;
+    float h2inv = 1.0F;
     for (uint32_t lvl = 0; lvl < opts->max_levels && cur >= 3; ++lvl)
     {
-      zx_mg_level L;
-      L.n     = cur;
-      L.h2inv = h2inv;
-      L.x.assign(cur, 0.0F);
-      L.r.assign(cur, 0.0F);
-      L.z.assign(cur, 0.0F);
-      L.tmp.assign(cur, 0.0F);
-      ctx->levels.push_back(std::move(L));
+      ZxMgLevel level;
+      level.n     = cur;
+      level.h2inv = h2inv;
+      level.x.assign(cur, 0.0F);
+      level.r.assign(cur, 0.0F);
+      level.z.assign(cur, 0.0F);
+      level.tmp.assign(cur, 0.0F);
+      ctx->levels.push_back(std::move(level));
       if (cur == 3)
       {
         break;
@@ -158,15 +171,14 @@ extern "C"
         break;
       }
       cur = next;
-      h2inv *= 4.0F;  // grid spacing doubles each level -> 1/h^2 scales by 1/4; here we keep h^2
-                      // consistent per stencil scaling usage
+      h2inv *= k_four;  // grid spacing doubles each level -> 1/h^2 scales by 1/4; here we keep h^2
+                        // consistent per stencil scaling usage
     }
     if (ctx->levels.empty())
     {
-      delete ctx;
       return nullptr;
     }
-    return ctx;
+    return ctx.release();
   }
 
   /** \brief Destroy multigrid context. */
@@ -190,17 +202,17 @@ extern "C"
    */
   void ZX_CALL zx_mg_prec_apply(const float* r, float* z, void* user_ctx)
   {
-    zx_mg_context* ctx = (zx_mg_context*) user_ctx;
+    auto* ctx = static_cast<zx_mg_context*>(user_ctx);
     if ((ctx == nullptr) || (r == nullptr) || (z == nullptr))
     {
       return;
     }
     // load RHS into finest level
-    zx_mg_level& F = ctx->levels.front();
-    std::copy_n(r, F.n, F.r.begin());
-    std::fill(F.x.begin(), F.x.end(), 0.0F);
+    ZxMgLevel& f = ctx->levels.front();
+    std::copy_n(r, f.n, f.r.begin());
+    std::fill(f.x.begin(), f.x.end(), 0.0F);
     vcycle(ctx, 0);
-    std::copy(F.x.begin(), F.x.end(), z);
+    std::copy(f.x.begin(), f.x.end(), z);
   }
 
 }  // extern "C"

@@ -31,14 +31,6 @@ extern "C"
     }
   }
 
-  static inline void scal(size_t n, float alpha, float* x)
-  {
-    for (size_t i = 0; i < n; ++i)
-    {
-      x[i] *= alpha;
-    }
-  }
-
   /**
    * @brief Copy n float elements from source to destination.
    *
@@ -92,20 +84,25 @@ extern "C"
     const float tol_abs      = (opts->tol_abs > 0.0F) ? opts->tol_abs : 0.0F;
     const float tol_rel      = (opts->tol_rel > 0.0F) ? opts->tol_rel : 0.0F;
 
-    std::vector<float> r(n, 0.0F), z(n, 0.0F), p(n, 0.0F), Ap(n, 0.0F);
+    std::vector<float> r(n, 0.0F);
+    std::vector<float> z(n, 0.0F);
+    std::vector<float> p(n, 0.0F);
+    std::vector<float> ap(n, 0.0F);
 
     // r = b - A x
-    apply_A(x, Ap.data(), user);
+    apply_A(x, ap.data(), user);
     for (size_t i = 0; i < n; ++i)
     {
-      r[i] = b[i] - Ap[i];
+      r[i] = b[i] - ap[i];
     }
 
     float b_norm = std::sqrt(std::max(0.0F, dot(n, b, b)));
     if (b_norm == 0.0F)
     {
       if (out_final_resid != nullptr)
+      {
         *out_final_resid = 0.0F;
+      }
       std::fill(x, x + n, 0.0F);
       return 0;
     }
@@ -124,9 +121,9 @@ extern "C"
     uint32_t k = 0;
     for (; k < max_iters; ++k)
     {
-      apply_A(p.data(), Ap.data(), user);
-      float pAp = dot(n, p.data(), Ap.data());
-      if ((pAp <= 0.0F) || std::isnan(pAp) || std::isinf(pAp))
+      apply_A(p.data(), ap.data(), user);
+      float p_ap = dot(n, p.data(), ap.data());
+      if ((p_ap <= 0.0F) || std::isnan(p_ap) || std::isinf(p_ap))
       {
         if (out_final_resid != nullptr)
         {
@@ -134,17 +131,20 @@ extern "C"
         }
         break;  // not SPD or numerical failure
       }
-      float alpha = rz_old / pAp;
+      const float alpha = rz_old / p_ap;
 
-      float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
-      float thresh = std::max(tol_abs, tol_rel * b_norm);
+      // x = x + alpha * p; r = r - alpha * (A p)
+      axpy(n, alpha, p.data(), x);
+      axpy(n, -alpha, ap.data(), r.data());
+
+      const float r_norm = std::sqrt(std::max(0.0F, dot(n, r.data(), r.data())));
+      const float thresh = std::max(tol_abs, tol_rel * b_norm);
       if (r_norm <= thresh)
       {
         if (out_final_resid != nullptr)
         {
           *out_final_resid = r_norm;
         }
-        ++k;
         break;
       }
 

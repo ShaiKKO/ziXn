@@ -1,0 +1,8 @@
+==== core/src/zx_mg.cpp ====
+clang-tidy.exe : 38913 warnings generated.
+At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:18 char:10
++     $r = & $ct $f -p $BuildDir -checks=$Checks -quiet -warnings-as-er ...
++          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (38913 warnings generated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

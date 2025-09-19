@@ -10,8 +10,8 @@
 #ifndef ZX_MG_H
 #define ZX_MG_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "zx_abi.h"
 
@@ -22,7 +22,7 @@ extern "C"
 
   typedef struct zx_mg_context zx_mg_context; /* opaque */
 
-  typedef struct zx_mg_opts
+  typedef struct ZxMgOpts
   {
     uint32_t max_levels;   /* maximum levels including finest */
     uint32_t pre_smooth;   /* Jacobi pre-smoothing iterations */

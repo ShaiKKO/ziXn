@@ -7,9 +7,9 @@
 #define ZX_HEAVE_VALIDATION_H
 
 #include "zx_abi.h"
-#include <stdint.h>
+#include <cstdint>
 
-typedef struct zx_heave_params
+typedef struct ZxHeaveParams
 {
   float load_newton;     /* applied vertical load */
   float footprint_width; /* contact width (m) */

@@ -1,3 +1,17 @@
+.vs/
+build-rel/
+build/
+*.user
+*.opendb
+*.VC.db
+*.suo
+*.ilk
+*.pdb
+*.obj
+*.tlog/
+*.log
+*.cache/
+wsl-build/
 # Build artifacts
 /build/
 /build-*/

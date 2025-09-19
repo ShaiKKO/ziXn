@@ -10,11 +10,6 @@
 #ifndef ZX_ABI_H
 #define ZX_ABI_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #if defined(_WIN32)
 #if defined(ZX_BUILD)
 #define ZX_API __declspec(dllexport)
@@ -36,8 +31,13 @@ extern "C"
 #define ZX_RESTRICT
 #endif
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
   /* ABI version 0x00010000 = 1.0.0. Bump on breaking struct or proc-table changes. */
   static constexpr uint32_t zx_abi_version = 0x00010000U;
@@ -56,7 +56,7 @@ extern "C"
   typedef zx_handle zx_material;
   typedef zx_handle zx_rig;
 
-  typedef enum zx_status
+  typedef enum ZxStatus
   {
     ZX_OK            = 0,
     ZX_E_INVALID     = -1,
@@ -67,16 +67,16 @@ extern "C"
     ZX_W_SOFT        = 1
   } zx_status;
 
-  typedef struct zx_vec3
+  typedef struct ZxVec3
   {
     float x, y, z;
   } zx_vec3;
-  typedef struct zx_mat3
+  typedef struct ZxMat3
   {
     float m[zx_mat3_size];
   } zx_mat3;
 
-  typedef struct zx_context_desc
+  typedef struct ZxContextDesc
   {
     uint32_t size; /* must be set by caller to sizeof(zx_context_desc) */
     void* (*host_alloc)(size_t, void*);
@@ -86,39 +86,39 @@ extern "C"
   } zx_context_desc;
 
   /* Forward-declared descriptor structs (opaque to clients until detailed headers exist) */
-  typedef struct zx_device_desc
+  typedef struct ZxDeviceDesc
   {
     uint32_t size;
     uint32_t reserved;
   } zx_device_desc;
-  typedef struct zx_scene_desc
+  typedef struct ZxSceneDesc
   {
     uint32_t size;
     uint32_t reserved;
   } zx_scene_desc;
-  typedef struct zx_material_desc
+  typedef struct ZxMaterialDesc
   {
     uint32_t size;
     uint32_t reserved;
   } zx_material_desc;
-  typedef struct zx_rig_desc
+  typedef struct ZxRigDesc
   {
     uint32_t size;
     uint32_t reserved;
   } zx_rig_desc;
 
-  typedef struct zx_frame_begin
+  typedef struct ZxFrameBegin
   {
     uint32_t size;
     double time_seconds;
   } zx_frame_begin;
-  typedef struct zx_sim_params
+  typedef struct ZxSimParams
   {
     uint32_t size;
     float dt;
     uint32_t substeps;
   } zx_sim_params;
-  typedef struct zx_writeback_desc
+  typedef struct ZxWritebackDesc
   {
     uint32_t size;
     uint32_t flags; /* future use */
@@ -128,13 +128,13 @@ extern "C"
     uint32_t height;
     uint32_t row_pitch_bytes;
   } zx_writeback_desc;
-  typedef struct zx_frame_end
+  typedef struct ZxFrameEnd
   {
     uint32_t size;
     uint64_t fence;
   } zx_frame_end;
 
-  typedef struct zx_counters
+  typedef struct ZxCounters
   {
     uint32_t size;    /* sizeof(zx_counters) that caller allocated */
     uint32_t version; /* structure version for forward/back compat */
@@ -154,7 +154,7 @@ extern "C"
     uint32_t substeps;
   } zx_counters;
 
-  typedef struct zx_procs
+  typedef struct ZxProcs
   {
     uint32_t size;    /* must be set by caller to sizeof(zx_procs) */
     uint32_t version; /* semantic ABI version, e.g., 0x00010000 */
@@ -189,7 +189,7 @@ extern "C"
    */
   ZX_API zx_status ZX_CALL zx_get_proc_table(uint32_t abi_version, zx_procs* out_procs);
 /* Back-compat alias */
-#define zxGetProcTable zx_get_proc_table
+#define ZX_GET_PROC_TABLE zx_get_proc_table
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -11,10 +11,10 @@
 
 namespace
 {
-  constexpr float zx_pi        = 3.14159265358979323846F;  // NOLINT(readability-magic-numbers)
-  constexpr float zx_deg2rad   = zx_pi / 180.0F;           // NOLINT(readability-magic-numbers)
-  constexpr float zx_tan_floor = 0.2F;                     // NOLINT(readability-magic-numbers)
-  constexpr float zx_min_deg   = 5.0F;                     // NOLINT(readability-magic-numbers)
+  constexpr float zx_pi        = 3.14159265358979323846F;
+  constexpr float zx_deg2rad   = zx_pi / 180.0F;
+  constexpr float zx_tan_floor = 0.2F;
+  constexpr float zx_min_deg   = 5.0F;
 }  // namespace
 
 /**
@@ -51,8 +51,7 @@ float zx_validation_inclined_plane_theta_c(const zx_mc_params* mc)
  * @param ar Initial aspect ratio (height/width).
  * @return float Estimated runout ratio L/H.
  */
-float zx_validation_column_collapse_runout_ratio(
-    float friction_deg, float ar)  // NOLINT(bugprone-easily-swappable-parameters)
+float zx_validation_column_collapse_runout_ratio(float friction_deg, float ar)
 {
   // Empirical monotone: larger φ -> shorter runout; larger aspect ratio -> longer.
   // Use a simple proxy L/H ≈ a * ar^b / tan(φ), with clamps for stability.

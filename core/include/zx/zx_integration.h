@@ -9,7 +9,7 @@
 #ifndef ZX_INTEGRATION_H
 #define ZX_INTEGRATION_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "zx_abi.h"
 #include "zx_hbp.h"
@@ -21,7 +21,7 @@ extern "C"
 {
 #endif
 
-  typedef struct zx_dambreak_params
+  typedef struct ZxDambreakParams
   {
     uint32_t tiles;    /* number of tiles in pool (>=1) */
     float h;           /* grid spacing [m] */
@@ -41,7 +41,7 @@ extern "C"
     float softness_k;
   } zx_dambreak_params;
 
-  typedef struct zx_dambreak_metrics
+  typedef struct ZxDambreakMetrics
   {
     float front_x;   /* estimated front advance [m] */
     float kinetic_j; /* total kinetic energy [J], unit density */
@@ -51,7 +51,7 @@ extern "C"
    * bed. */
   ZX_API zx_dambreak_metrics ZX_CALL zx_integration_dambreak_run(const zx_dambreak_params* params);
 
-  typedef struct zx_bogging_params
+  typedef struct ZxBoggingParams
   {
     float h;
     float dt;
@@ -71,7 +71,7 @@ extern "C"
     float softness_k;
   } zx_bogging_params;
 
-  typedef struct zx_bogging_metrics
+  typedef struct ZxBoggingMetrics
   {
     float sink_depth_m; /* average sink depth under wheel [m] */
     float drag_N;       /* effective resisting force in x [N] (unit density proxy) */
@@ -80,7 +80,7 @@ extern "C"
   ZX_API zx_bogging_metrics ZX_CALL
   zx_integration_wheel_bogging_run(const zx_bogging_params* params);
 
-  typedef struct zx_puddle_params
+  typedef struct ZxPuddleParams
   {
     float h;
     float dt;
@@ -98,7 +98,7 @@ extern "C"
     float softness_k;
   } zx_puddle_params;
 
-  typedef struct zx_puddle_metrics
+  typedef struct ZxPuddleMetrics
   {
     float creep_dist_x; /* puddle creep distance [m] */
   } zx_puddle_metrics;

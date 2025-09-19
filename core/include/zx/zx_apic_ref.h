@@ -8,7 +8,7 @@
 #define ZX_APIC_REF_H
 
 #include "zx_abi.h"
-#include <stddef.h>
+#include <cstddef>
 
 /* Quadratic B-spline basis (1D) */
 ZX_API void ZX_CALL zx_bspline_w3(float x, float w[3]);

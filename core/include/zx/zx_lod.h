@@ -24,7 +24,7 @@ SIMD and platform notes (Windows-first):
 #define ZX_LOD_H
 
 #include "zx_abi.h"
-#include <stdint.h>
+#include <cstdint>
 
 /** \brief Downsample a displacement field by 2× using a 2×2 average filter.
  *
@@ -72,7 +72,7 @@ ZX_API float ZX_CALL zx_lod_border_consistency_check(const float* A, uint32_t Aw
                                                      uint32_t Bh, uint32_t Bpitch, int side);
 
 /* Fallback policy/state for present-LOD under pressure signals */
-typedef struct zx_lod_fallback_policy
+typedef struct ZxLodFallbackPolicy
 {
   uint32_t active_tiles_max;
   float step_ms_max;
@@ -81,7 +81,7 @@ typedef struct zx_lod_fallback_policy
   uint32_t blend_frames;
 } zx_lod_fallback_policy;
 
-typedef struct zx_lod_fallback_state
+typedef struct ZxLodFallbackState
 {
   uint32_t active_frames;
   uint32_t inactive_frames;

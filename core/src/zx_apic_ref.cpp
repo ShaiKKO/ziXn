@@ -14,9 +14,8 @@
 #include <cstring>
 #include <vector>
 
-// Minimal array view to centralize pointer indexing and localize NOLINT usage.
-// This avoids scattering pointer arithmetic across call sites while preserving
-// the C ABI in public headers.
+// Minimal array view to centralize pointer indexing while preserving the C ABI
+// in public headers.
 template <typename T> class ArrayView
 {
 public:
@@ -25,8 +24,7 @@ public:
   T& operator[](size_t idx) const
   {
     // Bounds are validated by callers where applicable; this centralizes pointer
-    // arithmetic to a single location with a focused suppression.
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    // arithmetic to a single location.
     return ptr_[idx];
   }
 
@@ -47,8 +45,8 @@ private:
 // File-scope constants and indices used across helpers
 constexpr size_t k_vec3 = 3U;
 constexpr size_t k_cdim = 9U;
-constexpr float k_half  = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-constexpr float k_four  = 4.0F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+constexpr float k_half  = 0.5F;
+constexpr float k_four  = 4.0F;
 
 // Indices into 3x3 affine C matrix (row-major)
 constexpr size_t k_cxx = 0U;
@@ -126,32 +124,38 @@ static inline int idx3(int x, int y, int z, int nx, int ny)
   return (((z * ny) + y) * nx) + x;
 }
 
+/**
+ * @brief Quadratic B-spline weights (1D).
+ * @param x Position relative to cell center in [0,1].
+ * @param w Output 3 weights array (non-null).
+ */
 void zx_bspline_w3(float x, float w[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  constexpr float k_half_f           = 0.5F;   // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  constexpr float k_three_quarters_f = 0.75F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_half_f           = 0.5F;
+  constexpr float k_three_quarters_f = 0.75F;
   const float x0                     = k_half_f - x;
   const float x1                     = k_half_f + x;
   w[0]                               = k_half_f * x0 * x0;
   w[1]                               = k_three_quarters_f - x * x;
   w[2]                               = k_half_f * x1 * x1;
-  // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
+/**
+ * @brief Derivative of quadratic B-spline (1D).
+ * @param x Position relative to cell center in [0,1].
+ * @param g Output 3 derivative weights array (non-null).
+ */
 void zx_bspline_dw3(float x, float g[3])
 {
   // Public ABI requires pointer-based array. Localize the pointer indexing.
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  constexpr float k_half_f = 0.5F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
-  constexpr float k_two_f  = 2.0F;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr float k_half_f = 0.5F;
+  constexpr float k_two_f  = 2.0F;
   const float x0           = k_half_f - x;
   const float x1           = k_half_f + x;
   g[0]                     = -x0;
   g[1]                     = -k_two_f * x;
   g[2]                     = x1;
-  // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 // Helper to compute grid base coordinates and B-spline weights for a particle
@@ -168,7 +172,6 @@ static inline void compute_support_and_weights(float gx, float gy, float gz, int
 }
 
 // Helper to accumulate a single particle's P2G contributions (deterministic or not)
-// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float>& pos_view,
                                            const ArrayView<const float>& vel_view, const float* C,
                                            size_t N, float mp,
@@ -176,7 +179,6 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
                                            int ny, int nz, ArrayView<float>& m_grid_view,
                                            ArrayView<float>& p_grid_view,
                                            std::vector<Contrib>* contribs)
-// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const size_t pbase = static_cast<size_t>(k_vec3) * i;
   const float px     = pos_view[pbase + 0U];
@@ -186,7 +188,7 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
   const float vy0    = vel_view[pbase + 1U];
   const float vz0    = vel_view[pbase + 2U];
 
-  const float invh = 1.0F / h;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float invh = 1.0F / h;
   const float gx   = (px - origin_arr[0]) * invh;
   const float gy   = (py - origin_arr[1]) * invh;
   const float gz   = (pz - origin_arr[2]) * invh;
@@ -209,7 +211,7 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
     has_c = true;
   }
 
-  constexpr int k_support = 3;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr int k_support = 3;
   for (int dz = 0; dz < k_support; ++dz)
   {
     for (int dy = 0; dy < k_support; ++dy)
@@ -269,21 +271,19 @@ static inline void accumulate_p2g_particle(size_t i, const ArrayView<const float
 }
 
 // Helper to accumulate a single particle's G2P gather
-// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 static inline void accumulate_g2p_particle(size_t i, const ArrayView<const float>& pos_view,
                                            ArrayView<float>& out_vel_view, ArrayView<float>* out_c,
                                            const std::array<float, 3>& origin_arr, float h, int nx,
                                            int ny, int nz,
                                            const ArrayView<const float>& m_grid_view,
                                            const ArrayView<const float>& v_grid_view)
-// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   const size_t pbase = i * static_cast<size_t>(k_vec3);
   const float px     = pos_view[pbase + 0U];
   const float py     = pos_view[pbase + 1U];
   const float pz     = pos_view[pbase + 2U];
 
-  const float invh = 1.0F / h;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  const float invh = 1.0F / h;
   const float gx   = (px - origin_arr[0]) * invh;
   const float gy   = (py - origin_arr[1]) * invh;
   const float gz   = (pz - origin_arr[2]) * invh;
@@ -303,7 +303,7 @@ static inline void accumulate_g2p_particle(size_t i, const ArrayView<const float
   std::array<float, 3> cy{};
   std::array<float, 3> cz{};
 
-  constexpr int k_support = 3;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr int k_support = 3;
   for (int dz = 0; dz < k_support; ++dz)
   {
     for (int dy = 0; dy < k_support; ++dy)
@@ -374,15 +374,26 @@ static inline void accumulate_g2p_particle(size_t i, const ArrayView<const float
   }
 }
 
-// NOLINTBEGIN(bugprone-easily-swappable-parameters)
+/**
+ * @brief APIC/MLS particle-to-grid transfer (CPU reference).
+ * @param N Number of particles.
+ * @param pos Positions (xyz triplets, length 3N).
+ * @param vel Velocities (xyz triplets, length 3N).
+ * @param C Affine matrix per particle (row-major, length 9N) or nullptr.
+ * @param mass Particle masses (length N).
+ * @param origin Grid origin (min corner), length-3 array.
+ * @param h Grid spacing.
+ * @param nx Grid x size; @param ny Grid y size; @param nz Grid z size.
+ * @param m_grid Out mass grid (length nx*ny*nz).
+ * @param p_grid Out momentum grid (xyz per node, length 3*nx*ny*nz).
+ */
 void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* C,
                      const float* mass, const float origin[3], float h, int nx, int ny, int nz,
                      float* ZX_RESTRICT m_grid, float* ZX_RESTRICT p_grid)
-// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   std::memset(m_grid, 0, sizeof(float) * nx * ny * nz);
   std::memset(p_grid, 0, sizeof(float) * 3 * nx * ny * nz);
-  constexpr size_t k_neighbors_3d  = 27U;  // NOLINT(cppcoreguidelines-avoid-magic-numbers)
+  constexpr size_t k_neighbors_3d  = 27U;
   const bool deterministic_enabled = (zx_get_determinism() != 0);
   std::vector<Contrib> contribs;
   if (deterministic_enabled)
@@ -417,11 +428,21 @@ void zx_apic_p2g_ref(size_t N, const float* pos, const float* vel, const float* 
   }
 }
 
-// NOLINTBEGIN(bugprone-easily-swappable-parameters)
+/**
+ * @brief APIC/MLS grid-to-particle gather (CPU reference).
+ * @param N Number of particles.
+ * @param pos Positions (xyz triplets, length 3N).
+ * @param out_vel Out velocities (xyz triplets, length 3N).
+ * @param out_C Optional out affine matrices (row-major, length 9N) or nullptr.
+ * @param origin Grid origin (min corner), length-3 array.
+ * @param h Grid spacing.
+ * @param nx Grid x size; @param ny Grid y size; @param nz Grid z size.
+ * @param m_grid Mass grid (length nx*ny*nz).
+ * @param v_grid Velocity grid (xyz per node, length 3*nx*ny*nz).
+ */
 void zx_apic_g2p_ref(size_t N, const float* pos, float* out_vel, float* out_C,
                      const float origin[3], float h, int nx, int ny, int nz,
                      const float* ZX_RESTRICT m_grid, const float* ZX_RESTRICT v_grid)
-// NOLINTEND(bugprone-easily-swappable-parameters)
 {
   // Wrap arrays in views and copy origin to avoid pointer indexing on parameters.
   ArrayView<const float> pos_view(pos, static_cast<size_t>(k_vec3) * N);

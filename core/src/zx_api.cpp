@@ -1,18 +1,20 @@
-/*!
- * \file zx_api.cpp
- * \brief Minimal proc table export for ziXn.
- * \author Colin Macritchie (Ripple Group, LLC)
- * \version 1.0.0
- * \date 2025-09-16
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_api.cpp
+ * @brief Minimal proc table export for ziXn.
+ * @details Implements C-ABI procedure table population with stub functions for early wiring
+ *          and testing. Validates sizes on all descriptor inputs to avoid ABI drift. No global
+ *          state is modified by these stubs.
+ * @version 1.0.0
+ * @date 2025-09-16
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_abi.h"
 #include <cstring>
 
-// Suppress identifier-naming for ABI macros and false-positive global var check for ZX_CALL
-// across the whole stub section below. Public ABI enforces these spellings.
-// NOLINTBEGIN(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
+// Public ABI enforces names/macros per zx_*. Internal identifiers follow project naming.
 /* ABI version defined in public header */
 
 /**
@@ -250,7 +252,6 @@ static zx_status ZX_CALL writeback_stub(zx_scene sc, const zx_writeback_desc* wb
     {
       for (uint32_t x = 0; x < wb->width; ++x)
       {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         disp[(static_cast<size_t>(y) * static_cast<size_t>(pitch)) + static_cast<size_t>(x)] = 0.0F;
       }
     }
@@ -307,7 +308,6 @@ static zx_status ZX_CALL get_counters_stub(zx_context ctx, zx_counters* c, uint3
   return ZX_OK;
 }
 
-// NOLINTEND(readability-identifier-naming,cppcoreguidelines-avoid-non-const-global-variables)
 /**
  * @brief Convert a zx_status value to a human-readable string literal.
  *

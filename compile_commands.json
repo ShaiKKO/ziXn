@@ -1,0 +1,410 @@
+[
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_api.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_api.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_api.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_api.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_tiles.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_tiles.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_tiles.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_tiles.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_apic_ref.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_apic_ref.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_apic_ref.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_apic_ref.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_contact_ref.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_contact_ref.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_contact_ref.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_contact_ref.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_writeback.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_writeback.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_writeback.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_writeback.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_constitutive_ref.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_constitutive_ref.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_constitutive_ref.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_constitutive_ref.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_validation.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_validation.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_validation.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_validation.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_heave_validation.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_heave_validation.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_heave_validation.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_heave_validation.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_presets.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_presets.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_presets.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_presets.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_authoring.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_authoring.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_authoring.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_authoring.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_lod.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_lod.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_lod.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_lod.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_hbp.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_hbp.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_hbp.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_hbp.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_pcg.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_pcg.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_pcg.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_pcg.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_mixture.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_mixture.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_mixture.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_mixture.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_mg.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_mg.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_mg.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_mg.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_integration.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_integration.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_integration.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_integration.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_determinism.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_determinism.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_determinism.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_determinism.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_telemetry.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_telemetry.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_telemetry.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_telemetry.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_checksum.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_checksum.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_checksum.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_checksum.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -DZX_BUILD -Dzx_EXPORTS -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /W4 /permissive- /FoCMakeFiles\\zx.dir\\core\\src\\zx_residency.cpp.obj /FdCMakeFiles\\zx.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_residency.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/core/src/zx_residency.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx.dir/core/src/zx_residency.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\zx_cli.dir\\tools\\zx_cli.cpp.obj /FdCMakeFiles\\zx_cli.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tools\\zx_cli.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tools/zx_cli.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx_cli.dir/tools/zx_cli.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\abi_conformance_test.dir\\tests\\abi_conformance_test.cpp.obj /FdCMakeFiles\\abi_conformance_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\abi_conformance_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/abi_conformance_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/abi_conformance_test.dir/tests/abi_conformance_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\zx_abi_smoke.dir\\tests\\abi_smoke.cpp.obj /FdCMakeFiles\\zx_abi_smoke.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\abi_smoke.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/abi_smoke.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/zx_abi_smoke.dir/tests/abi_smoke.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\apic_basis_test.dir\\tests\\apic_basis_test.cpp.obj /FdCMakeFiles\\apic_basis_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\apic_basis_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/apic_basis_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/apic_basis_test.dir/tests/apic_basis_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\apic_ref_test.dir\\tests\\apic_ref_test.cpp.obj /FdCMakeFiles\\apic_ref_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\apic_ref_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/apic_ref_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/apic_ref_test.dir/tests/apic_ref_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\counters_smoke.dir\\tests\\counters_smoke.cpp.obj /FdCMakeFiles\\counters_smoke.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\counters_smoke.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/counters_smoke.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/counters_smoke.dir/tests/counters_smoke.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\writeback_smoke.dir\\tests\\writeback_smoke.cpp.obj /FdCMakeFiles\\writeback_smoke.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\writeback_smoke.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/writeback_smoke.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/writeback_smoke.dir/tests/writeback_smoke.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\constitutive_ref_test.dir\\tests\\constitutive_ref_test.cpp.obj /FdCMakeFiles\\constitutive_ref_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\constitutive_ref_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/constitutive_ref_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/constitutive_ref_test.dir/tests/constitutive_ref_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\constitutive_plastic_work_test.dir\\tests\\constitutive_plastic_work_test.cpp.obj /FdCMakeFiles\\constitutive_plastic_work_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\constitutive_plastic_work_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/constitutive_plastic_work_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/constitutive_plastic_work_test.dir/tests/constitutive_plastic_work_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\mc_return_map_test.dir\\tests\\mc_return_map_test.cpp.obj /FdCMakeFiles\\mc_return_map_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\mc_return_map_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/mc_return_map_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/mc_return_map_test.dir/tests/mc_return_map_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\validation_tests.dir\\tests\\validation_tests.cpp.obj /FdCMakeFiles\\validation_tests.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\validation_tests.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/validation_tests.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/validation_tests.dir/tests/validation_tests.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\norsand_test.dir\\tests\\norsand_test.cpp.obj /FdCMakeFiles\\norsand_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\norsand_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/norsand_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/norsand_test.dir/tests/norsand_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\heave_validation_test.dir\\tests\\heave_validation_test.cpp.obj /FdCMakeFiles\\heave_validation_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\heave_validation_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/heave_validation_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/heave_validation_test.dir/tests/heave_validation_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\anisotropic_contact_test.dir\\tests\\anisotropic_contact_test.cpp.obj /FdCMakeFiles\\anisotropic_contact_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\anisotropic_contact_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/anisotropic_contact_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/anisotropic_contact_test.dir/tests/anisotropic_contact_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\wheel_heave_test.dir\\tests\\wheel_heave_test.cpp.obj /FdCMakeFiles\\wheel_heave_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\wheel_heave_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/wheel_heave_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/wheel_heave_test.dir/tests/wheel_heave_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\foot_heave_test.dir\\tests\\foot_heave_test.cpp.obj /FdCMakeFiles\\foot_heave_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\foot_heave_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/foot_heave_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/foot_heave_test.dir/tests/foot_heave_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\anisotropy_scene_test.dir\\tests\\anisotropy_scene_test.cpp.obj /FdCMakeFiles\\anisotropy_scene_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\anisotropy_scene_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/anisotropy_scene_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/anisotropy_scene_test.dir/tests/anisotropy_scene_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\presets_test.dir\\tests\\presets_test.cpp.obj /FdCMakeFiles\\presets_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\presets_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/presets_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/presets_test.dir/tests/presets_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\authoring_map_test.dir\\tests\\authoring_map_test.cpp.obj /FdCMakeFiles\\authoring_map_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\authoring_map_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/authoring_map_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/authoring_map_test.dir/tests/authoring_map_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_filters_test.dir\\tests\\lod_filters_test.cpp.obj /FdCMakeFiles\\lod_filters_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_filters_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_filters_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_filters_test.dir/tests/lod_filters_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_alignment_test.dir\\tests\\lod_alignment_test.cpp.obj /FdCMakeFiles\\lod_alignment_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_alignment_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_alignment_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_alignment_test.dir/tests/lod_alignment_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_crack_free_test.dir\\tests\\lod_crack_free_test.cpp.obj /FdCMakeFiles\\lod_crack_free_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_crack_free_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_crack_free_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_crack_free_test.dir/tests/lod_crack_free_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_mip_random_test.dir\\tests\\lod_mip_random_test.cpp.obj /FdCMakeFiles\\lod_mip_random_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_mip_random_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_mip_random_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_mip_random_test.dir/tests/lod_mip_random_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_mip_chain_test.dir\\tests\\lod_mip_chain_test.cpp.obj /FdCMakeFiles\\lod_mip_chain_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_mip_chain_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_mip_chain_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_mip_chain_test.dir/tests/lod_mip_chain_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\mixture_assembly_test.dir\\tests\\mixture_assembly_test.cpp.obj /FdCMakeFiles\\mixture_assembly_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\mixture_assembly_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/mixture_assembly_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/mixture_assembly_test.dir/tests/mixture_assembly_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\bog_memory_knob_test.dir\\tests\\bog_memory_knob_test.cpp.obj /FdCMakeFiles\\bog_memory_knob_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\bog_memory_knob_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/bog_memory_knob_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/bog_memory_knob_test.dir/tests/bog_memory_knob_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\pcg_smoke_test.dir\\tests\\pcg_smoke_test.cpp.obj /FdCMakeFiles\\pcg_smoke_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\pcg_smoke_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/pcg_smoke_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/pcg_smoke_test.dir/tests/pcg_smoke_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\mg_pcg_test.dir\\tests\\mg_pcg_test.cpp.obj /FdCMakeFiles\\mg_pcg_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\mg_pcg_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/mg_pcg_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/mg_pcg_test.dir/tests/mg_pcg_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\mg_prec_test.dir\\tests\\mg_prec_test.cpp.obj /FdCMakeFiles\\mg_prec_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\mg_prec_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/mg_prec_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/mg_prec_test.dir/tests/mg_prec_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\dambreak_integration_test.dir\\tests\\dambreak_integration_test.cpp.obj /FdCMakeFiles\\dambreak_integration_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\dambreak_integration_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/dambreak_integration_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/dambreak_integration_test.dir/tests/dambreak_integration_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\bogging_puddle_integration_test.dir\\tests\\bogging_puddle_integration_test.cpp.obj /FdCMakeFiles\\bogging_puddle_integration_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\bogging_puddle_integration_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/bogging_puddle_integration_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/bogging_puddle_integration_test.dir/tests/bogging_puddle_integration_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_fallback_threshold_test.dir\\tests\\lod_fallback_threshold_test.cpp.obj /FdCMakeFiles\\lod_fallback_threshold_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_fallback_threshold_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_fallback_threshold_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_fallback_threshold_test.dir/tests/lod_fallback_threshold_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_fallback_blend_test.dir\\tests\\lod_fallback_blend_test.cpp.obj /FdCMakeFiles\\lod_fallback_blend_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_fallback_blend_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_fallback_blend_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_fallback_blend_test.dir/tests/lod_fallback_blend_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\lod_fallback_sweep_test.dir\\tests\\lod_fallback_sweep_test.cpp.obj /FdCMakeFiles\\lod_fallback_sweep_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\lod_fallback_sweep_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/lod_fallback_sweep_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/lod_fallback_sweep_test.dir/tests/lod_fallback_sweep_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\determinism_tests.dir\\tests\\determinism_tests.cpp.obj /FdCMakeFiles\\determinism_tests.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\determinism_tests.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/determinism_tests.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/determinism_tests.dir/tests/determinism_tests.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\determinism_strict_test.dir\\tests\\determinism_strict_test.cpp.obj /FdCMakeFiles\\determinism_strict_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\determinism_strict_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/determinism_strict_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/determinism_strict_test.dir/tests/determinism_strict_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\checksum_parity_test.dir\\tests\\checksum_parity_test.cpp.obj /FdCMakeFiles\\checksum_parity_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\checksum_parity_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/checksum_parity_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/checksum_parity_test.dir/tests/checksum_parity_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\determinism_ordering_test.dir\\tests\\determinism_ordering_test.cpp.obj /FdCMakeFiles\\determinism_ordering_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\determinism_ordering_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/determinism_ordering_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/determinism_ordering_test.dir/tests/determinism_ordering_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\residency_hysteresis_test.dir\\tests\\residency_hysteresis_test.cpp.obj /FdCMakeFiles\\residency_hysteresis_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\residency_hysteresis_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/residency_hysteresis_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/residency_hysteresis_test.dir/tests/residency_hysteresis_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\residency_prefetch_test.dir\\tests\\residency_prefetch_test.cpp.obj /FdCMakeFiles\\residency_prefetch_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\residency_prefetch_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/residency_prefetch_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/residency_prefetch_test.dir/tests/residency_prefetch_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\residency_pinning_test.dir\\tests\\residency_pinning_test.cpp.obj /FdCMakeFiles\\residency_pinning_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\residency_pinning_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/residency_pinning_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/residency_pinning_test.dir/tests/residency_pinning_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\residency_churn_test.dir\\tests\\residency_churn_test.cpp.obj /FdCMakeFiles\\residency_churn_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\residency_churn_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/residency_churn_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/residency_churn_test.dir/tests/residency_churn_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\hbp_mu_eff_test.dir\\tests\\hbp_mu_eff_test.cpp.obj /FdCMakeFiles\\hbp_mu_eff_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\hbp_mu_eff_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/hbp_mu_eff_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/hbp_mu_eff_test.dir/tests/hbp_mu_eff_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\hbp_viscous_update_test.dir\\tests\\hbp_viscous_update_test.cpp.obj /FdCMakeFiles\\hbp_viscous_update_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\hbp_viscous_update_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/hbp_viscous_update_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/hbp_viscous_update_test.dir/tests/hbp_viscous_update_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\hbp_clamp_policy_test.dir\\tests\\hbp_clamp_policy_test.cpp.obj /FdCMakeFiles\\hbp_clamp_policy_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\hbp_clamp_policy_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/hbp_clamp_policy_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/hbp_clamp_policy_test.dir/tests/hbp_clamp_policy_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\hbp_stability_bound_test.dir\\tests\\hbp_stability_bound_test.cpp.obj /FdCMakeFiles\\hbp_stability_bound_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\hbp_stability_bound_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/hbp_stability_bound_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/hbp_stability_bound_test.dir/tests/hbp_stability_bound_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\telemetry_schema_test.dir\\tests\\telemetry_schema_test.cpp.obj /FdCMakeFiles\\telemetry_schema_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\telemetry_schema_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/telemetry_schema_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/telemetry_schema_test.dir/tests/telemetry_schema_test.cpp.obj"
+},
+{
+  "directory": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel",
+  "command": "C:\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\include /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD /FoCMakeFiles\\telemetry_depth_test.dir\\tests\\telemetry_depth_test.cpp.obj /FdCMakeFiles\\telemetry_depth_test.dir\\ -c -- C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\tests\\telemetry_depth_test.cpp",
+  "file": "C:/Users/cisco/Desktop/dev/research/ziXn/tests/telemetry_depth_test.cpp",
+  "output": "C:/Users/cisco/Desktop/dev/research/ziXn/build-rel/CMakeFiles/telemetry_depth_test.dir/tests/telemetry_depth_test.cpp.obj"
+}
+]

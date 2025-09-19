@@ -1,8 +1,12 @@
-/*!
- * \file zx_tiles.cpp
- * \brief Allocation and initialization for tiles and particle SoA.
- * \author Colin Macritchie (Ripple Group, LLC)
- * \license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
+/**
+ * @file zx_tiles.cpp
+ * @brief Allocation and initialization for tiles and particle SoA.
+ * @details C-ABI allocation helpers for tile pools and particle SoA using host-provided
+ *          callbacks. Functions defensively check pointers and sizes; no global state.
+ *          Thread-safe when allocators are thread-safe and buffers are disjoint.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
  */
 
 #include "zx/zx_tiles.h"
@@ -22,8 +26,8 @@ extern "C"
 
   /* Allocation helpers are exposed as C symbols to ease testing and early wiring. */
 
-  zx_particle_soa ZX_CALL zx_create_particle_so_a(size_t count, void* (*alloc_fn)(size_t, void*),
-                                                  void* user)
+  zx_particle_soa ZX_CALL zx_create_particle_soa(size_t count, void* (*alloc_fn)(size_t, void*),
+                                                 void* user)
   {
     zx_particle_soa soa{};
     if (alloc_fn == nullptr || count == 0)
@@ -59,8 +63,8 @@ extern "C"
     return soa;
   }
 
-  void ZX_CALL zx_destroy_particle_so_a(zx_particle_soa* soa, void (*free_fn)(void*, void*),
-                                        void* user)
+  void ZX_CALL zx_destroy_particle_soa(zx_particle_soa* soa, void (*free_fn)(void*, void*),
+                                       void* user)
   {
     if (soa == nullptr || free_fn == nullptr)
     {

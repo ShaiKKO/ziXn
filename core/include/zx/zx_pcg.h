@@ -10,8 +10,8 @@
 #ifndef ZX_PCG_H
 #define ZX_PCG_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "zx_abi.h"
 
@@ -20,15 +20,14 @@ extern "C"
 {
 #endif
 
-  typedef struct zx_pcg_opts
+  typedef struct
   {
     uint32_t max_iters;
     float tol_abs;
     float tol_rel;
   } zx_pcg_opts;
 
-  typedef void (*zx_apply_a_fn)(const float* x, float* y,
-                                void* user);  // NOLINT(readability-identifier-naming)
+  typedef void (*zx_apply_a_fn)(const float* x, float* y, void* user);
   typedef void (*zx_apply_prec_fn)(const float* r, float* z, void* user);
 
   /** \brief Solve Ax=b using PCG with optional preconditioner.

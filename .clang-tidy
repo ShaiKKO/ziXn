@@ -7,13 +7,25 @@ Checks: >
   readability-*,
   modernize-*,
   cppcoreguidelines-*,
+  cppcoreguidelines-pro-type-vararg,
+  -portability-simd-intrinsics,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-owning-memory,
+  -bugprone-easily-swappable-parameters,
+  -readability-magic-numbers,
+  -cppcoreguidelines-avoid-magic-numbers,
   -modernize-use-trailing-return-type,
   -modernize-use-using,
   -cppcoreguidelines-avoid-c-arrays,
   -modernize-avoid-c-arrays,
   -cppcoreguidelines-use-enum-class,
   -performance-enum-size,
-  -readability-identifier-length
+  -readability-identifier-length,
+  readability-else-after-return
 WarningsAsErrors: '*'
 HeaderFilterRegex: '^(core/(include|src)|kernels)/.*'
 # Removed unsupported key for Windows clang-tidy

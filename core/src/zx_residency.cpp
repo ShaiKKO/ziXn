@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-struct tile_state  // NOLINT(readability-identifier-naming)
+struct TileState
 {
   int hot_frames  = 0;
   int cold_frames = 0;
@@ -21,7 +21,7 @@ struct tile_state  // NOLINT(readability-identifier-naming)
 struct zx_residency
 {
   zx_residency_opts opts{};
-  std::unordered_map<long long, tile_state> states;
+  std::unordered_map<long long, TileState> states;
   uint32_t active_count = 0;
   std::unordered_map<long long, bool> pinned;
   uint32_t last_enters = 0, last_exits = 0;
@@ -29,8 +29,8 @@ struct zx_residency
 
 static inline long long key(int x, int y, int z)
 {
-  constexpr int shift_x = 42;  // NOLINT(readability-magic-numbers)
-  constexpr int shift_y = 21;  // NOLINT(readability-magic-numbers)
+  constexpr int shift_x = 42;
+  constexpr int shift_y = 21;
   return ((static_cast<long long>(static_cast<unsigned int>(x)) << shift_x) ^
           (static_cast<long long>(static_cast<unsigned int>(y)) << shift_y) ^
           static_cast<long long>(static_cast<unsigned int>(z)));
@@ -39,9 +39,10 @@ static inline long long key(int x, int y, int z)
 extern "C"
 {
 
-  /** \brief Create residency context.
-   * @param opts Options for enter/exit frames and prefetch rings (must not be NULL)
-   * @return Residency handle; caller owns and must destroy
+  /**
+   * @brief Create residency context.
+   * @param opts Options for enter/exit frames and prefetch rings (must not be NULL).
+   * @return Residency handle; caller owns and must destroy.
    */
   zx_residency*
       ZX_CALL /**
@@ -60,59 +61,34 @@ extern "C"
     {
       return nullptr;
     }
-    auto* r = new zx_residency();  // NOLINT(cppcoreguidelines-owning-memory)
+    auto* r = new zx_residency();
     r->opts = *opts;
     return r;
   }
 
   /**
-   * @brief Destroys and frees a residency context.
-   *
-   * Deletes the given zx_residency instance and releases its resources.
-   * Passing nullptr is safe and has no effect. After calling this, the pointer
-   * must not be used.
-   *
-   * @param ctx Pointer to the residency context to destroy.
+   * @brief Destroy and free a residency context.
+   * @param ctx Residency context to destroy (nullptr is safe).
    */
   void ZX_CALL zx_residency_destroy(zx_residency* ctx)
   {
-    delete ctx;  // NOLINT(cppcoreguidelines-owning-memory)
+    delete ctx;
   }
 
   /**
    * @brief Advance residency state by one frame around a tile center.
-   *
-   * Advances per-tile hot/cold counters for a frame centered at (cx,cy,cz) using
-   * an active cubic radius (in tiles). Tiles within the cube are considered
-   * "hot" this tick; all others cool down. Tiles transition to active when their
-   * hot counter reaches opts.enter_frames and deactivate when their cold counter
-   * reaches opts.exit_frames. Inactive tiles with prolonged coldness
-   * (cold_frames > exit_frames*2) are pruned from the internal map.
-   *
-   * Side effects:
-   * - Mutates ctx->states (per-tile TileState) and ctx->active_count.
-   * - Increments `*enters`/`*exits` for newly activated/deactivated tiles if those
-   *   output pointers are non-null.
-   * - Writes a computed prefetch ring size to `*prefetch_count` if non-null.
-   *
    * @param ctx Residency handle (no-op if null).
-   * @param cx Center X coordinate in tiles.
-   * @param cy Center Y coordinate in tiles.
-   * @param cz Center Z coordinate in tiles.
+   * @param center_x Center X coordinate in tiles.
+   * @param center_y Center Y coordinate in tiles.
+   * @param center_z Center Z coordinate in tiles.
    * @param active_radius Radius (in tiles) defining the cubic hot region.
-   * @param enters Optional out parameter; incremented by the number of tiles
-   *        that became active this tick.
-   * @param exits Optional out parameter; incremented by the number of tiles
-   *        that became inactive this tick.
-   * @param prefetch_count Optional out parameter receiving the size of the
-   *        prefetch ring computed from `active_radius` and `opts.prefetch_rings`.
+   * @param enters Optional; incremented by tiles that became active this tick.
+   * @param exits Optional; incremented by tiles that became inactive this tick.
+   * @param prefetch_count Optional; receives ring size derived from active radius.
    */
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void ZX_CALL
-  zx_residency_tick(zx_residency* ctx, int center_x, int center_y,
-                    int center_z,  // NOLINT(bugprone-easily-swappable-parameters)
-                    uint32_t active_radius, uint32_t* enters, uint32_t* exits,
-                    uint32_t* prefetch_count)  // NOLINT(bugprone-easily-swappable-parameters)
+  void ZX_CALL zx_residency_tick(zx_residency* ctx, int center_x, int center_y, int center_z,
+                                 uint32_t active_radius, uint32_t* enters, uint32_t* exits,
+                                 uint32_t* prefetch_count)
   {
     if (ctx == nullptr)
     {
@@ -140,8 +116,8 @@ extern "C"
       {
         for (int x = -r; x <= r; ++x)
         {
-          long long k   = key(center_x + x, center_y + y, center_z + z);
-          tile_state& s = ctx->states[k];
+          long long k  = key(center_x + x, center_y + y, center_z + z);
+          TileState& s = ctx->states[k];
           s.hot_frames += 1;
           s.cold_frames = 0;
           if (!s.active && s.hot_frames >= static_cast<int>(ctx->opts.enter_frames))
@@ -162,8 +138,8 @@ extern "C"
     for (auto& it : ctx->states)
     {
       // if not touched this frame (not within radius)
-      long long k   = it.first;
-      tile_state& s = it.second;
+      long long k  = it.first;
+      TileState& s = it.second;
       // We detect untouched by checking if hot_frames advanced this tick; we can't directly know,
       // so we keep a decay model:
       if (s.hot_frames > 0)
@@ -192,7 +168,7 @@ extern "C"
         to_erase.push_back(k);
       }
     }
-    for (auto k : to_erase)
+    for (const auto k : to_erase)
     {
       ctx->states.erase(k);
     }
@@ -200,8 +176,8 @@ extern "C"
     // Force pinned tiles to remain active
     for (const auto& kv : ctx->pinned)
     {
-      long long k   = kv.first;
-      tile_state& s = ctx->states[k];
+      long long k  = kv.first;
+      TileState& s = ctx->states[k];
       if (!s.active)
       {
         s.active = true;
@@ -213,8 +189,8 @@ extern "C"
     if (prefetch_count != nullptr)
     {
       const int pr             = static_cast<int>(ctx->opts.prefetch_rings);
-      const int64_t a          = 2LL * (r + pr) + 1;
-      const int64_t b          = 2LL * r + 1;
+      const int64_t a          = (2LL * (r + pr)) + 1;
+      const int64_t b          = (2LL * r) + 1;
       const uint64_t vol_shell = static_cast<uint64_t>(a) * a * a;
       const uint64_t vol_core  = static_cast<uint64_t>(b) * b * b;
       const uint64_t diff      = (vol_shell > vol_core) ? (vol_shell - vol_core) : 0ULL;
@@ -224,9 +200,14 @@ extern "C"
     }
   }
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+  /**
+   * @brief Pin all tiles in an axis-aligned box so they remain active.
+   * @param ctx Residency context (no-op if null).
+   * @param x0 Min x, @param y0 Min y, @param z0 Min z
+   * @param x1 Max x, @param y1 Max y, @param z1 Max z
+   */
   void ZX_CALL zx_residency_pin_box(zx_residency* ctx, int x0, int y0, int z0, int x1, int y1,
-                                    int z1) /* NOLINT(bugprone-easily-swappable-parameters) */
+                                    int z1)
   {
     if (ctx == nullptr)
     {
@@ -256,6 +237,10 @@ extern "C"
     }
   }
 
+  /**
+   * @brief Clear all pinned tiles.
+   * @param ctx Residency context (no-op if null).
+   */
   void ZX_CALL zx_residency_unpin_all(zx_residency* ctx)
   {
     if (ctx == nullptr)
@@ -265,6 +250,11 @@ extern "C"
     ctx->pinned.clear();
   }
 
+  /**
+   * @brief Set number of prefetch rings used to compute prefetch surface.
+   * @param ctx Residency context (no-op if null).
+   * @param rings Prefetch rings (non-negative integer)
+   */
   void ZX_CALL zx_residency_set_prefetch_rings(zx_residency* ctx, uint32_t rings)
   {
     if (ctx == nullptr)
@@ -274,10 +264,15 @@ extern "C"
     ctx->opts.prefetch_rings = rings;
   }
 
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  void ZX_CALL
-  zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters, uint32_t* exits,
-                              uint32_t* churn) /* NOLINT(bugprone-easily-swappable-parameters) */
+  /**
+   * @brief Get last tick enter/exit counts and their sum (churn).
+   * @param ctx Residency context (may be null; outputs become zero).
+   * @param enters Optional; receives last enters.
+   * @param exits Optional; receives last exits.
+   * @param churn Optional; receives enters+exits.
+   */
+  void ZX_CALL zx_residency_get_last_churn(const zx_residency* ctx, uint32_t* enters,
+                                           uint32_t* exits, uint32_t* churn)
   {
     if (ctx == nullptr)
     {
@@ -310,11 +305,8 @@ extern "C"
   }
 
   /**
-   * @brief Returns the number of tiles currently marked active (from the last tick).
-   *
-   * If `ctx` is null, returns 0.
-   *
-   * @return uint32_t Current active tile count.
+   * @brief Current active tile count (from the last tick).
+   * @return Active tile count (0 if ctx is null).
    */
   uint32_t ZX_CALL zx_residency_get_active_count(const zx_residency* ctx)
   {

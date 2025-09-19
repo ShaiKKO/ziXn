@@ -13,9 +13,9 @@ Notes:
 #define ZX_WRITEBACK_H
 
 #include "zx_abi.h"
-#include <stdint.h>
+#include <cstdint>
 
-typedef struct zx_write_target
+typedef struct ZxWriteTarget
 {
   /* Displacement: R32F, width x height, row_pitch in bytes */
   float* disp;
@@ -28,7 +28,7 @@ typedef struct zx_write_target
   uint8_t* debug_mask;   /* R8U */
 } zx_write_target;
 
-typedef struct zx_rect
+typedef struct ZxRect
 {
   int32_t x;
   int32_t y;

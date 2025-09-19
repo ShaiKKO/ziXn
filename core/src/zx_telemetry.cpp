@@ -52,6 +52,20 @@ namespace
   };
 
   using FileHandle = std::unique_ptr<FILE, FileCloser>;
+
+  static inline FILE* zx_fopen_write_binary(const char* path)
+  {
+#if defined(_MSC_VER)
+    FILE* f = nullptr;
+    if (fopen_s(&f, path, "wb") != 0)
+    {
+      return nullptr;
+    }
+    return f;
+#else
+    return std::fopen(path, "wb");
+#endif
+  }
 }  // namespace
 
 extern "C"
@@ -74,7 +88,7 @@ extern "C"
    */
   zx_telemetry* ZX_CALL zx_telemetry_create(uint32_t capacity)
   {
-    auto* t = new zx_telemetry();  // NOLINT(cppcoreguidelines-owning-memory)
+    auto* t                                      = new zx_telemetry();
     static constexpr uint32_t k_default_capacity = 1024U;
     t->capacity                                  = (capacity != 0U) ? capacity : k_default_capacity;
     t->in_step                                   = false;
@@ -91,7 +105,7 @@ extern "C"
    */
   void ZX_CALL zx_telemetry_destroy(zx_telemetry* ctx)
   {
-    delete ctx;  // NOLINT(cppcoreguidelines-owning-memory)
+    delete ctx;
   }
 
   /**
@@ -240,7 +254,7 @@ extern "C"
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    FileHandle f(std::fopen(path, "wb"));
+    FileHandle f(zx_fopen_write_binary(path));
     if (!f)
     {
       return -2;
@@ -294,7 +308,7 @@ extern "C"
       return -1;
     }
     std::lock_guard<std::mutex> lock(ctx->mtx);
-    FileHandle f(std::fopen(path, "wb"));
+    FileHandle f(zx_fopen_write_binary(path));
     if (!f)
     {
       return -2;

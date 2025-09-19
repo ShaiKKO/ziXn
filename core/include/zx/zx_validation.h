@@ -10,7 +10,7 @@
 
 #include "zx_abi.h"
 #include "zx_constitutive_ref.h"
-#include <stdint.h>
+#include <cstdint>
 
 /** \brief Critical angle for onset of sliding on an inclined plane for dry granular MC.
  * For MC with friction φ and negligible cohesion, θ_c ≈ φ. Returns radians.

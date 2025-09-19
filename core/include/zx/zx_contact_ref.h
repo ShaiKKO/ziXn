@@ -1,9 +1,13 @@
-/*!
-\file zx_contact_ref.h
-\brief CPU reference contact projection: non-penetration + Coulomb friction.
-\author Colin Macritchie (Ripple Group, LLC)
-\license Proprietary — Copyright (c) 2025 Colin Macritchie / Ripple Group, LLC.
-*/
+/**
+ * @file zx_contact_ref.h
+ * @brief CPU reference contact projection: non-penetration + Coulomb friction.
+ * @details Declares C-ABI entry points for isotropic and anisotropic tangential contact
+ *          projection with optional compliance. Inputs are plain arrays; outputs written
+ *          in-place; all functions are thread-safe and pure.
+ * @copyright
+ *   (c) 2025 Colin Macritchie / Ripple Group, LLC. All rights reserved.
+ *   Licensed for use within the ziXn project under project terms.
+ */
 
 #ifndef ZX_CONTACT_REF_H
 #define ZX_CONTACT_REF_H

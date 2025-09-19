@@ -2,12 +2,23 @@
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop, master, feature/** ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, develop, master ]
 
 jobs:
+  nolint-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run NOLINT gate
+        shell: pwsh
+        run: ./scripts/nolint-gate.ps1
+
   build:
+    needs: [nolint-gate]
     name: Build and Test
     runs-on: ${{ matrix.os }}
     strategy:
@@ -63,7 +74,7 @@ jobs:
           cmake --build build --config Release --target zx
           files=$(git ls-files 'core/src/*.cpp');
           if [[ -n "$files" ]]; then
-            clang-tidy $files -- -Icore/include
+            clang-tidy -p build $files -- -Icore/include
           fi
 
       - name: Test

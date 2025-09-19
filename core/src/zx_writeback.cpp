@@ -60,9 +60,7 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
     {
       continue;
     }
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    float* dst_row = t->disp + (static_cast<size_t>(y) * static_cast<size_t>(dst_pitch));
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    float* dst_row       = t->disp + (static_cast<size_t>(y) * static_cast<size_t>(dst_pitch));
     const float* src_row = src + (static_cast<size_t>(sy) * static_cast<size_t>(sw));
     int32_t sx0          = cx0 - x0;
     sx0                  = std::max(sx0, 0);
@@ -76,7 +74,7 @@ void zx_writeback_copy_displacement(const float* src, uint32_t sw, uint32_t sh, 
       sx1 = static_cast<int32_t>(sw);
     }
     auto n = static_cast<uint32_t>(sx1 - sx0);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    std::memcpy(&dst_row[cx0], &src_row[sx0], n * sizeof(float));
+    std::memcpy(dst_row + static_cast<size_t>(cx0), src_row + static_cast<size_t>(sx0),
+                static_cast<size_t>(n) * sizeof(float));
   }
 }
