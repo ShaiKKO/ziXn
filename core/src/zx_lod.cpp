@@ -450,6 +450,22 @@ static void init_up2_impl()
   g_up2_impl = up2_scalar;
 }
 
+/**
+ * @brief Downsample a single-channel float image by 2x using SIMD-dispatched implementation.
+ *
+ * Selects an AVX2-accelerated kernel when available (and not overridden), otherwise falls back
+ * to a scalar implementation. Inputs must satisfy dw == sw/2 and dh == sh/2. No-op on invalid
+ * arguments.
+ *
+ * @param src Source pointer (size sw x sh, stride sp in elements).
+ * @param sw Source width in elements.
+ * @param sh Source height in elements.
+ * @param sp Source row stride in elements.
+ * @param dst Destination pointer (size dw x dh, stride dp in elements).
+ * @param dw Destination width in elements (must be sw/2).
+ * @param dh Destination height in elements (must be sh/2).
+ * @param dp Destination row stride in elements.
+ */
 void zx_lod_downsample_2x(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                           uint32_t dw, uint32_t dh, uint32_t dp)
 {
@@ -457,6 +473,22 @@ void zx_lod_downsample_2x(const float* src, uint32_t sw, uint32_t sh, uint32_t s
   g_down2_impl(src, sw, sh, sp, dst, dw, dh, dp);
 }
 
+/**
+ * @brief Upsample a single-channel float image by 2x using SIMD-dispatched implementation.
+ *
+ * Selects an AVX2-accelerated kernel when available (and not overridden), otherwise falls back
+ * to a scalar implementation. Inputs must satisfy dw == sw*2 and dh == sh*2. No-op on invalid
+ * arguments.
+ *
+ * @param src Source pointer (size sw x sh, stride sp in elements).
+ * @param sw Source width in elements.
+ * @param sh Source height in elements.
+ * @param sp Source row stride in elements.
+ * @param dst Destination pointer (size dw x dh, stride dp in elements).
+ * @param dw Destination width in elements (must be sw*2).
+ * @param dh Destination height in elements (must be sh*2).
+ * @param dp Destination row stride in elements.
+ */
 void zx_lod_upsample_2x(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, float* dst,
                         uint32_t dw, uint32_t dh, uint32_t dp)
 {

@@ -29,6 +29,11 @@ static inline float deg2rad(float d)
   return d * k_pi / k_deg;
 }
 
+/**
+ * @brief Map Mohr–Coulomb parameters to Drucker–Prager (triaxial compression fit).
+ * @param mc Input Mohr–Coulomb parameters.
+ * @param out_dp Output Drucker–Prager parameters (alpha, k) populated.
+ */
 void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
 {
   const float phi   = deg2rad(mc->friction_deg);
@@ -40,6 +45,12 @@ void zx_mc_to_dp(const zx_mc_params* mc, zx_dp_params* out_dp)
   out_dp->k     = (k_six * c_pa * std::cos(phi)) / (sqrt3 * (k_three - sinp));
 }
 
+/**
+ * @brief Compute Lamé parameters from Young's modulus and Poisson ratio.
+ * @param ep Elastic parameters.
+ * @param lambda Out: first Lamé parameter.
+ * @param mu Out: shear modulus.
+ */
 void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
 {
   const float young_e = ep->young_E;
@@ -48,6 +59,12 @@ void zx_elastic_lame(const zx_elastic_params* ep, float* lambda, float* mu)
   *lambda             = (young_e * nu) / ((1.0F + nu) * (1.0F - k_two * nu));
 }
 
+/**
+ * @brief Compute the first invariant I1 and the second deviatoric invariant J2.
+ * @param s Symmetric Cauchy stress (9 elements, row-major).
+ * @param i1_out Out: I1 = trace(s).
+ * @param j2_out Out: J2 = 1/2 dev:dev.
+ */
 void zx_stress_invariants(const float s[zx_mat3_size], float* i1_out, float* j2_out)
 {
   // Copy to std::array to avoid pointer arithmetic on C arrays
@@ -71,6 +88,15 @@ void zx_stress_invariants(const float s[zx_mat3_size], float* i1_out, float* j2_
   *j2_out = k_half * dd;
 }
 
+/**
+ * @brief Drucker–Prager (+ optional cap) return map (reference implementation).
+ * @param ep Elastic parameters (reserved for future scaling).
+ * @param dp Drucker–Prager parameters.
+ * @param cap Optional cap parameters; may be null.
+ * @param sigma_trial Trial Cauchy stress (9 elements).
+ * @param sigma_out Out: returned stress on yield surface (9 elements).
+ * @param delta_gamma_out Out: plastic multiplier magnitude (may be null).
+ */
 void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const zx_cap_params* cap,
                       const float sigma_trial[zx_mat3_size], float sigma_out[zx_mat3_size],
                       float* delta_gamma_out)
@@ -206,6 +232,11 @@ void zx_dp_return_map(const zx_elastic_params* ep, const zx_dp_params* dp, const
   }
 }
 
+/**
+ * @brief Approximate eigenvalues of a real symmetric 3x3 matrix using invariants.
+ * @param s Input symmetric matrix (row-major 3x3, 9 elements).
+ * @param eval Out eigenvalues (unordered).
+ */
 static void eig3_sym(const float s[9], float eval[3])
 {
   // Very small symmetric 3x3 eigenvalue approximation: use invariants + Newton for cubic
