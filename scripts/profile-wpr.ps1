@@ -2,7 +2,8 @@ Param(
   [ValidateSet("cpu","heap","both")] [string]$Mode = 'cpu',
   [string]$OutDir = 'traces',
   [string]$Inst = 'zx_profile',
-  [string]$TestCmd = 'ctest --test-dir build-rel -C Release -R dambreak_integration_test -V'
+  [string]$TestCmd = 'build-rel\\zx_cli.exe --mode scene --scene dambreak --telemetry-out traces\\dambreak.json',
+  [string]$WorkingDir = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -27,7 +28,12 @@ function Assert-Admin {
 }
 
 function Start-WprCpu([string]$wpr, [string]$instance) {
-  & $wpr -start CPU -filemode -instancename $instance | Out-Null
+  $p = Start-Process -FilePath $wpr -ArgumentList ('-start','CPU','-filemode','-instancename', $instance) -PassThru -Wait -NoNewWindow
+  if ($p.ExitCode -ne 0) {
+    # Fallback to GeneralProfile if CPU profile fails
+    $p2 = Start-Process -FilePath $wpr -ArgumentList ('-start','GeneralProfile','-filemode','-instancename', $instance) -PassThru -Wait -NoNewWindow
+    if ($p2.ExitCode -ne 0) { throw "Failed to start WPR CPU/GeneralProfile (exit=$($p.ExitCode)/$($p2.ExitCode))" }
+  }
 }
 
 function Start-WprHeap([string]$wpr, [string]$instance) {
@@ -35,14 +41,20 @@ function Start-WprHeap([string]$wpr, [string]$instance) {
 }
 
 function Stop-Wpr([string]$wpr, [string]$outFile) {
-  & $wpr -stop $outFile | Out-Null
+  $p = Start-Process -FilePath $wpr -ArgumentList ('-stop', $outFile) -PassThru -Wait -NoNewWindow
+  if ($p.ExitCode -ne 0) { Write-Warning "WPR stop returned exit code $($p.ExitCode). Output may be missing." }
 }
 
 function Stop-WprRecording([string]$wpr) {
   try { & $wpr -cancel | Out-Null } catch { }
 }
 
-New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
+if ([string]::IsNullOrWhiteSpace($WorkingDir)) {
+  # Default working dir to repo root (script's parent directory)
+  $WorkingDir = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+}
+Push-Location $WorkingDir
+try { New-Item -ItemType Directory -Force -Path $OutDir | Out-Null } catch {}
 $wprPath = Resolve-WprPath
 Assert-Admin
 Stop-WprRecording $wprPath
@@ -58,7 +70,7 @@ try {
   if ($startHeap) { Start-WprHeap -wpr $wprPath -instance "$Inst-heap" }
 
   $psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-Command', $TestCmd)
-  $p = Start-Process -FilePath 'powershell.exe' -ArgumentList $psArgs -PassThru
+  $p = Start-Process -FilePath 'powershell.exe' -ArgumentList $psArgs -WorkingDirectory $WorkingDir -PassThru
   Wait-Process -Id $p.Id
 
   if ($startCpu) { Stop-Wpr -wpr $wprPath -outFile $cpuEtl }
@@ -70,8 +82,13 @@ catch {
 }
 
 Write-Host "Trace(s) written to:"
-if ($startCpu) { Write-Host "  $cpuEtl" }
-if ($startHeap) { Write-Host "  $heapEtl" }
+if ($startCpu) {
+  if (Test-Path $cpuEtl) { Write-Host "  $cpuEtl" } else { Write-Warning "CPU ETL not found at $cpuEtl" }
+}
+if ($startHeap) {
+  if (Test-Path $heapEtl) { Write-Host "  $heapEtl" } else { Write-Warning "Heap ETL not found at $heapEtl" }
+}
 Write-Host "Open ETL files with Windows Performance Analyzer (wpa.exe) for analysis."
 
+Pop-Location
 
