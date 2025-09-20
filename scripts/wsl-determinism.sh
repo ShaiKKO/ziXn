@@ -11,7 +11,12 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${ROOT_DIR}/wsl-build"
-BIN="${BUILD_DIR}/zx_cli"
+# Prefer Windows .exe on Windows runners; else ELF
+if [[ "${OS:-}" == "Windows_NT" ]]; then
+  BIN="${BUILD_DIR}/Release/zx_cli.exe"
+else
+  BIN="${BUILD_DIR}/zx_cli"
+fi
 OUT_A="${BUILD_DIR}/telem_a.json"
 OUT_B="${BUILD_DIR}/telem_b.json"
 SCENE="dambreak"
@@ -28,8 +33,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ! -x "${BIN}" ]]; then
-  echo "zx_cli not found, building..." >&2
-  cmake --build "${BUILD_DIR}" -j
+  echo "zx_cli not found, configuring & building fresh..." >&2
+  rm -rf "${BUILD_DIR}"
+  cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
+  if [[ "${OS:-}" == "Windows_NT" ]]; then
+    cmake --build "${BUILD_DIR}" --config Release -j
+    BIN="${BUILD_DIR}/Release/zx_cli.exe"
+  else
+    cmake --build "${BUILD_DIR}" -j
+    BIN="${BUILD_DIR}/zx_cli"
+  fi
+fi
+
+if [[ ! -x "${BIN}" ]]; then
+  echo "ERROR: zx_cli not found at ${BIN}" >&2
+  exit 1
 fi
 
 "${BIN}" --mode scene --scene "${SCENE}" --deterministic 1 --seed "${SEED}" --fallback "${FALLBACK}" --telemetry-out "${OUT_A}"

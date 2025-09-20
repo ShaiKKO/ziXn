@@ -23,8 +23,8 @@ SIMD and platform notes (Windows-first):
 #ifndef ZX_LOD_H
 #define ZX_LOD_H
 
-#include <stdint.h>
 #include "zx_abi.h"
+#include <cstdint>
 
 /** \brief Downsample a displacement field by 2× using a 2×2 average filter.
  *
@@ -39,9 +39,9 @@ SIMD and platform notes (Windows-first):
  * @param dst_pitch Destination row pitch (elements)
  * @note No-op on invalid preconditions.
  */
-ZX_API void ZX_CALL zx_lod_downsample_2x(
-    const float* src, uint32_t src_w, uint32_t src_h, uint32_t src_pitch,
-    float* dst, uint32_t dst_w, uint32_t dst_h, uint32_t dst_pitch);
+ZX_API void ZX_CALL zx_lod_downsample_2x(const float* src, uint32_t src_w, uint32_t src_h,
+                                         uint32_t src_pitch, float* dst, uint32_t dst_w,
+                                         uint32_t dst_h, uint32_t dst_pitch);
 
 /** \brief Upsample a displacement field by 2× using separable bilinear filter.
  * @param src Source pointer (must not be NULL)
@@ -54,9 +54,9 @@ ZX_API void ZX_CALL zx_lod_downsample_2x(
  * @param dst_pitch Destination row pitch (elements)
  * @note No-op on invalid preconditions.
  */
-ZX_API void ZX_CALL zx_lod_upsample_2x(
-    const float* src, uint32_t src_w, uint32_t src_h, uint32_t src_pitch,
-    float* dst, uint32_t dst_w, uint32_t dst_h, uint32_t dst_pitch);
+ZX_API void ZX_CALL zx_lod_upsample_2x(const float* src, uint32_t src_w, uint32_t src_h,
+                                       uint32_t src_pitch, float* dst, uint32_t dst_w,
+                                       uint32_t dst_h, uint32_t dst_pitch);
 
 /** \brief Check border consistency between two adjacent tiles.
  * Compares edges after downsample to detect cracks.
@@ -67,25 +67,26 @@ ZX_API void ZX_CALL zx_lod_upsample_2x(
  * @param side 0=compare A right to B left; 1=compare A bottom to B top
  * @return Max absolute difference across the compared edge
  */
-ZX_API float ZX_CALL zx_lod_border_consistency_check(
-    const float* A, uint32_t Aw, uint32_t Ah, uint32_t Apitch,
-    const float* B, uint32_t Bw, uint32_t Bh, uint32_t Bpitch,
-    int side);
+ZX_API float ZX_CALL zx_lod_border_consistency_check(const float* A, uint32_t Aw, uint32_t Ah,
+                                                     uint32_t Apitch, const float* B, uint32_t Bw,
+                                                     uint32_t Bh, uint32_t Bpitch, int side);
 
 /* Fallback policy/state for present-LOD under pressure signals */
-typedef struct zx_lod_fallback_policy {
-    uint32_t active_tiles_max;
-    float    step_ms_max;
-    uint32_t enter_frames;
-    uint32_t exit_frames;
-    uint32_t blend_frames;
+typedef struct ZxLodFallbackPolicy
+{
+  uint32_t active_tiles_max;
+  float step_ms_max;
+  uint32_t enter_frames;
+  uint32_t exit_frames;
+  uint32_t blend_frames;
 } zx_lod_fallback_policy;
 
-typedef struct zx_lod_fallback_state {
-    uint32_t active_frames;
-    uint32_t inactive_frames;
-    uint32_t blend_remaining;
-    uint32_t activations;
+typedef struct ZxLodFallbackState
+{
+  uint32_t active_frames;
+  uint32_t inactive_frames;
+  uint32_t blend_remaining;
+  uint32_t activations;
 } zx_lod_fallback_state;
 
 /** \brief Initialize fallback state to defaults. */
@@ -98,21 +99,33 @@ ZX_API void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s);
  * @param s In/out state (must not be NULL)
  * @return 1 if coarse LOD should be used this frame, else 0
  */
-ZX_API int  ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p,
-                                           uint32_t residency_active_tiles,
-                                           float last_step_ms,
-                                           zx_lod_fallback_state* s);
+ZX_API int ZX_CALL zx_lod_fallback_update(const zx_lod_fallback_policy* p,
+                                          uint32_t residency_active_tiles, float last_step_ms,
+                                          zx_lod_fallback_state* s);
 // returns 1 if coarse LOD should be used this frame
 
 /* Global fallback configuration for integration/CLI wiring */
 ZX_API void ZX_CALL zx_lod_set_enabled(int on);
-ZX_API int  ZX_CALL zx_lod_is_enabled(void);
+ZX_API int ZX_CALL zx_lod_is_enabled();
 ZX_API void ZX_CALL zx_lod_set_default_policy(const zx_lod_fallback_policy* p);
 ZX_API void ZX_CALL zx_lod_get_default_policy(zx_lod_fallback_policy* out);
 
 /* SIMD override for LOD kernels: -1 auto, 0 scalar, 2 AVX2 (if supported) */
 ZX_API void ZX_CALL zx_lod_set_simd_override(int mode);
 
+/** \brief Configure store policy for LOD kernels (non-temporal writes).
+ *
+ * Controls whether LOD kernels may use non-temporal (streaming) stores on long,
+ * contiguous row writes to reduce cache pollution on large images.
+ *
+ * Modes:
+ * - -1: auto (enable when rows are wide and pointers are 32B-aligned on AVX2)
+ * -  0: force disabled
+ * -  1: force enabled when safe (alignment and width threshold)
+ */
+ZX_API void ZX_CALL zx_lod_set_store_policy(int mode);
+
+/** \brief Query the current store policy (-1 auto, 0 disabled, 1 enabled). */
+ZX_API int ZX_CALL zx_lod_get_store_policy(void);
+
 #endif /* ZX_LOD_H */
-
-

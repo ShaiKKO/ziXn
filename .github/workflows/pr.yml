@@ -11,6 +11,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Clean build directory
+        shell: bash
+        run: |
+          rm -rf build
+
       - name: Configure
         run: cmake -S . -B build -DZX_ENABLE_TESTS=ON -DZX_BUILD_SHARED=ON
 

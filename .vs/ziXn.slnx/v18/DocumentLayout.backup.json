@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_apic_ref.cpp||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:core\\src\\zx_apic_ref.cpp||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "zx_apic_ref.cpp",
+              "DocumentMoniker": "C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_apic_ref.cpp",
+              "RelativeDocumentMoniker": "core\\src\\zx_apic_ref.cpp",
+              "ToolTip": "C:\\Users\\cisco\\Desktop\\dev\\research\\ziXn\\core\\src\\zx_apic_ref.cpp",
+              "RelativeToolTip": "core\\src\\zx_apic_ref.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-19T19:00:09.788Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,637 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<StackWindow>
+ <StackSource>
+  <Frames Count="10">
+   <Frame ID="0">ROOT</Frame>
+   <Frame ID="1">BROKEN</Frame>
+   <Frame ID="2">?!?</Frame>
+   <Frame ID="3">OVERHEAD</Frame>
+   <Frame ID="4">Processor (1) Priority (9)</Frame>
+   <Frame ID="5">c:\windows\system32\ntoskrnl!?</Frame>
+   <Frame ID="6">c:\windows\system32\drivers\bam.sys!?</Frame>
+   <Frame ID="7">BROKEN</Frame>
+   <Frame ID="8">Thread (6248) CPU=1ms</Frame>
+   <Frame ID="9">Process64 zx_cli (27332) Args:  --mode bench --bench-up2 --size 2048 --iters 200</Frame>
+  </Frames>
+  <Stacks Count="21">
+   <Stack ID="0" CallerID="-1" FrameID="9" />
+   <Stack ID="1" CallerID="0" FrameID="8" />
+   <Stack ID="2" CallerID="1" FrameID="7" />
+   <Stack ID="3" CallerID="2" FrameID="5" />
+   <Stack ID="4" CallerID="3" FrameID="5" />
+   <Stack ID="5" CallerID="4" FrameID="5" />
+   <Stack ID="6" CallerID="5" FrameID="5" />
+   <Stack ID="7" CallerID="6" FrameID="5" />
+   <Stack ID="8" CallerID="7" FrameID="5" />
+   <Stack ID="9" CallerID="8" FrameID="5" />
+   <Stack ID="10" CallerID="9" FrameID="5" />
+   <Stack ID="11" CallerID="10" FrameID="6" />
+   <Stack ID="12" CallerID="11" FrameID="6" />
+   <Stack ID="13" CallerID="12" FrameID="6" />
+   <Stack ID="14" CallerID="13" FrameID="5" />
+   <Stack ID="15" CallerID="14" FrameID="5" />
+   <Stack ID="16" CallerID="15" FrameID="5" />
+   <Stack ID="17" CallerID="16" FrameID="5" />
+   <Stack ID="18" CallerID="17" FrameID="5" />
+   <Stack ID="19" CallerID="18" FrameID="5" />
+   <Stack ID="20" CallerID="19" FrameID="4" />
+  </Stacks>
+  <Samples Count="1">
+   <Sample ID="0" Time="13626.279" StackID="20" />
+  </Samples>
+ </StackSource>
+ <StackWindowGuiState>
+  <FilterGuiState>
+   <Start>
+    <Value>0</Value>
+   </Start>
+   <End>
+    <Value>14,017.588</Value>
+   </End>
+   <Scenarios />
+   <GroupRegEx>
+    <Value>[group module entries]  {%}!=&gt;module $1</Value>
+    <History>
+     <string>Processor ({%}) Priority ({%})-&gt;Processor ($1)</string>
+     <string>Processor ({%}) Priority ({%})-&gt;Priority ($2)</string>
+     <string>[no grouping]</string>
+     <string>[group CLR/OS entries] \Temporary ASP.NET Files\-&gt;;v4.0.30319\%!=&gt;CLR;v2.0.50727\%!=&gt;CLR;mscoree=&gt;CLR;\mscorlib.*!=&gt;LIB;\System.Xaml.*!=&gt;WPF;\System.*!=&gt;LIB;Presentation%=&gt;WPF;WindowsBase%=&gt;WPF;system32\*!=&gt;OS;syswow64\*!=&gt;OS;{%}!=&gt; module $1</string>
+     <string>[group modules]           {%}!-&gt;module $1</string>
+     <string>[group module entries]  {%}!=&gt;module $1</string>
+     <string>[group full path module entries]  {*}!=&gt;module $1</string>
+     <string>[group class entries]     {%!*}.%(=&gt;class $1;{%!*}::=&gt;class $1</string>
+     <string>[group classes]            {%!*}.%(-&gt;class $1;{%!*}::-&gt;class $1</string>
+     <string>[fold threads]            Thread -&gt; AllThreads</string>
+    </History>
+   </GroupRegEx>
+   <FoldPercent />
+   <FoldRegEx>
+    <Value>ntoskrnl!%ServiceCopyEnd</Value>
+    <History>
+     <string>ntoskrnl!%ServiceCopyEnd</string>
+    </History>
+   </FoldRegEx>
+   <IncludeRegEx>
+    <Value>Process% zx_cli (27332)</Value>
+   </IncludeRegEx>
+   <ExcludeRegEx />
+   <TypePriority />
+  </FilterGuiState>
+  <Notes>Notes typed here will be saved when the view is saved. F2 will hide/unhide.</Notes>
+  <Log>***** See C:\Users\cisco\AppData\Local\Temp\perfview\PerfViewLogFile.1.txt for complete log. ******
+........................ 10.0 Meg
+............................................................. 11.0 Meg
+............................................................. 12.0 Meg
+........
+CopyStreamToFile: Copy Done, moving to C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernelbase.pdb\7F3CD2A8BD9275ED7056780D62154F2C1\kernelbase.pdb.new
+FindSymbolFilePath: *} Successfully found PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernelbase.pdb\7F3CD2A8BD9275ED7056780D62154F2C1\kernelbase.pdb GUID 7f3cd2a8-bd92-75ed-7056-780d62154f2c Age 1 Version 10.0.26100.6584
+Opening PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernelbase.pdb\7F3CD2A8BD9275ED7056780D62154F2C1\kernelbase.pdb with signature GUID 7f3cd2a8-bd92-75ed-7056-780d62154f2c Age 1
+Opened Pdb file C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernelbase.pdb\7F3CD2A8BD9275ED7056780D62154F2C1\kernelbase.pdb
+Loaded, resolving symbols
+    Addresses to look up       1533
+        Found Symbols          1533
+        Distinct Found Symbols 310
+        Unmatched Symbols 0
+[Loading symbols for c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\coreclr.dll]
+No R2R perfmap signature for c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\coreclr.dll in trace.
+FindSymbolFilePath: *{ Locating PDB D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb GUID 1ada2937-cb32-4136-9b04-3c6a92aaa512 Age 1 Version 9,0,325,11113 @Commit: 831d23e56149cd59c40fc00c7feb7c5334bd19c4
+FindSymbolFilePath: Pdb is for DLL c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\coreclr.dll
+FindSymbolFilePath: Checking relative to DLL path c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\coreclr.dll
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\symbols.pri\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.copilot_1.25091.124.0_x64__8wekyb3d8bbwe\symbols\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\AppData\Local\Temp\perfview\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location coreclr.pdb does not exist
+FindSymbolFilePath: Searching Symbol Server https://msdl.microsoft.com/download/symbols.
+FindSymbolFilePath: In task, sending HTTP request https://msdl.microsoft.com/download/symbols/coreclr.pdb/1ADA2937CB3241369B043C6A92AAA5121/coreclr.pdb
+CopyStreamToFile: Copying https://msdl.microsoft.com/download/symbols/coreclr.pdb/1ADA2937CB3241369B043C6A92AAA5121/coreclr.pdb to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb.new.new
+.............................................................. 1.0 Meg
+............................................................. 2.0 Meg
+............................................................. 3.0 Meg
+............................................................. 4.0 Meg
+............
+FindSymbolFilePath: Waiting for initial connection to https://msdl.microsoft.com/download/symbols/coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb.
+.................................................. 5.0 Meg
+............................................................. 6.0 Meg
+............................................................. 7.0 Meg
+............................................................. 8.0 Meg
+............................................................. 9.0 Meg
+............................................................. 10.0 Meg
+............................................................. 11.0 Meg
+............................................................. 12.0 Meg
+............................................................. 13.0 Meg
+............................................................. 14.0 Meg
+............................................................. 15.0 Meg
+............................................................. 16.0 Meg
+............................................................. 17.0 Meg
+............................................................. 18.0 Meg
+............................................................. 19.0 Meg
+............................................................. 20.0 Meg
+............................................................. 21.0 Meg
+............................................................. 22.0 Meg
+............................................................. 23.0 Meg
+............................................................. 24.0 Meg
+............................................................. 25.0 Meg
+............................................................. 26.0 Meg
+............................................................. 27.0 Meg
+............................................................. 28.0 Meg
+.............................................................. 29.0 Meg
+............................................................. 30.0 Meg
+............................................................. 31.0 Meg
+............................................................. 32.0 Meg
+............................................................. 33.0 Meg
+............................................................. 34.0 Meg
+............................................................. 35.0 Meg
+............................................................. 36.0 Meg
+............................................................. 37.0 Meg
+............................................................. 38.0 Meg
+............................................................. 39.0 Meg
+............................................................. 40.0 Meg
+............................................................. 41.0 Meg
+............................................................. 42.0 Meg
+............................................................. 43.0 Meg
+............................................................. 44.0 Meg
+............................................................. 45.0 Meg
+............................................................. 46.0 Meg
+............................................................. 47.0 Meg
+............................................................
+CopyStreamToFile: Copy Done, moving to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb.new
+FindSymbolFilePath: *} Successfully found PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb GUID 1ada2937-cb32-4136-9b04-3c6a92aaa512 Age 1 Version 9,0,325,11113 @Commit: 831d23e56149cd59c40fc00c7feb7c5334bd19c4
+Opening PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb with signature GUID 1ada2937-cb32-4136-9b04-3c6a92aaa512 Age 1
+Opened Pdb file C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\1ADA2937CB3241369B043C6A92AAA5121\coreclr.pdb
+Loaded, resolving symbols
+Warning: NOT IN RANGE: address 0x18138e start 1347dc end 13491a Offset 4cbb2 Len 13e, symbol WKS::gc_heap::try_allocate_more_space, prefixing with ??.
+Warning: NOT IN RANGE: address 0x196d4b start 4ef68 end 4f177 Offset 147de3 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x196d5c start 4ef68 end 4f177 Offset 147df4 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x196d7e start 4ef68 end 4f177 Offset 147e16 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1a23d3 start 706f8 end 70b3a Offset 131cdb Len 442, symbol WKS::gc_heap::adjust_limit_clr, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1a6b53 start 7f820 end 801b4 Offset 127333 Len 994, symbol CEEJitInfo::allocMem, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1baeac start ba88c end ba9c6 Offset 100620 Len 13a, symbol GCInterface::AddMemoryPressure, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1bdc1b start bf3a8 end bf445 Offset fe873 Len 9d, symbol FireEtwThreadCreated, prefixing with ??.
+    Addresses to look up       89
+        Found Symbols          89
+        Distinct Found Symbols 83
+        Unmatched Symbols 0
+[Loading symbols for c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\coreclr.dll]
+No R2R perfmap signature for c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\coreclr.dll in trace.
+FindSymbolFilePath: *{ Locating PDB D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb GUID 75099299-d3d9-48a6-8b59-4fc4439dfa52 Age 1 Version 9,0,925,41916 @Commit: 893c2ebbd49952ca49e93298148af2d95a61a0a4
+FindSymbolFilePath: Pdb is for DLL c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\coreclr.dll
+FindSymbolFilePath: Checking relative to DLL path c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\coreclr.dll
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\symbols.pri\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoftwindows.crossdevice_1.25082.70.0_x64__cw5n1h2txyewy\symbols\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\AppData\Local\Temp\perfview\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location coreclr.pdb does not exist
+FindSymbolFilePath: Searching Symbol Server https://msdl.microsoft.com/download/symbols.
+FindSymbolFilePath: In task, sending HTTP request https://msdl.microsoft.com/download/symbols/coreclr.pdb/75099299D3D948A68B594FC4439DFA521/coreclr.pdb
+CopyStreamToFile: Copying https://msdl.microsoft.com/download/symbols/coreclr.pdb/75099299D3D948A68B594FC4439DFA521/coreclr.pdb to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb.new.new
+.............................................................. 1.0 Meg
+...........................................................
+FindSymbolFilePath: Waiting for initial connection to https://msdl.microsoft.com/download/symbols/coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb.
+.. 2.0 Meg
+............................................................. 3.0 Meg
+............................................................. 4.0 Meg
+.............................................................. 5.0 Meg
+............................................................. 6.0 Meg
+............................................................. 7.0 Meg
+............................................................. 8.0 Meg
+............................................................. 9.0 Meg
+............................................................. 10.0 Meg
+............................................................. 11.0 Meg
+............................................................. 12.0 Meg
+............................................................. 13.0 Meg
+............................................................. 14.0 Meg
+............................................................. 15.0 Meg
+............................................................. 16.0 Meg
+............................................................. 17.0 Meg
+............................................................. 18.0 Meg
+............................................................. 19.0 Meg
+............................................................. 20.0 Meg
+............................................................. 21.0 Meg
+............................................................. 22.0 Meg
+............................................................. 23.0 Meg
+............................................................. 24.0 Meg
+............................................................. 25.0 Meg
+............................................................. 26.0 Meg
+............................................................. 27.0 Meg
+............................................................. 28.0 Meg
+.............................................................. 29.0 Meg
+............................................................. 30.0 Meg
+............................................................. 31.0 Meg
+............................................................. 32.0 Meg
+............................................................. 33.0 Meg
+............................................................. 34.0 Meg
+............................................................. 35.0 Meg
+............................................................. 36.0 Meg
+............................................................. 37.0 Meg
+............................................................. 38.0 Meg
+............................................................. 39.0 Meg
+............................................................. 40.0 Meg
+............................................................. 41.0 Meg
+............................................................. 42.0 Meg
+............................................................. 43.0 Meg
+............................................................. 44.0 Meg
+............................................................. 45.0 Meg
+............................................................. 46.0 Meg
+............................................................. 47.0 Meg
+..........................................
+CopyStreamToFile: Copy Done, moving to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb.new
+FindSymbolFilePath: *} Successfully found PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb GUID 75099299-d3d9-48a6-8b59-4fc4439dfa52 Age 1 Version 9,0,925,41916 @Commit: 893c2ebbd49952ca49e93298148af2d95a61a0a4
+Opening PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb with signature GUID 75099299-d3d9-48a6-8b59-4fc4439dfa52 Age 1
+Opened Pdb file C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\75099299D3D948A68B594FC4439DFA521\coreclr.pdb
+Loaded, resolving symbols
+Warning: NOT IN RANGE: address 0x186220 start 134538 end 134678 Offset 51ce8 Len 140, symbol WKS::gc_heap::try_allocate_more_space, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1ae041 start 87730 end 880b4 Offset 126911 Len 984, symbol CEEJitInfo::allocMem, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1b282f start 946b8 end 948c7 Offset 11e177 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1b2840 start 946b8 end 948c7 Offset 11e188 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1b2862 start 946b8 end 948c7 Offset 11e1aa Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1bffa8 start b90c0 end b950e Offset 106ee8 Len 44e, symbol WKS::gc_heap::adjust_limit_clr, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1cd74d start ec8c4 end ec961 Offset e0e89 Len 9d, symbol FireEtwThreadCreated, prefixing with ??.
+    Addresses to look up       72
+        Found Symbols          72
+        Distinct Found Symbols 65
+        Unmatched Symbols 0
+[Loading symbols for c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\coreclr.dll]
+No R2R perfmap signature for c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\coreclr.dll in trace.
+FindSymbolFilePath: *{ Locating PDB D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb GUID 7009ea9c-8a6b-4f7d-b145-15ee3cc3c1e7 Age 1 Version 9,0,825,36511 @Commit: aae90fa09086a9be09dac83fa66542232c7269d8
+FindSymbolFilePath: Pdb is for DLL c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\coreclr.dll
+FindSymbolFilePath: Checking relative to DLL path c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\coreclr.dll
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\symbols.pri\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location c:\program files\windowsapps\microsoft.yourphone_1.25081.83.0_x64__8wekyb3d8bbwe\symbols\retail\dll\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location D:\a\_work\1\s\artifacts\obj\coreclr\windows.x64.Release\dlls\mscoree\coreclr\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\AppData\Local\Temp\perfview\coreclr.pdb does not exist
+FindSymbolFilePath: Probed file location coreclr.pdb does not exist
+FindSymbolFilePath: Searching Symbol Server https://msdl.microsoft.com/download/symbols.
+FindSymbolFilePath: In task, sending HTTP request https://msdl.microsoft.com/download/symbols/coreclr.pdb/7009EA9C8A6B4F7DB14515EE3CC3C1E71/coreclr.pdb
+CopyStreamToFile: Copying https://msdl.microsoft.com/download/symbols/coreclr.pdb/7009EA9C8A6B4F7DB14515EE3CC3C1E71/coreclr.pdb to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb.new.new
+.............................................................. 1.0 Meg
+............................................................. 2.0 Meg
+............................................................. 3.0 Meg
+............................................................. 4.0 Meg
+............
+FindSymbolFilePath: Waiting for initial connection to https://msdl.microsoft.com/download/symbols/coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb.
+.................................................. 5.0 Meg
+............................................................. 6.0 Meg
+............................................................. 7.0 Meg
+............................................................. 8.0 Meg
+............................................................. 9.0 Meg
+............................................................. 10.0 Meg
+............................................................. 11.0 Meg
+............................................................. 12.0 Meg
+............................................................. 13.0 Meg
+............................................................. 14.0 Meg
+............................................................. 15.0 Meg
+............................................................. 16.0 Meg
+............................................................. 17.0 Meg
+............................................................. 18.0 Meg
+............................................................. 19.0 Meg
+............................................................. 20.0 Meg
+............................................................. 21.0 Meg
+............................................................. 22.0 Meg
+............................................................. 23.0 Meg
+............................................................. 24.0 Meg
+............................................................. 25.0 Meg
+............................................................. 26.0 Meg
+............................................................. 27.0 Meg
+............................................................. 28.0 Meg
+.............................................................. 29.0 Meg
+............................................................. 30.0 Meg
+............................................................. 31.0 Meg
+............................................................. 32.0 Meg
+............................................................. 33.0 Meg
+............................................................. 34.0 Meg
+............................................................. 35.0 Meg
+............................................................. 36.0 Meg
+............................................................. 37.0 Meg
+............................................................. 38.0 Meg
+............................................................. 39.0 Meg
+............................................................. 40.0 Meg
+............................................................. 41.0 Meg
+............................................................. 42.0 Meg
+............................................................. 43.0 Meg
+............................................................. 44.0 Meg
+............................................................. 45.0 Meg
+............................................................. 46.0 Meg
+............................................................. 47.0 Meg
+..........................................................
+CopyStreamToFile: Copy Done, moving to C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb.new
+FindSymbolFilePath: *} Successfully found PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb GUID 7009ea9c-8a6b-4f7d-b145-15ee3cc3c1e7 Age 1 Version 9,0,825,36511 @Commit: aae90fa09086a9be09dac83fa66542232c7269d8
+Opening PDB C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb with signature GUID 7009ea9c-8a6b-4f7d-b145-15ee3cc3c1e7 Age 1
+Opened Pdb file C:\Users\cisco\AppData\Local\Temp\SymbolCache\coreclr.pdb\7009EA9C8A6B4F7DB14515EE3CC3C1E71\coreclr.pdb
+Loaded, resolving symbols
+Warning: NOT IN RANGE: address 0x1ab46b start 7976c end 7997b Offset 131cff Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1ab47c start 7976c end 7997b Offset 131d10 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1ab49e start 7976c end 7997b Offset 131d32 Len 20f, symbol MethodDesc::JitCompileCodeLockedEventWrapper, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1bed3b start b5ec0 end b6854 Offset 108e7b Len 994, symbol CEEJitInfo::allocMem, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1d315b start 10b504 end 10b5a1 Offset c7c57 Len 9d, symbol FireEtwThreadCreated, prefixing with ??.
+Warning: NOT IN RANGE: address 0x1d6f6b start 118fe4 end 1190f0 Offset bdf87 Len 10c, symbol FinalizerThread::FinalizeAllObjects, prefixing with ??.
+    Addresses to look up       73
+        Found Symbols          73
+        Distinct Found Symbols 62
+        Unmatched Symbols 0
+Completed: Opening Automated Trace Analysis   (Elapsed Time: 17.260 sec)
+Started: Opening Anti-Malware Real-Time Scan Stacks
+[Computing the processes involved in the trace.]
+Completed: Opening Anti-Malware Real-Time Scan Stacks   (Elapsed Time: 0.059 sec)
+Started: Looking up high importance PDBs that are locally cached
+Restricting to process zx_cli (27332)
+Total CPU = 13121 samples
+Pdb threshold = 5.00% = 656 code address instances
+Addr Count = 78648 &amp;gt;= 656, adding: c:\windows\system32\kernelbase.dll
+Addr Count = 4827 &amp;gt;= 656, adding: c:\windows\system32\ucrtbase.dll
+Addr Count = 199463 &amp;gt;= 656, adding: c:\windows\system32\kernel32.dll
+Addr Count = 462210 &amp;gt;= 656, adding: c:\windows\system32\ntdll.dll
+Symbol reader _NT_SYMBOL_PATH= {
+    C:\Users\cisco\Desktop\dev\research\ziXn\traces;
+    SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache;
+    }
+This can be set using the File -&amp;gt; Set Symbol Path dialog on the Stack Viewer.
+Creating authentication handler for DeveloperIdentity, GitHubDeviceFlow, BasicHttpAuth.
+Created SymbolReader with SymbolPath C:\Users\cisco\Desktop\dev\research\ziXn\traces;SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache
+Setting SymbolReaderOptions forces clearing Pdb lookup cache
+[Quick lookup of kernelbase]
+No code addresses are in kernelbase that have not already been looked up.
+[Quick lookup of ucrtbase]
+[Loading symbols for c:\windows\system32\ucrtbase.dll]
+No R2R perfmap signature for c:\windows\system32\ucrtbase.dll in trace.
+FindSymbolFilePath: *{ Locating PDB ucrtbase.pdb GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ucrtbase.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\ucrtbase.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\msfz0\ucrtbase.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\ucrtbase.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\msfz0\ucrtbase.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ucrtbase.pdb in local cache GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ucrtbase.dll.
+FindSymbolFilePath: *{ Locating PDB ucrtbase.pdb GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ucrtbase.pdb b4499d96-bdb5-1ee1-d933-4c5a5b045a91 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ucrtbase.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ucrtbase.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\ucrtbase.dll
+Could not find PDB file.
+[Quick lookup of kernel32]
+[Loading symbols for c:\windows\system32\kernel32.dll]
+No R2R perfmap signature for c:\windows\system32\kernel32.dll in trace.
+FindSymbolFilePath: *{ Locating PDB kernel32.pdb GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\kernel32.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\kernel32.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\kernel32.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\kernel32.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\msfz0\kernel32.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\kernel32.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\msfz0\kernel32.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB kernel32.pdb in local cache GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\kernel32.dll.
+FindSymbolFilePath: *{ Locating PDB kernel32.pdb GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\kernel32.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for kernel32.pdb fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\kernel32.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\kernel32.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\kernel32.dll
+Could not find PDB file.
+[Quick lookup of ntdll]
+[Loading symbols for c:\windows\system32\ntdll.dll]
+No R2R perfmap signature for c:\windows\system32\ntdll.dll in trace.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ntdll.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ntdll.pdb in local cache GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ntdll.dll.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ntdll.pdb 21eb609f-5cd4-2f73-8b9a-d508893634bd 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ntdll.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ntdll.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\ntdll.dll
+Could not find PDB file.
+Completed: Looking up high importance PDBs that are locally cached   (Elapsed Time: 0.045 sec)
+Could not determine EXE path, could not add &amp;apos;Just my app&amp;apos; group
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.015 sec)
+Opening Viewer.
+Started: Opening Image Load Stacks
+Produced 0.308K events
+[Computing the processes involved in the trace.]
+Completed: Opening Image Load Stacks   (Elapsed Time: 0.048 sec)
+Started: Opening Thread Time (with ReadyThread) Stacks
+[Computing the processes involved in the trace.]
+Completed: Opening Thread Time (with ReadyThread) Stacks   (Elapsed Time: 0.006 sec)
+Started: Looking up high importance PDBs that are locally cached
+Total CPU = 7885293 samples
+Pdb threshold = 5.00% = 394264 code address instances
+Addr Count = 462210 &amp;gt;= 394264, adding: c:\windows\system32\ntdll.dll
+Addr Count = 2879170 &amp;gt;= 394264, adding: c:\windows\system32\ntoskrnl.exe
+Addr Count = 1018730 &amp;gt;= 394264, adding: c:\users\cisco\appdata\local\programs\cursor\cursor.exe
+Symbol reader _NT_SYMBOL_PATH= {
+    C:\Users\cisco\Desktop\dev\research\ziXn\traces;
+    SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache;
+    }
+This can be set using the File -&amp;gt; Set Symbol Path dialog on the Stack Viewer.
+Creating authentication handler for DeveloperIdentity, GitHubDeviceFlow, BasicHttpAuth.
+Created SymbolReader with SymbolPath C:\Users\cisco\Desktop\dev\research\ziXn\traces;SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache
+Setting SymbolReaderOptions forces clearing Pdb lookup cache
+[Quick lookup of ntdll]
+[Loading symbols for c:\windows\system32\ntdll.dll]
+No R2R perfmap signature for c:\windows\system32\ntdll.dll in trace.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ntdll.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ntdll.pdb in local cache GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ntdll.dll.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ntdll.pdb 21eb609f-5cd4-2f73-8b9a-d508893634bd 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ntdll.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ntdll.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\ntdll.dll
+Could not find PDB file.
+[Quick lookup of ntoskrnl]
+[Loading symbols for c:\windows\system32\ntoskrnl.exe]
+No R2R perfmap signature for c:\windows\system32\ntoskrnl.exe in trace.
+FindSymbolFilePath: *{ Locating PDB ntkrnlmp.pdb GUID e6426a07-c26e-66f8-eb85-94621a7b273b Age 1 Version 10.0.26100.6584
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntoskrnl.exe
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ntoskrnl.exe
+FindSymbolFilePath: Probed file location c:\windows\system32\ntkrnlmp.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ntkrnlmp.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ntkrnlmp.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ntkrnlmp.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntkrnlmp.pdb\E6426A07C26E66F8EB8594621A7B273B1\ntkrnlmp.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntkrnlmp.pdb\E6426A07C26E66F8EB8594621A7B273B1\msfz0\ntkrnlmp.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntkrnlmp.pdb\E6426A07C26E66F8EB8594621A7B273B1\ntkrnlmp.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntkrnlmp.pdb\E6426A07C26E66F8EB8594621A7B273B1\msfz0\ntkrnlmp.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ntkrnlmp.pdb in local cache GUID e6426a07-c26e-66f8-eb85-94621a7b273b Age 1 Version 10.0.26100.6584
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ntoskrnl.exe.
+FindSymbolFilePath: *{ Locating PDB ntkrnlmp.pdb GUID e6426a07-c26e-66f8-eb85-94621a7b273b Age 1 Version 10.0.26100.6584 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntoskrnl.exe
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ntkrnlmp.pdb e6426a07-c26e-66f8-eb85-94621a7b273b 1 10.0.26100.6584 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ntoskrnl.exe to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ntoskrnl.exe to a volume-based path.
+Failed to find PDB for c:\windows\system32\ntoskrnl.exe
+Could not find PDB file.
+[Quick lookup of cursor]
+[Loading symbols for c:\users\cisco\appdata\local\programs\cursor\cursor.exe]
+No R2R perfmap signature for c:\users\cisco\appdata\local\programs\cursor\cursor.exe in trace.
+FindSymbolFilePath: *{ Locating PDB electron.exe.pdb GUID ec4f371a-f36c-a3ce-4c4c-44205044422e Age 1 Version 1.6.27
+FindSymbolFilePath: Pdb is for DLL c:\users\cisco\appdata\local\programs\cursor\cursor.exe
+FindSymbolFilePath: Checking relative to DLL path c:\users\cisco\appdata\local\programs\cursor\cursor.exe
+FindSymbolFilePath: Probed file location c:\users\cisco\appdata\local\programs\cursor\electron.exe.pdb does not exist
+FindSymbolFilePath: Probed file location c:\users\cisco\appdata\local\programs\cursor\symbols.pri\retail\dll\electron.exe.pdb does not exist
+FindSymbolFilePath: Probed file location c:\users\cisco\appdata\local\programs\cursor\symbols\retail\dll\electron.exe.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\electron.exe.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\electron.exe.pdb\EC4F371AF36CA3CE4C4C44205044422E1\electron.exe.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\electron.exe.pdb\EC4F371AF36CA3CE4C4C44205044422E1\msfz0\electron.exe.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\electron.exe.pdb\EC4F371AF36CA3CE4C4C44205044422E1\electron.exe.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\electron.exe.pdb\EC4F371AF36CA3CE4C4C44205044422E1\msfz0\electron.exe.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB electron.exe.pdb in local cache GUID ec4f371a-f36c-a3ce-4c4c-44205044422e Age 1 Version 1.6.27
+The local file c:\users\cisco\appdata\local\programs\cursor\cursor.exe has a mismatched checksum found 190904180 != expected 190886934
+Attempting to convert c:\users\cisco\appdata\local\programs\cursor\cursor.exe to a volume-based path in case the file inside of a container.
+Unable to convert c:\users\cisco\appdata\local\programs\cursor\cursor.exe to a volume-based path.
+Failed to find PDB for c:\users\cisco\appdata\local\programs\cursor\cursor.exe
+Could not find PDB file.
+Completed: Looking up high importance PDBs that are locally cached   (Elapsed Time: 0.009 sec)
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 1.530 sec)
+Opening Viewer.
+Started: Opening Thread Time (with ReadyThread) Stacks
+[Computing the processes involved in the trace.]
+Completed: Opening Thread Time (with ReadyThread) Stacks   (Elapsed Time: 0.006 sec)
+Started: Looking up high importance PDBs that are locally cached
+Restricting to process zx_cli (27332)
+Total CPU = 13121 samples
+Pdb threshold = 5.00% = 656 code address instances
+Addr Count = 78648 &amp;gt;= 656, adding: c:\windows\system32\kernelbase.dll
+Addr Count = 4827 &amp;gt;= 656, adding: c:\windows\system32\ucrtbase.dll
+Addr Count = 199463 &amp;gt;= 656, adding: c:\windows\system32\kernel32.dll
+Addr Count = 462210 &amp;gt;= 656, adding: c:\windows\system32\ntdll.dll
+Symbol reader _NT_SYMBOL_PATH= {
+    C:\Users\cisco\Desktop\dev\research\ziXn\traces;
+    SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache;
+    }
+This can be set using the File -&amp;gt; Set Symbol Path dialog on the Stack Viewer.
+Creating authentication handler for DeveloperIdentity, GitHubDeviceFlow, BasicHttpAuth.
+Created SymbolReader with SymbolPath C:\Users\cisco\Desktop\dev\research\ziXn\traces;SRV*C:\Users\cisco\AppData\Local\Temp\SymbolCache
+Setting SymbolReaderOptions forces clearing Pdb lookup cache
+[Quick lookup of kernelbase]
+No code addresses are in kernelbase that have not already been looked up.
+[Quick lookup of ucrtbase]
+[Loading symbols for c:\windows\system32\ucrtbase.dll]
+No R2R perfmap signature for c:\windows\system32\ucrtbase.dll in trace.
+FindSymbolFilePath: *{ Locating PDB ucrtbase.pdb GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ucrtbase.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ucrtbase.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\ucrtbase.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\msfz0\ucrtbase.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\ucrtbase.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ucrtbase.pdb\B4499D96BDB51EE1D9334C5A5B045A911\msfz0\ucrtbase.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ucrtbase.pdb in local cache GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ucrtbase.dll.
+FindSymbolFilePath: *{ Locating PDB ucrtbase.pdb GUID b4499d96-bdb5-1ee1-d933-4c5a5b045a91 Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ucrtbase.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ucrtbase.pdb b4499d96-bdb5-1ee1-d933-4c5a5b045a91 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ucrtbase.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ucrtbase.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\ucrtbase.dll
+Could not find PDB file.
+[Quick lookup of kernel32]
+[Loading symbols for c:\windows\system32\kernel32.dll]
+No R2R perfmap signature for c:\windows\system32\kernel32.dll in trace.
+FindSymbolFilePath: *{ Locating PDB kernel32.pdb GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\kernel32.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\kernel32.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\kernel32.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\kernel32.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\kernel32.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\msfz0\kernel32.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\kernel32.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\kernel32.pdb\FD47EC7B00D61787D0CD6D4EC3590C511\msfz0\kernel32.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB kernel32.pdb in local cache GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\kernel32.dll.
+FindSymbolFilePath: *{ Locating PDB kernel32.pdb GUID fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\kernel32.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for kernel32.pdb fd47ec7b-00d6-1787-d0cd-6d4ec3590c51 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\kernel32.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\kernel32.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\kernel32.dll
+Could not find PDB file.
+[Quick lookup of ntdll]
+[Loading symbols for c:\windows\system32\ntdll.dll]
+No R2R perfmap signature for c:\windows\system32\ntdll.dll in trace.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Checking relative to DLL path c:\windows\system32\ntdll.dll
+FindSymbolFilePath: Probed file location c:\windows\system32\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols.pri\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location c:\windows\system32\symbols\retail\dll\ntdll.pdb does not exist
+FindSymbolFilePath: Probed file location C:\Users\cisco\Desktop\dev\research\ziXn\traces\ntdll.pdb does not exist
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: no file at cache location C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\ntdll.pdb or C:\Users\cisco\AppData\Local\Temp\SymbolCache\ntdll.pdb\21EB609F5CD42F738B9AD508893634BD1\msfz0\ntdll.pdb and cacheOnly set, giving up.
+FindSymbolFilePath: *} Failed to find PDB ntdll.pdb in local cache GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074
+FindSymbolFilePathForModule: searching for PDB for DLL c:\windows\system32\ntdll.dll.
+FindSymbolFilePath: *{ Locating PDB ntdll.pdb GUID 21eb609f-5cd4-2f73-8b9a-d508893634bd Age 1 Version 10.0.26100.5074 (WinBuild.160101.0800)
+FindSymbolFilePath: Pdb is for DLL c:\windows\system32\ntdll.dll
+FindSymbolFilePath: } Hit Cache, returning NULL
+FindSymbolFilePathForModule returns NULL for ntdll.pdb 21eb609f-5cd4-2f73-8b9a-d508893634bd 1 10.0.26100.5074 (WinBuild.160101.0800)
+Attempting to convert c:\windows\system32\ntdll.dll to a volume-based path in case the file inside of a container.
+Unable to convert c:\windows\system32\ntdll.dll to a volume-based path.
+Failed to find PDB for c:\windows\system32\ntdll.dll
+Could not find PDB file.
+Completed: Looking up high importance PDBs that are locally cached   (Elapsed Time: 0.010 sec)
+Could not determine EXE path, could not add &amp;apos;Just my app&amp;apos; group
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.207 sec)
+Opening Viewer.
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.227 sec)
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.237 sec)
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.228 sec)
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.227 sec)
+Started: Computing Stack Traces
+Completed: Computing Stack Traces   (Elapsed Time: 0.217 sec)
+</Log>
+  <Columns>
+   <string>NameColumn</string>
+   <string>ExcPercentColumn</string>
+   <string>ExcColumn</string>
+   <string>ExcCountColumn</string>
+   <string>IncPercentColumn</string>
+   <string>IncColumn</string>
+   <string>IncCountColumn</string>
+   <string>FoldColumn</string>
+   <string>FoldCountColumn</string>
+   <string>WhenColumn</string>
+   <string>FirstColumn</string>
+   <string>LastColumn</string>
+  </Columns>
+  <NotesPaneHidden>False</NotesPaneHidden>
+  <ScalingPolicy>ScaleToData</ScalingPolicy>
+  <TabSelected>CallTreeTab</TabSelected>
+  <FocusName>ROOT</FocusName>
+ </StackWindowGuiState>
+</StackWindow>

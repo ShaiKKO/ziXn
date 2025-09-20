@@ -1,0 +1,83 @@
+Ripple Group, LLC — Commercial License Agreement (ziXn)
+
+Version: 1.0
+Effective Date: 2025-09-18
+Licensor: Ripple Group, LLC ("Licensor")
+Software: ziXn (the "Software")
+
+By downloading, accessing, installing, or using the Software in a manner that requires a commercial license under LICENSE.md, you ("Licensee") agree to be bound by this Commercial License Agreement (the "Agreement"). If you do not agree, do not use the Software under this Agreement.
+
+1. Definitions
+1.1 "Application" means Licensee's software, product, or service that incorporates or interfaces with the Software.
+1.2 "Annual Gross Revenue" means Licensee’s total revenue recognized in the preceding 12 months under applicable accounting standards, before expenses.
+1.3 "Order Form" means a document (including an online checkout) executed by the parties specifying fees, license metrics, term, support, and any special terms.
+1.4 "Support" means any maintenance, updates, or technical assistance purchased under an Order Form.
+1.5 "Derivative Work" means a work based upon the Software or any portion thereof, including modifications, enhancements, or translations.
+
+2. License Grant
+2.1 Subject to Licensee’s compliance with this Agreement and payment of applicable Fees, Licensor grants Licensee a non-exclusive, non-transferable, non-sublicensable (except as expressly permitted in Section 2.3), worldwide license to:
+     (a) use, reproduce, and modify the Software internally;
+     (b) compile and distribute the Software, in object/binary form only, as integrated into Licensee’s Application;
+     (c) create and distribute Derivative Works in object/binary form as part of Licensee’s Application.
+2.2 Source Code Distribution. Except as expressly permitted by Licensor in an Order Form, Licensee may not distribute the Software or Derivative Works in source code form to any third party.
+2.3 Limited Sublicensing for Distribution. Licensee may sublicense the object/binary form of the Software solely as embedded in Licensee’s Application to Licensee’s customers and end users for use of the Application, and not for use of the Software on a standalone basis or for creating a competing library, SDK, or service.
+2.4 Reservation of Rights. Licensor reserves all rights not expressly granted.
+
+3. Eligibility; Revenue Threshold
+3.1 This Agreement applies if Licensee (a) has Annual Gross Revenue of USD $100,000 or more, or (b) does not otherwise qualify for the Community License described in LICENSE.md, or (c) requires rights not granted under the Community License.
+3.2 If Licensee’s Annual Gross Revenue subsequently meets or exceeds USD $100,000, Licensee must promptly obtain a license under this Agreement prior to any further use, distribution, or deployment of the Software.
+
+4. Fees and Payment
+4.1 Fees. License fees and metrics (e.g., per-developer, per-application, or per-seat) will be specified in an Order Form. Taxes are additional.
+4.2 Payment Terms. Unless otherwise stated in an Order Form, fees are due within thirty (30) days of invoice. Late payments may incur the maximum interest permitted by law.
+4.3 Non-Refundable. Except as required by law or expressly stated in an Order Form, fees are non-refundable.
+
+5. Evaluation Use
+5.1 Licensor may, at its discretion, permit a time-limited evaluation (e.g., thirty (30) days) for internal testing only, with no production use, and without Support or warranties.
+
+6. Restrictions
+6.1 Licensee shall not: (a) use the Software to create a competing library, SDK, or service; (b) remove or alter proprietary notices; (c) reverse engineer object/binary-only components where prohibited by law; (d) use the Software in violation of applicable laws; (e) circumvent license enforcement or access controls.
+6.2 Trademarks. Licensee shall not use Licensor’s names, logos, or trademarks without written permission.
+
+7. Compliance; Records; Audit
+7.1 Records. Licensee shall maintain accurate records sufficient to verify compliance with this Agreement and license metrics for at least three (3) years.
+7.2 Audit. No more than once per 12-month period, with at least ten (10) business days’ notice, Licensor or its independent auditor may audit Licensee’s records during normal business hours to verify compliance. Audits will be at Licensor’s expense unless material non-compliance (≥5% underpayment or unlicensed use) is found, in which case Licensee shall reimburse reasonable audit costs and promptly cure non-compliance.
+
+8. Ownership; Feedback
+8.1 Ownership. Licensor retains all right, title, and interest in and to the Software and all copies and Derivative Works thereof, subject to the licenses granted herein.
+8.2 Feedback. If Licensee provides feedback or suggestions, Licensor may use them without restriction or obligation.
+
+9. Confidentiality
+9.1 The Software source code and any non-public information disclosed by Licensor is Licensor’s Confidential Information. Licensee will protect it using at least the same degree of care it uses to protect its own confidential information, but no less than reasonable care. Confidentiality obligations survive for five (5) years from disclosure; trade secrets remain protected so long as they qualify as trade secrets.
+
+10. Support; Updates
+10.1 Support and update rights, if any, are as stated in an Order Form. Absent such terms, Licensor has no obligation to provide Support, patches, or updates.
+
+11. Warranty; Disclaimers
+11.1 THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND. LICENSOR DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ANY WARRANTIES ARISING OUT OF COURSE OF DEALING OR USAGE.
+
+12. Limitation of Liability
+12.1 TO THE MAXIMUM EXTENT PERMITTED BY LAW, LICENSOR WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, GOODWILL, OR DATA, EVEN IF ADVISED OF THE POSSIBILITY.
+12.2 LICENSOR’S TOTAL LIABILITY FOR ALL CLAIMS UNDER THIS AGREEMENT SHALL NOT EXCEED THE FEES PAID BY LICENSEE TO LICENSOR FOR THE SOFTWARE IN THE TWELVE (12) MONTHS PRECEDING THE EVENT GIVING RISE TO LIABILITY.
+
+13. Indemnification
+13.1 By Licensee. Licensee will indemnify, defend, and hold harmless Licensor from and against claims arising out of Licensee’s (a) use or distribution of the Software in violation of this Agreement or applicable law, or (b) Licensee’s Applications.
+13.2 Optional IP Indemnity by Licensor. If included in an Order Form, Licensor may provide limited IP infringement indemnity subject to customary exclusions and conditions.
+
+14. Term and Termination
+14.1 Term. This Agreement begins on the Effective Date and continues for the license term stated in the Order Form, or if none, until terminated as provided herein.
+14.2 Termination for Cause. Either party may terminate for material breach not cured within thirty (30) days after written notice.
+14.3 Effect of Termination. Upon termination, all rights granted to Licensee terminate, and Licensee must cease use of the Software and destroy or return all copies. Sections 1, 6, 7, 8, 9, 11, 12, 13, 14.3, and 15 survive termination.
+
+15. General
+15.1 Governing Law; Venue. This Agreement is governed by the laws of the State of [Utah/United States Of America], without regard to conflict of laws rules. The parties submit to the exclusive jurisdiction and venue of the courts located in [Jurisdiction].
+15.2 Assignment. Licensee may not assign this Agreement, in whole or in part, without Licensor’s prior written consent, except to a successor in interest in connection with a merger, acquisition, or sale of substantially all assets, provided the successor agrees in writing to be bound by this Agreement.
+15.3 Notices. Notices must be in writing and deemed given upon receipt if sent to the addresses provided by the parties or, for Licensor, to legal@ripplegroup.com and licensing@ripplegroup.com.
+15.4 Entire Agreement; Order of Precedence. This Agreement, together with any Order Form(s), constitutes the entire agreement regarding the subject matter and supersedes all prior or contemporaneous understandings. In the event of conflict, an executed Order Form controls.
+15.5 Amendments; Waivers. Any amendment must be in writing and signed by both parties. No waiver is effective unless in writing and signed by the waiving party.
+15.6 Severability. If any provision is held unenforceable, it shall be modified to the minimum extent necessary to make it enforceable, and the remaining provisions shall remain in effect.
+15.7 Export Control. Licensee shall comply with all applicable export and sanctions laws and regulations.
+15.8 U.S. Government Rights. The Software is "commercial computer software" and "commercial computer software documentation." If acquired by or on behalf of a U.S. Government entity, use is subject to the terms of this Agreement per FAR 12.212 and DFARS 227.7202, as applicable.
+
+Contact for Licensing
+Email: colin@teraflux.app

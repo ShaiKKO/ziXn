@@ -1,21 +1,54 @@
 Checks: >
   -*,
   bugprone-*,
-  cppcoreguidelines-*,
+  clang-analyzer-*,
   performance-*,
   portability-*,
   readability-*,
   modernize-*,
-  clang-analyzer-*
+  cppcoreguidelines-*,
+  cppcoreguidelines-pro-type-vararg,
+  -portability-simd-intrinsics,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-owning-memory,
+  -bugprone-easily-swappable-parameters,
+  -readability-magic-numbers,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -modernize-use-trailing-return-type,
+  -modernize-use-using,
+  -cppcoreguidelines-avoid-c-arrays,
+  -modernize-avoid-c-arrays,
+  -cppcoreguidelines-use-enum-class,
+  -performance-enum-size,
+  -readability-identifier-length,
+  readability-else-after-return
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'core/.*'
-AnalyzeTemporaryDtors: false
+HeaderFilterRegex: '^(core/(include|src)|kernels)/.*'
+# Removed unsupported key for Windows clang-tidy
 FormatStyle:     file
 CheckOptions:
-  - { key: readability-identifier-naming.VariableCase, value: camelBack }
-  - { key: readability-identifier-naming.FunctionCase, value: camelBack }
-  - { key: readability-identifier-naming.ClassCase, value: PascalCase }
-  - { key: readability-identifier-naming.StructCase, value: PascalCase }
-  - { key: readability-identifier-naming.EnumCase, value: PascalCase }
+  - { key: readability-identifier-naming.FunctionCase, value: lower_case }
+  - { key: readability-identifier-naming.MethodCase, value: lower_case }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.ClassCase, value: CamelCase }
+  - { key: readability-identifier-naming.StructCase, value: CamelCase }
+  - { key: readability-identifier-naming.EnumCase, value: CamelCase }
   - { key: readability-identifier-naming.EnumConstantCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.TypeAliasCase, value: CamelCase }
+  - { key: readability-identifier-naming.TypedefCase, value: lower_case }
+  - { key: readability-identifier-naming.IgnoreMainLikeFunctions, value: true }
+  - { key: readability-identifier-naming.IgnoreFailedSplit, value: true }
+  - { key: readability-identifier-naming.AllowedFunctionNames, value: '^zx_.*$' }
+  - { key: readability-identifier-naming.AllowedTypeNames, value: '^(zx_.*|ZX_.*)$' }
+  - { key: readability-identifier-naming.IgnoreMacros, value: true }
+  - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.MacroAllowedRegexp, value: '^(ZX_CALL|ZX_API|ZX_STATUS|ZX_.*)$' }
+  - { key: readability-identifier-length.MinimumParameterNameLength, value: '0' }
+  - { key: readability-identifier-length.MinimumVariableNameLength, value: '0' }
+  - { key: readability-identifier-length.IgnoredParameterNames, value: '^(x|y|z|w|h|dt|mu|nu|ns|st|mc|ep|dp|p|r|g|i|j|k|cx|cy|cz)$' }
+  - { key: readability-function-cognitive-complexity.Threshold, value: '60' }
 
