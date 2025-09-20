@@ -436,3 +436,33 @@ if(ZX_ENABLE_TESTS)
 endif()
 
 
+# Profiling: PerfView bench target (Windows only)
+# This custom target runs PerfView headlessly on `zx_cli --mode bench` and writes traces to `${CMAKE_BINARY_DIR}/traces`.
+# Usage:
+#   cmake --build . --config Release --target perfview_bench
+if(WIN32)
+  set(PERFVIEW_TRACE_DIR "${CMAKE_BINARY_DIR}/traces")
+  file(MAKE_DIRECTORY "${PERFVIEW_TRACE_DIR}")
+
+  # Attempt to locate PerfView. Users may also have it in PATH via winget alias `perfview`.
+  find_program(PERFVIEW_EXE
+    NAMES PerfView PerfView.exe perfview.exe perfview
+    HINTS "$ENV{LOCALAPPDATA}/Microsoft/WinGet/Links" "C:/Program Files/PerfView" "C:/Program Files (x86)/PerfView"
+  )
+
+  if(PERFVIEW_EXE)
+    add_custom_target(perfview_bench
+      COMMAND "${PERFVIEW_EXE}" /NoGui /AcceptEULA /ThreadTime /CircularMB:64 /MaxCollectSec:45 run "$<TARGET_FILE:zx_cli>" --mode bench
+      WORKING_DIRECTORY "${PERFVIEW_TRACE_DIR}"
+      COMMENT "Running PerfView on zx_cli --mode bench; ETL will be emitted to ${PERFVIEW_TRACE_DIR}"
+      VERBATIM
+    )
+    add_dependencies(perfview_bench zx_cli)
+    set_target_properties(perfview_bench PROPERTIES
+      DESCRIPTION "Headless PerfView run for zx_cli bench; outputs ETL into traces/"
+    )
+  else()
+    message(STATUS "PerfView not found; 'perfview_bench' target will not be available. Install Microsoft.PerfView or add it to PATH.")
+  endif()
+endif()
+

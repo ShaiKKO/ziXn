@@ -113,4 +113,19 @@ ZX_API void ZX_CALL zx_lod_get_default_policy(zx_lod_fallback_policy* out);
 /* SIMD override for LOD kernels: -1 auto, 0 scalar, 2 AVX2 (if supported) */
 ZX_API void ZX_CALL zx_lod_set_simd_override(int mode);
 
+/** \brief Configure store policy for LOD kernels (non-temporal writes).
+ *
+ * Controls whether LOD kernels may use non-temporal (streaming) stores on long,
+ * contiguous row writes to reduce cache pollution on large images.
+ *
+ * Modes:
+ * - -1: auto (enable when rows are wide and pointers are 32B-aligned on AVX2)
+ * -  0: force disabled
+ * -  1: force enabled when safe (alignment and width threshold)
+ */
+ZX_API void ZX_CALL zx_lod_set_store_policy(int mode);
+
+/** \brief Query the current store policy (-1 auto, 0 disabled, 1 enabled). */
+ZX_API int ZX_CALL zx_lod_get_store_policy(void);
+
 #endif /* ZX_LOD_H */

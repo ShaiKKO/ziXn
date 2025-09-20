@@ -61,10 +61,13 @@ namespace
   constexpr uint32_t k_default_enter_frames        = 2U;
   constexpr uint32_t k_default_exit_frames         = 2U;
   constexpr uint32_t k_default_blend_frames        = 3U;
+  constexpr uint32_t k_nt_min_row_width            = 128U;  // elements; enable NT on wide rows
 }  // namespace
 
 /* SIMD override: -1 auto, 0 scalar, 2 AVX2 */
 static int g_simd_override = -1;  // -1 auto, 0 scalar, 2 AVX2
+/* Store policy: -1 auto, 0 disabled, 1 enabled (when safe) */
+static int g_store_policy = -1;
 
 #if defined(__x86_64__) || defined(_M_X64)
 static inline int cpu_supports_avx2(); /* forward */
@@ -93,13 +96,26 @@ static void down2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp
   constexpr float k_quarter = 0.25F;
   for (uint32_t y = 0; y < dh; ++y)
   {
+    // Scalar row accumulation; optional streaming store if policy enables and row wide
+    const bool use_nt =
+        (g_store_policy == 1) || ((g_store_policy == -1) && (dw >= k_nt_min_row_width));
     for (uint32_t x = 0; x < dw; ++x)
     {
-      const float a                          = src[((2U * y + 0U) * sp) + (2U * x + 0U)];
-      const float b                          = src[((2U * y + 0U) * sp) + (2U * x + 1U)];
-      const float c                          = src[((2U * y + 1U) * sp) + (2U * x + 0U)];
-      const float d                          = src[((2U * y + 1U) * sp) + (2U * x + 1U)];
-      dst[(static_cast<size_t>(y) * dp) + x] = k_quarter * (a + b + c + d);
+      const float a = src[((2U * y + 0U) * sp) + (2U * x + 0U)];
+      const float b = src[((2U * y + 0U) * sp) + (2U * x + 1U)];
+      const float c = src[((2U * y + 1U) * sp) + (2U * x + 0U)];
+      const float d = src[((2U * y + 1U) * sp) + (2U * x + 1U)];
+      const float v = k_quarter * (a + b + c + d);
+#if defined(__x86_64__) || defined(_M_X64)
+      if (use_nt)
+      {
+        _mm_stream_ss(dst + (static_cast<size_t>(y) * dp) + x, _mm_set_ss(v));
+      }
+      else
+#endif
+      {
+        dst[(static_cast<size_t>(y) * dp) + x] = v;
+      }
     }
   }
 }
@@ -120,6 +136,8 @@ static ZX_TARGET_AVX2 void down2_avx2(const float* src, uint32_t sw, uint32_t sh
     const float* row0 = src + static_cast<size_t>((2U * y + 0U) * sp);
     const float* row1 = src + static_cast<size_t>((2U * y + 1U) * sp);
     uint32_t x        = 0;
+    const bool use_nt =
+        (g_store_policy == 1) || ((g_store_policy == -1) && (dw >= k_nt_min_row_width));
     for (; x < vec_w; x += k_block8)
     {
       // Load 16 contiguous samples from each row
@@ -137,15 +155,30 @@ static ZX_TARGET_AVX2 void down2_avx2(const float* src, uint32_t sw, uint32_t sh
       __m256 sum           = _mm256_add_ps(s0, s1);
       __m256 out           = _mm256_mul_ps(sum, quarter);
       const size_t dst_row = static_cast<size_t>(y) * static_cast<size_t>(dp);
-      _mm256_storeu_ps(dst + dst_row + x, out);
+      if (use_nt)
+      {
+        _mm256_stream_ps(dst + dst_row + x, out);
+      }
+      else
+      {
+        _mm256_storeu_ps(dst + dst_row + x, out);
+      }
     }
     for (; x < dw; ++x)
     {
-      const float a                          = row0[(2U * x) + 0U];
-      const float b                          = row0[(2U * x) + 1U];
-      const float c                          = row1[(2U * x) + 0U];
-      const float d                          = row1[(2U * x) + 1U];
-      dst[(static_cast<size_t>(y) * dp) + x] = k_quarter * (a + b + c + d);
+      const float a = row0[(2U * x) + 0U];
+      const float b = row0[(2U * x) + 1U];
+      const float c = row1[(2U * x) + 0U];
+      const float d = row1[(2U * x) + 1U];
+      const float v = k_quarter * (a + b + c + d);
+      if (use_nt)
+      {
+        _mm_stream_ss(dst + (static_cast<size_t>(y) * dp) + x, _mm_set_ss(v));
+      }
+      else
+      {
+        dst[(static_cast<size_t>(y) * dp) + x] = v;
+      }
     }
   }
 }
@@ -193,24 +226,29 @@ static void up2_scalar(const float* src, uint32_t sw, uint32_t sh, uint32_t sp, 
   for (uint32_t y = 0; y < dh; ++y)
   {
     const float fy = ((static_cast<float>(y) + k_half) * k_half) - k_half;
-    int y0         = (int) std::floor((double) fy);
-    int y1         = std::min((int) sh - 1, y0 + 1);
-    const float ty = fy - (float) y0;
-    y0             = std::max(0, y0);
+    int y0         = 0;
+    int y1         = 0;
+    float ty       = 0.0F;
+    {
+      const int y_floor = static_cast<int>(std::floor(static_cast<double>(fy)));
+      y0                = std::clamp(y_floor, 0, static_cast<int>(sh) - 1);
+      y1                = std::min(y0 + 1, static_cast<int>(sh) - 1);
+      ty                = fy - static_cast<float>(y0);
+    }
     for (uint32_t x = 0; x < dw; ++x)
     {
-      const float fx                         = ((static_cast<float>(x) + k_half) * k_half) - k_half;
-      int x0                                 = (int) std::floor((double) fx);
-      int x1                                 = std::min((int) sw - 1, x0 + 1);
-      const float tx                         = fx - (float) x0;
-      x0                                     = std::max(0, x0);
-      const float a                          = src[(y0 * sp) + x0];
-      const float b                          = src[(y0 * sp) + x1];
-      const float c                          = src[(y1 * sp) + x0];
-      const float d                          = src[(y1 * sp) + x1];
-      const float ab                         = a + (tx * (b - a));
-      const float cd                         = c + (tx * (d - c));
-      dst[(static_cast<size_t>(y) * dp) + x] = ab + ty * (cd - ab);
+      const float fx = ((static_cast<float>(x) + k_half) * k_half) - k_half;
+      int x0         = static_cast<int>(std::floor(static_cast<double>(fx)));
+      x0             = std::clamp(x0, 0, static_cast<int>(sw) - 1);
+      int x1         = std::min(static_cast<int>(sw) - 1, x0 + 1);
+      const float tx = fx - static_cast<float>(x0);
+      const float a  = src[(y0 * sp) + x0];
+      const float b  = src[(y0 * sp) + x1];
+      const float c  = src[(y1 * sp) + x0];
+      const float d  = src[(y1 * sp) + x1];
+      const float ab = a + (tx * (b - a));
+      const float cd = c + (tx * (d - c));
+      dst[(static_cast<size_t>(y) * dp) + x] = ab + (ty * (cd - ab));
     }
   }
 }
@@ -543,7 +581,7 @@ static float border_scalar(const float* a, uint32_t a_w, uint32_t a_h, uint32_t 
 #if defined(__x86_64__) || defined(_M_X64)
 static inline int cpu_supports_avx2()
 {
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
   int cpu_info[4] = {0};
   __cpuid(cpu_info, 0);
   int n_ids = cpu_info[0];
@@ -589,7 +627,7 @@ static ZX_TARGET_AVX2 float border_avx2(const float* a, uint32_t a_w, uint32_t a
     uint32_t x_b = 0U;
     uint32_t h   = std::min(a_h, b_h);
     uint32_t y   = 0;
-    for (; (y + k_block8) <= h; y += k_block8)
+    while ((y + k_block8) <= h)
     {
       std::array<int, k_avx_lanes> idx_a{};
       std::array<int, k_avx_lanes> idx_b{};
@@ -607,6 +645,7 @@ static ZX_TARGET_AVX2 float border_avx2(const float* a, uint32_t a_w, uint32_t a
       __m256 d = _mm256_sub_ps(va, vb);
       d        = _mm256_and_ps(d, signmask);
       vmax     = _mm256_max_ps(vmax, d);
+      y += k_block8;
     }
     alignas(k_avx_align) std::array<float, k_avx_lanes> tmp{};
     _mm256_store_ps(tmp.data(), vmax);
@@ -628,13 +667,14 @@ static ZX_TARGET_AVX2 float border_avx2(const float* a, uint32_t a_w, uint32_t a
     uint32_t y_b = 0U;
     uint32_t w   = std::min(a_w, b_w);
     uint32_t x   = 0;
-    for (; (x + k_block8) <= w; x += k_block8)
+    while ((x + k_block8) <= w)
     {
       __m256 va = _mm256_loadu_ps(&a[(y_a * a_p) + x]);
       __m256 vb = _mm256_loadu_ps(&b[(y_b * b_p) + x]);
       __m256 d  = _mm256_sub_ps(va, vb);
       d         = _mm256_and_ps(d, signmask);
       vmax      = _mm256_max_ps(vmax, d);
+      x += k_block8;
     }
     alignas(k_avx_align) std::array<float, k_avx_lanes> tmp{};
     _mm256_store_ps(tmp.data(), vmax);
@@ -747,6 +787,20 @@ void ZX_CALL zx_lod_set_simd_override(int mode)
 {
   g_simd_override = mode;
   recompute_dispatch();
+}
+
+extern "C" void ZX_CALL zx_lod_set_store_policy(int mode)
+{
+  if ((mode < -1) || (mode > 1))
+  {
+    mode = -1;
+  }
+  g_store_policy = mode;
+}
+
+extern "C" int ZX_CALL zx_lod_get_store_policy(void)
+{
+  return g_store_policy;
 }
 
 void ZX_CALL zx_lod_fallback_init(zx_lod_fallback_state* s)

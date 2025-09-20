@@ -9,8 +9,16 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 function Get-InstanceNameByPid([int]$procId) {
-  $cs = Get-Counter '\\Process(*)\\ID Process'
-  foreach ($s in $cs.CounterSamples) {
+  $gc = Get-Counter '\\Process(*)\\ID Process'
+  $samples = $gc.CounterSamples
+  if (-not $samples) {
+    # Some PS hosts return a nested structure; try the First counter set
+    if ($gc.Readings -and $gc.Readings.Count -gt 0) {
+      $gc = Get-Counter '\\Process(*)\\ID Process' -ErrorAction Stop
+      $samples = $gc.CounterSamples
+    }
+  }
+  foreach ($s in $samples) {
     if ([int]$s.CookedValue -eq $procId) { return $s.InstanceName }
   }
   throw "Process instance for PID $procId not found in performance counters."

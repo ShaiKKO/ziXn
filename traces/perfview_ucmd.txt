@@ -1,0 +1,275 @@
+﻿[EXECUTING: PerfView /NoGui UserCommandHelp]
+All User Commands
+
+-------------------------------------------------------------------------
+NetperfToSpeedScope netPerfFileName
+
+  Summary: 
+      Save Thread stacks from a NetPerf file into a *.speedscope.json file.
+
+-------------------------------------------------------------------------
+DumpEventsAsXml etlFileName [xmlOutputFileName]
+
+  Summary: 
+      Dump every event in 'etlFileName' (which can be a ETL file or an ETL.ZIP
+      file), as an XML file 'xmlOutputFileName' If the output file name is not
+      given, the input filename's extension is changed to '.etl.xml' and that is
+      used. This command is particularly useful for EventSources, where you want
+      to post-process the data in some other tool.
+
+-------------------------------------------------------------------------
+SaveCPUStacks etlFileName [processName]
+
+  Summary: 
+      Save the CPU stacks from 'etlFileName'. If the /process qualifier is
+      present use it to narrow what is put into the file to a single process.
+
+-------------------------------------------------------------------------
+SaveCPUStacksAsCsv etlFileName [processName] [warmSymbolLookupMinimumValue] [processLookupMethod]
+
+  Summary: 
+      Save the CPU stacks from 'etlFileName' as a CSV list to allow for easier
+      to parse data. If the /process qualifier is present use it to narrow what
+      is put into the file to a single process.
+
+-------------------------------------------------------------------------
+SaveScenarioCPUStacks scenario
+
+  Summary: 
+      Save the CPU stacks for a set of traces. If 'scenario' is an XML file, it
+      will be used as a configuration file. Otherwise, 'scenario' must refer to
+      a directory. All ETL files in that directory and any subdirectories will
+      be processed according to the default rules. Summary of config XML: ([]
+      used instead of brackets) [ScenarioConfig] [Scenarios files="*.etl"
+      process="$1.exe" name="scenario $1" /] [/ScenarioConfig]
+
+-------------------------------------------------------------------------
+DumpEventSourceManifests etlFileName [outputDirectory] [pattern]
+
+  Summary: 
+      If there are System.Diagnostics.Tracing.EventSources that are logging data
+      to the ETL file then there are manifests for each of these EventSources in
+      event stream. This method dumps these to 'outputDirectory' (each manifest
+      file is 'ProviderName'.manifest.xml) If outputDirectory is not present,
+      then the directory 'EtwManifests' in the same directory as the
+      'etlFileName' is used as the output directory. If 'pattern' is present
+      this is a .NET regular expression and only EventSources that match the
+      pattern will be output.
+
+-------------------------------------------------------------------------
+JSGCDumpFromETLFile etlFileName [gcDumpOutputFileName]
+
+-------------------------------------------------------------------------
+DotNetGCDumpFromETLFile etlFileName [processNameOrId] [gcDumpOutputFileName]
+
+  Summary: 
+      Generate a GCDumpFile of a DotNet heap from ETW data in 'etlFileName',
+      need to have a V4.5.1 runtime (preferably V4.5.2) to have the proper
+      events.
+
+-------------------------------------------------------------------------
+DumpRawDotNetGCHeapEvents etlFileName [processId] [outputFileName]
+
+  Summary: 
+      Pretty prints the raw .NET GC dump events (GCBulk*) with minimal
+      processing as XML. This is mostly useful for debugging, to see if the raw
+      data sane if there is a question on why something is not showing up
+      properly in a more user-friendly view.
+  Parameters: 
+      etlFileName: The input ETW file containing the GC dump events
+      processId: The process to focus on. 0 (the default) says to pick the first
+          process with Bulk GC events.
+      outputFileName: The output XML file.
+
+-------------------------------------------------------------------------
+DumpGCDumpFile gcDumpFileName
+
+  Summary: 
+      Dumps a GCDump file as XML. Useful for debugging heap dumping issues. It
+      is easier to read than what is produced by 'WriteGCDumpAsXml' but can't be
+      read in with as a '.gcdump.xml' file.
+  Parameters: 
+      gcDumpFileName: 
+
+-------------------------------------------------------------------------
+WriteGCDumpAsXml gcDumpFileName [outputFileName]
+
+  Summary: 
+      Dumps a GCDump file as gcdump.xml file. THese files can be read back by
+      PerfView.
+  Parameters: 
+      gcDumpFileName: The input file (.gcdump)
+      outputFileName: The output file name (defaults to input file with
+          .gcdump.xml suffix)
+
+-------------------------------------------------------------------------
+DumpRegisteredManifest providerName [outputFileName]
+
+  Summary: 
+      Given a name (or guid) of a provider registered on the system, generate a
+      '.manifest.xml' file that represents the manifest for that provider.
+
+-------------------------------------------------------------------------
+Listen etwProviderNames
+
+  Summary: 
+      Opens a text window that displays events from the given set of event
+      source names By default the output goes to a GUI window but you can use
+      the /LogFile option to redirect it elsewhere.
+  Parameters: 
+      etwProviderNames: a comma separated list of providers specs (just like
+          /Providers value)
+
+-------------------------------------------------------------------------
+DirectorySize [directoryPath] [outputFileName]
+
+  Summary: 
+      Creates perfView.xml file that represents the directory size of
+      'directoryPath' and places it in 'outputFileName'.
+  Parameters: 
+      directoryPath: The directory whose size is being computed (default to the
+          current dir)
+      outputFileName: The output fileName (defaults to
+          NAME.dirSize.PerfView.xml.zip) where NAME is the simple name of the
+          directory.
+
+-------------------------------------------------------------------------
+PerfScript path [threadTime]
+
+  Summary: 
+      Creates a .perfView.xml.zip that represents the profiling data from a perf
+      script output dump. Adding a --threadtime tag enables blocked time
+      investigations on the perf script dump.
+  Parameters: 
+      path: The path to the perf script dump, right now, either a file with
+          suffix perf.data.dump, .trace.zip or .data.txt will be accepted.
+      threadTime: Option to turn on thread time on the perf script dump.
+
+-------------------------------------------------------------------------
+TextHistogram textFilePath
+
+  Summary: 
+      Creates a stack source out of the textFileName where each line is a frame
+      (which is directly rooted) and every such line has a metric of 1. Thus it
+      allows you to form histograms for these lines nicely in perfView.
+  Parameters: 
+      textFilePath: 
+
+-------------------------------------------------------------------------
+ProjectNMetaData projectNMetadataDataCsv
+
+  Summary: 
+      Reads a project N metaData.csv file (From ILC.exe) and converts it to a
+      .GCDump file (a heap)
+
+-------------------------------------------------------------------------
+ReflectionUse reflectionLogFile
+
+  Summary: 
+      This is used to visualize the Project N ILTransformed\*.reflectionlog.csv
+      file so it can viewed in PerfVIew.
+  Parameters: 
+      reflectionLogFile: The name of the file to view
+
+-------------------------------------------------------------------------
+ImageSize [inputExeName] [outputFileName]
+
+  Summary: 
+      ImageSize generates a XML report (by default inputExeName.imageSize.xml)
+      that breaks down the executable file 'inputExeName' by the symbols in it
+      (fetched from its PDB. The PDB needs to be locatable (either on the
+      _NT_SYMBOL_PATH, or next to the file, or in its original build location).
+      This report can be viewed with PerfView (it looks like a GC heap).
+  Parameters: 
+      inputExeName: The name of the EXE (or DLL) that you wish to analyze. If
+          blank it will prompt for one.
+      outputFileName: The name of the report file. Defaults to the inputExeName
+          with a .imageSize.xml suffix.
+
+-------------------------------------------------------------------------
+PdbSignature pdbFileName
+
+  Summary: 
+      Dumps the PDB signature associated with pdb 'pdbName'
+
+-------------------------------------------------------------------------
+LookupSymbolsFor dllName [ILPdb]
+
+-------------------------------------------------------------------------
+LookupSymbols pdbFileName pdbGuid pdbAge
+
+-------------------------------------------------------------------------
+GetDynamicAssemblySymbols targetSymbolCachePath
+
+  Summary: 
+      Listen for the CLR CodeSymbols events and when you find them write them to
+      the directory targetSymbolCachePath using standard symbol server
+      conventions (Name.Pdb\GUID-AGE\Name.Pdb) Usage
+  Parameters: 
+      targetSymbolCachePath: 
+
+-------------------------------------------------------------------------
+NGenImageSize ngenImagePath
+
+  Summary: 
+      Given an NGEN image 'ngenImagePath' create a 'heap' description of what is
+      in the NGEN image (where the metric is size).
+  Parameters: 
+      ngenImagePath: 
+
+-------------------------------------------------------------------------
+GCStats etlFile
+
+  Summary: 
+      Computes the GCStats HTML report for etlFile.
+
+-------------------------------------------------------------------------
+ServerGCReport etlFile
+
+  Summary: 
+      Outputs some detailed Server GC analysis to a file.
+
+-------------------------------------------------------------------------
+JITStats etlFile
+
+  Summary: 
+      Computes the JITStats HTML report for etlFile.
+
+-------------------------------------------------------------------------
+ListProviderKeywords providerNameOrGuid
+
+  Summary: 
+      Gets the ETW keywords (bitset definitions of what can be turned on in the
+      provider) for a given provider. Currently does not work for EventSources
+  Parameters: 
+      providerNameOrGuid: The name or GUID of the provider to look up
+
+-------------------------------------------------------------------------
+ListProvidersInProcess processNameOrId
+
+  Summary: 
+      returns a list of providers that exist (can be enabled) in a particular
+      process. Currently EventSouces are returned as GUIDs.
+  Parameters: 
+      processNameOrId: The process name (exe without extension) or process ID of
+          the process of interest.
+
+-------------------------------------------------------------------------
+ListPublishedProviders
+
+  Summary: 
+      returns a list of all providers that have published their meta-data to the
+      Operating system. This does NOT include EventSources and is a long list.
+      Some of these are not actually active and thus will have no effect if they
+      are enabled (see ListProvidersInProcess).
+
+-------------------------------------------------------------------------
+FetchSymbolsForProcess etlFileName [processName]
+
+  Summary: 
+      Fetch all the PDBs files needed for viewing 'etlFileName' locally. If
+      'processName' is present we only fetch PDBs needed for that process. This
+      can be either a process name (exe without extension or path) or a decimal
+      numeric ID.
+[DONE 03:14:47 SUCCESS: PerfView /NoGui UserCommandHelp]
+Press enter to close window.

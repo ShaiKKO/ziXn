@@ -1,0 +1,9 @@
+==== core/src/zx_authoring.cpp,core/src/zx_checksum.cpp,core/src/zx_determinism.cpp,core/src/zx_validation.cpp,core/src/zx_writeback.cpp ====
+clang-tidy.exe : Error reading configuration from C:\Users\cisco\Desktop\dev\research\ziXn\core/src/zx_authoring.cpp,core/sr
+c/zx_checksum.cpp,core/src/zx_determinism.cpp,core/src/zx_validation.cpp,core/src: directory doesn't exist.
+At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:25 char:10
++     $r = & $ct @args 2>&1 | Out-String
++          ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Error reading c... doesn't exist.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

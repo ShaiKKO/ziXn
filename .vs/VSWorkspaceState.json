@@ -10,10 +10,7 @@
     "\\core",
     "\\core\\include",
     "\\core\\include\\zx",
-    "\\core\\src",
-    "\\docs",
-    "\\kernels"
+    "\\core\\src"
   ],
-  "SelectedNode": "\\core\\include\\zx\\zx_abi.h",
   "PreviewInSolutionExplorer": false
 }

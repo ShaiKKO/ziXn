@@ -1,8 +1,0 @@
-==== core/src/zx_api.cpp ====
-clang-tidy.exe : 27 warnings generated.
-At C:\Users\cisco\Desktop\dev\research\ziXn\scripts\run-repo-tidy.ps1:23 char:10
-+     $r = & $ct @args 2>&1 | Out-String
-+          ~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (27 warnings generated.:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
